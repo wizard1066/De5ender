@@ -12,6 +12,7 @@
 		7BA5CCD62192EDAA007EB2E3 /* SpriteComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCD52192EDAA007EB2E3 /* SpriteComponent.swift */; };
 		7BA5CCD82192F291007EB2E3 /* MovementComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCD72192F291007EB2E3 /* MovementComponent.swift */; };
 		7BA5CCDC21931B30007EB2E3 /* SKTUtils in Resources */ = {isa = PBXBuildFile; fileRef = 7BA5CCDB21931B30007EB2E3 /* SKTUtils */; };
+		7BA5CCDE21937165007EB2E3 /* TouchableSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCDD21937165007EB2E3 /* TouchableSprite.swift */; };
 		7BE20D09219222B900D68240 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE20D08219222B900D68240 /* AppDelegate.swift */; };
 		7BE20D0F219222B900D68240 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE20D0E219222B900D68240 /* GameScene.swift */; };
 		7BE20D11219222B900D68240 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE20D10219222B900D68240 /* GameViewController.swift */; };
@@ -27,6 +28,7 @@
 		7BA5CCD52192EDAA007EB2E3 /* SpriteComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteComponent.swift; sourceTree = "<group>"; };
 		7BA5CCD72192F291007EB2E3 /* MovementComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovementComponent.swift; sourceTree = "<group>"; };
 		7BA5CCDB21931B30007EB2E3 /* SKTUtils */ = {isa = PBXFileReference; lastKnownFileType = folder; path = SKTUtils; sourceTree = "<group>"; };
+		7BA5CCDD21937165007EB2E3 /* TouchableSprite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TouchableSprite.swift; sourceTree = "<group>"; };
 		7BE20D05219222B900D68240 /* SKDefender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SKDefender.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BE20D08219222B900D68240 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7BE20D0E219222B900D68240 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 				7BA5CCD02192E953007EB2E3 /* Entity */,
 				7BE20D08219222B900D68240 /* AppDelegate.swift */,
 				7BE20D0E219222B900D68240 /* GameScene.swift */,
+				7BA5CCDD21937165007EB2E3 /* TouchableSprite.swift */,
 				7BA5CCCE2192DB72007EB2E3 /* MoveAlongPath.swift */,
 				7BE20D10219222B900D68240 /* GameViewController.swift */,
 				7BE20D12219222B900D68240 /* Main.storyboard */,
@@ -188,6 +191,7 @@
 				7BA5CCCF2192DB72007EB2E3 /* MoveAlongPath.swift in Sources */,
 				7BE20D11219222B900D68240 /* GameViewController.swift in Sources */,
 				7BA5CCD62192EDAA007EB2E3 /* SpriteComponent.swift in Sources */,
+				7BA5CCDE21937165007EB2E3 /* TouchableSprite.swift in Sources */,
 				7BE20D09219222B900D68240 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

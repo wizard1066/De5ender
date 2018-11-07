@@ -15,7 +15,20 @@ struct PhysicsCat {
     static let Ground: UInt32 = 0b1 << 1
 }
 
-class GameScene: SKScene, SKPhysicsContactDelegate {
+class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
+    
+    func spriteTouched(box: TouchableSprite) {
+        if box.name == "up" {
+            player.movementComponent.applyImpulse(lastUpdateTimeInterval)
+        }
+        if box.name == "down" {
+            player.movementComponent.applyOmpulse(lastUpdateTimeInterval)
+        }
+        if box.name == "square" {
+            player.movementComponent.applyZero(lastUpdateTimeInterval)
+        }
+    }
+    
     
     enum Layer: CGFloat {
         case background
@@ -55,16 +68,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         shape.strokeColor = UIColor.white
         shape.lineWidth = 2
         shape.zPosition = 1
-//        shape.physicsBody = SKPhysicsBody(edgeLoopFrom: shape.path!)
-//        shape.physicsBody = SKPhysicsBody(edgeChainFrom: shape.path!)
-    
+        
         let texture = view?.texture(from: shape)
         let sprite = SKSpriteNode(texture: texture)
-//        sprite.physicsBody = SKPhysicsBody(edgeLoopFrom: shape.path!)
+
         sprite.physicsBody = SKPhysicsBody(edgeChainFrom: shape.path!)
         sprite.physicsBody?.categoryBitMask = PhysicsCat.Ground
         sprite.physicsBody?.collisionBitMask = 0
         sprite.physicsBody?.contactTestBitMask = PhysicsCat.Player
+        
         
 //        addChild(sprite)
         return sprite
@@ -73,7 +85,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func setupForeground() {
         for i in 0..<numberOfForegrounds {
             let foreground = buildGround()
-            foreground.anchorPoint = CGPoint(x: 0.0, y: 0.0)
+            foreground.anchorPoint = CGPoint(x: 0.0, y: -1.33)
             foreground.position = CGPoint(x: CGFloat(i) * foreground.size.width, y: playableStart)
             foreground.zPosition = Layer.foreground.rawValue
             foreground.name = "foreground"
@@ -86,7 +98,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             if let foreground = node as? SKSpriteNode {
                 let moveAmount = CGPoint(x: -CGFloat(self.groundSpeed) * CGFloat(self.deltaTime), y: self.playableStart)
                 foreground.position.x += moveAmount.x
-//                foreground.position.y += moveAmount.y
+
                 
                 if foreground.position.x < -foreground.size.width {
                     foreground.position.x += foreground.size.width * CGFloat(self.numberOfForegrounds)
@@ -105,6 +117,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        player.movementComponent.playableStart = playableStart
     }
     
+    func setupHUD() {
+        let upArrow = TouchableSprite(imageNamed: "UpArrow")
+        upArrow.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.midY)!) + 64)
+//        upArrow.position = CGPoint(x: self.view!.bounds.minX, y: self.view!.bounds.minY)
+        upArrow.size = CGSize(width: 64, height: 64)
+        upArrow.name = "up"
+        upArrow.delegate = self
+        let downArrow = TouchableSprite(imageNamed: "DownArrow")
+        downArrow.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.midY)!) - 64)
+        downArrow.size = CGSize(width: 64, height: 64)
+        downArrow.name = "down"
+        downArrow.delegate = self
+        let stopSquare = TouchableSprite(imageNamed: "Square")
+        stopSquare.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.midY)!))
+        //        upArrow.position = CGPoint(x: self.view!.bounds.minX, y: self.view!.bounds.minY)
+        stopSquare.size = CGSize(width: 64, height: 64)
+        stopSquare.name = "square"
+        stopSquare.delegate = self
+        
+        addChild(upArrow)
+        addChild(downArrow)
+        addChild(stopSquare)
+    }
+    
     override func didMove(to view: SKView) {
         /* Setup your scene here */
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
@@ -112,6 +148,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //        buildGround()
         setupForeground()
         setupPlayer()
+        setupHUD()
     }
     
     override func update(_ currentTime: CFTimeInterval) {
@@ -128,7 +165,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        player.movementComponent.applyImpulse(lastUpdateTimeInterval)
+        let pointTouched = touches.first?.location(in: self.view)
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let pointTouched = touches.first?.location(in: self.view)
+        
+        if pointTouched!.x < (self.view?.bounds.minX)! + 128, pointTouched!.y < ((self.view?.bounds.midY)!){
+            player.movementComponent.applyImpulse(lastUpdateTimeInterval)
+        }
+        if pointTouched!.x < (self.view?.bounds.minX)! + 128, pointTouched!.y > ((self.view?.bounds.midY)!){
+            player.movementComponent.applyOmpulse(lastUpdateTimeInterval)
+        }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        print("ended")
     }
     
     func didBegin(_ contact: SKPhysicsContact) {

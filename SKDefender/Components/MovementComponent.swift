@@ -13,6 +13,7 @@ class MovementComponent: GKComponent {
     let spriteComponent: SpriteComponent
     
     let impulse: CGFloat = 400
+    let ompulse: CGFloat = -400
     var velocity = CGPoint.zero
     let gravity: CGFloat = -1500
     
@@ -33,16 +34,26 @@ class MovementComponent: GKComponent {
         velocity = CGPoint(x: 0, y: impulse)
     }
     
+    func applyOmpulse(_ lastUpdateTime: TimeInterval) {
+        velocity = CGPoint(x: 0, y: ompulse)
+    }
+    
+    func applyZero(_ lastUpdateTime: TimeInterval) {
+        velocity = CGPoint(x: 0, y: 0)
+    }
+    
     func applyMovement(_ seconds: TimeInterval) {
         let spriteNode = spriteComponent.node
         
         // Apply Gravity
-        let gravityStep = gravity * CGFloat(seconds)
-        velocity.y = velocity.y + gravityStep
+//        let gravityStep = gravity * CGFloat(seconds)
+//        velocity.y = velocity.y + gravityStep
         
         // Apply Velocity
+        
         let velocityStep = velocity.y * CGFloat(seconds)
         spriteNode.position.y = spriteNode.position.y + velocityStep
+        
         
         // Temporary Ground Hit
         if spriteNode.position.y - spriteNode.size.height / 2 < playableStart {
