@@ -7,27 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7BA5CCCF2192DB72007EB2E3 /* MoveAlongPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCCE2192DB72007EB2E3 /* MoveAlongPath.swift */; };
+		7BA5CCD42192E9A4007EB2E3 /* PlayerEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCD32192E9A4007EB2E3 /* PlayerEntity.swift */; };
+		7BA5CCD62192EDAA007EB2E3 /* SpriteComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCD52192EDAA007EB2E3 /* SpriteComponent.swift */; };
+		7BA5CCD82192F291007EB2E3 /* MovementComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCD72192F291007EB2E3 /* MovementComponent.swift */; };
+		7BA5CCDC21931B30007EB2E3 /* SKTUtils in Resources */ = {isa = PBXBuildFile; fileRef = 7BA5CCDB21931B30007EB2E3 /* SKTUtils */; };
 		7BE20D09219222B900D68240 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE20D08219222B900D68240 /* AppDelegate.swift */; };
-		7BE20D0B219222B900D68240 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 7BE20D0A219222B900D68240 /* GameScene.sks */; };
-		7BE20D0D219222B900D68240 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 7BE20D0C219222B900D68240 /* Actions.sks */; };
 		7BE20D0F219222B900D68240 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE20D0E219222B900D68240 /* GameScene.swift */; };
 		7BE20D11219222B900D68240 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE20D10219222B900D68240 /* GameViewController.swift */; };
 		7BE20D14219222B900D68240 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7BE20D12219222B900D68240 /* Main.storyboard */; };
 		7BE20D16219222BA00D68240 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7BE20D15219222BA00D68240 /* Assets.xcassets */; };
 		7BE20D19219222BA00D68240 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7BE20D17219222BA00D68240 /* LaunchScreen.storyboard */; };
+		7BE20D252192252200D68240 /* SwiftLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 7BE20D242192252200D68240 /* SwiftLogo.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7BA5CCCE2192DB72007EB2E3 /* MoveAlongPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveAlongPath.swift; sourceTree = "<group>"; };
+		7BA5CCD32192E9A4007EB2E3 /* PlayerEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerEntity.swift; sourceTree = "<group>"; };
+		7BA5CCD52192EDAA007EB2E3 /* SpriteComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteComponent.swift; sourceTree = "<group>"; };
+		7BA5CCD72192F291007EB2E3 /* MovementComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovementComponent.swift; sourceTree = "<group>"; };
+		7BA5CCDB21931B30007EB2E3 /* SKTUtils */ = {isa = PBXFileReference; lastKnownFileType = folder; path = SKTUtils; sourceTree = "<group>"; };
 		7BE20D05219222B900D68240 /* SKDefender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SKDefender.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BE20D08219222B900D68240 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		7BE20D0A219222B900D68240 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
-		7BE20D0C219222B900D68240 /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
 		7BE20D0E219222B900D68240 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		7BE20D10219222B900D68240 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		7BE20D13219222B900D68240 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		7BE20D15219222BA00D68240 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7BE20D18219222BA00D68240 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7BE20D1A219222BA00D68240 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7BE20D242192252200D68240 /* SwiftLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SwiftLogo.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +49,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7BA5CCD02192E953007EB2E3 /* Entity */ = {
+			isa = PBXGroup;
+			children = (
+				7BA5CCD32192E9A4007EB2E3 /* PlayerEntity.swift */,
+			);
+			path = Entity;
+			sourceTree = "<group>";
+		};
+		7BA5CCD22192E96A007EB2E3 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				7BA5CCD52192EDAA007EB2E3 /* SpriteComponent.swift */,
+				7BA5CCD72192F291007EB2E3 /* MovementComponent.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		7BA5CCDA21931B1A007EB2E3 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				7BA5CCDB21931B30007EB2E3 /* SKTUtils */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		7BE20CFC219222B900D68240 = {
 			isa = PBXGroup;
 			children = (
@@ -60,13 +93,16 @@
 		7BE20D07219222B900D68240 /* SKDefender */ = {
 			isa = PBXGroup;
 			children = (
+				7BA5CCDA21931B1A007EB2E3 /* Resources */,
+				7BA5CCD22192E96A007EB2E3 /* Components */,
+				7BA5CCD02192E953007EB2E3 /* Entity */,
 				7BE20D08219222B900D68240 /* AppDelegate.swift */,
-				7BE20D0A219222B900D68240 /* GameScene.sks */,
-				7BE20D0C219222B900D68240 /* Actions.sks */,
 				7BE20D0E219222B900D68240 /* GameScene.swift */,
+				7BA5CCCE2192DB72007EB2E3 /* MoveAlongPath.swift */,
 				7BE20D10219222B900D68240 /* GameViewController.swift */,
 				7BE20D12219222B900D68240 /* Main.storyboard */,
 				7BE20D15219222BA00D68240 /* Assets.xcassets */,
+				7BE20D242192252200D68240 /* SwiftLogo.png */,
 				7BE20D17219222BA00D68240 /* LaunchScreen.storyboard */,
 				7BE20D1A219222BA00D68240 /* Info.plist */,
 			);
@@ -132,10 +168,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				7BE20D14219222B900D68240 /* Main.storyboard in Resources */,
-				7BE20D0B219222B900D68240 /* GameScene.sks in Resources */,
 				7BE20D16219222BA00D68240 /* Assets.xcassets in Resources */,
+				7BA5CCDC21931B30007EB2E3 /* SKTUtils in Resources */,
 				7BE20D19219222BA00D68240 /* LaunchScreen.storyboard in Resources */,
-				7BE20D0D219222B900D68240 /* Actions.sks in Resources */,
+				7BE20D252192252200D68240 /* SwiftLogo.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -146,8 +182,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BA5CCD42192E9A4007EB2E3 /* PlayerEntity.swift in Sources */,
+				7BA5CCD82192F291007EB2E3 /* MovementComponent.swift in Sources */,
 				7BE20D0F219222B900D68240 /* GameScene.swift in Sources */,
+				7BA5CCCF2192DB72007EB2E3 /* MoveAlongPath.swift in Sources */,
 				7BE20D11219222B900D68240 /* GameViewController.swift in Sources */,
+				7BA5CCD62192EDAA007EB2E3 /* SpriteComponent.swift in Sources */,
 				7BE20D09219222B900D68240 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -297,6 +337,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = CWGS87U262;
 				INFOPLIST_FILE = SKDefender/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -315,6 +356,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = CWGS87U262;
 				INFOPLIST_FILE = SKDefender/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
