@@ -13,7 +13,6 @@ class MovementComponent: GKComponent {
     let spriteComponent: SpriteComponent
     
     let impulse: CGFloat = 400
-    let ompulse: CGFloat = -400
     var velocity = CGPoint.zero
     let gravity: CGFloat = -1500
     
@@ -62,18 +61,20 @@ class MovementComponent: GKComponent {
         let velocityVStep = velocity.y * CGFloat(seconds)
         spriteNode.position.y = spriteNode.position.y + velocityVStep
         
-        let velocityHStep = velocity.x * CGFloat(seconds)
-        spriteNode.position.x = spriteNode.position.x + velocityHStep
+//        let velocityHStep = velocity.x * CGFloat(seconds)
+//        spriteNode.position.x = spriteNode.position.x + velocityHStep
         
         if spriteNode.userData!["direction"] as? String == "right" && velocity.x < 0 {
             // flip
             spriteNode.zRotation = CGFloat(180).degreesToRadians()
             spriteNode.userData?.setObject("left", forKey: "direction" as NSCopying)
+            spriteNode.run(SKAction.move(by: CGVector(dx: 1024, dy: 0), duration: 2))
         }
         if spriteNode.userData!["direction"] as? String == "left" && velocity.x > 0 {
             // flip
             spriteNode.zRotation = CGFloat(0).degreesToRadians()
             spriteNode.userData?.setObject("right", forKey: "direction" as NSCopying)
+            spriteNode.run(SKAction.move(by: CGVector(dx: -1024, dy: 0), duration: 2))
         }
         
         

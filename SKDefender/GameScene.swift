@@ -17,6 +17,9 @@ struct PhysicsCat {
 
 class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
+    var moveLeft = false
+    var moveRight = false
+    
     func spriteTouched(box: TouchableSprite) {
         switch box.name {
             case "up":
@@ -24,10 +27,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             case "down":
                 player.movementComponent.applyImpulseDown(lastUpdateTimeInterval)
             case "left":
+                moveLeft = true
+                moveRight = false
                 player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
             case "right":
+                moveRight = true
+                moveLeft = false
                 player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
             default:
+                moveLeft = false
+                moveRight = false
                 player.movementComponent.applyZero(lastUpdateTimeInterval)
         }
     }
@@ -96,7 +105,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         }
     }
     
-    func updateForeground() {
+    func updateForegroundRight() {
         self.enumerateChildNodes(withName: "foreground") { (node, stop) in
             if let foreground = node as? SKSpriteNode {
                 let moveAmount = CGPoint(x: -CGFloat(self.groundSpeed) * CGFloat(self.deltaTime), y: self.playableStart)
@@ -110,42 +119,54 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         }
     }
     
-    func setupPlayer() {
+    func updateForegroundLeft() {
+        self.enumerateChildNodes(withName: "foreground") { (node, stop) in
+            if let foreground = node as? SKSpriteNode {
+                let moveAmount = CGPoint(x: -CGFloat(self.groundSpeed) * CGFloat(self.deltaTime), y: self.playableStart)
+                foreground.position.x -= moveAmount.x
+                
+                
+                if foreground.position.x > foreground.size.width {
+                    foreground.position.x -= foreground.size.width * CGFloat(self.numberOfForegrounds)
+                }
+            }
+        }
+    }
+    
+    func setupPlayer(){
         let playerNode = player.spriteComponent.node
         playerNode.position = CGPoint(x: self.view!.bounds.maxX / 2, y: self.view!.bounds.maxY / 2)
         playerNode.zPosition = Layer.player.rawValue
 //        playerNode.size = CGSize(width: playerNode.size.width/4, height: playerNode.size.height/4)
         addChild(playerNode)
-        playerNode.addChild(cameraNode)
+        
         
 //        player.movementComponent.playableStart = playableStart
-    }
-    
-    func setupHUD() {
+  
         let upArrow = TouchableSprite(imageNamed: "UpArrow")
         upArrow.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.maxY)!) + 64)
-//        upArrow.position = CGPoint(x: self.view!.bounds.minX, y: self.view!.bounds.minY)
         upArrow.size = CGSize(width: 64, height: 64)
         upArrow.name = "up"
         upArrow.delegate = self
+        
         let downArrow = TouchableSprite(imageNamed: "DownArrow")
         downArrow.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.maxY)!) - 64)
         downArrow.size = CGSize(width: 64, height: 64)
         downArrow.name = "down"
         downArrow.delegate = self
+        
         let stopSquare = TouchableSprite(imageNamed: "Square")
         stopSquare.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.maxY)!))
-        //        upArrow.position = CGPoint(x: self.view!.bounds.minX, y: self.view!.bounds.minY)
         stopSquare.size = CGSize(width: 64, height: 64)
         stopSquare.name = "square"
         stopSquare.delegate = self
         
         let leftArrow = TouchableSprite(imageNamed: "LeftArrow")
         leftArrow.position = CGPoint(x: ((self.view?.bounds.maxX)! * 2) - 128, y: ((self.view?.bounds.maxY)!) + 64)
-        //        upArrow.position = CGPoint(x: self.view!.bounds.minX, y: self.view!.bounds.minY)
         leftArrow.size = CGSize(width: 64, height: 64)
         leftArrow.name = "left"
         leftArrow.delegate = self
+        
         let rightArrow = TouchableSprite(imageNamed: "RightArrow")
         rightArrow.position = CGPoint(x: ((self.view?.bounds.maxX)! * 2) - 128, y: ((self.view?.bounds.maxY)!) - 64)
         rightArrow.size = CGSize(width: 64, height: 64)
@@ -154,7 +175,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         let pauseSquare = TouchableSprite(imageNamed: "Square")
         pauseSquare.position = CGPoint(x: ((self.view?.bounds.maxX)! * 2) - 128, y: ((self.view?.bounds.maxY)!))
-        //        upArrow.position = CGPoint(x: self.view!.bounds.minX, y: self.view!.bounds.minY)
         pauseSquare.size = CGSize(width: 64, height: 64)
         pauseSquare.name = "square"
         pauseSquare.delegate = self
@@ -165,22 +185,47 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         addChild(leftArrow)
         addChild(rightArrow)
         addChild(pauseSquare)
+        
+        
     }
     
     var cameraNode: SKCameraNode!
+    var cameraNode2: SKCameraNode!
+    var subWin: SKScene!
     
     override func didMove(to view: SKView) {
         /* Setup your scene here */
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.contactDelegate = self
         cameraNode = SKCameraNode()
-        cameraNode.position = CGPoint(x: +512, y: +256)
+        cameraNode.position = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
         scene?.camera = cameraNode
         
-//        buildGround()
+        cameraNode.setScale(2)
+        
+        addChild(cameraNode)
+        
+//        subWin = SKScene()
+//        subWin.move(toParent: self)
+
+//        let swiftCode = SKSpriteNode(imageNamed: "SwiftLogo")
+//
+//        swiftCode.position = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
+//        subWin.addChild(swiftCode)
+//
+//        cameraNode2 = SKCameraNode()
+//        cameraNode2.position = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
+//        subWin?.camera = cameraNode2
+//
+//        cameraNode2.setScale(8)
+//        subWin.addChild(cameraNode2)
+        
         setupForeground()
         setupPlayer()
-        setupHUD()
+        
+        
+        
+
         
     }
     
@@ -193,7 +238,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         deltaTime = currentTime - lastUpdateTimeInterval
         lastUpdateTimeInterval = currentTime
         
-        updateForeground()
+        if moveLeft {
+            updateForegroundLeft()
+        }
+        if moveRight {
+            updateForegroundRight()
+        }
         player.update(deltaTime: deltaTime)
     }
     
@@ -212,12 +262,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             player.movementComponent.applyImpulseDown(lastUpdateTimeInterval)
             return
         }
-        if pointTouched!.x > (self.view?.bounds.maxX)! - 128, pointTouched!.x < (self.view?.bounds.maxX)! - 64 {
-            player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
-        }
-        if pointTouched!.x > (self.view?.bounds.maxX)! - 64, pointTouched!.x > ((self.view?.bounds.maxX)!){
-            player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
-        }
+//        if pointTouched!.x > (self.view?.bounds.maxX)! - 128, pointTouched!.x < (self.view?.bounds.maxX)! - 64 {
+//            player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
+//        }
+//        if pointTouched!.x > (self.view?.bounds.maxX)! - 64, pointTouched!.x > ((self.view?.bounds.maxX)!){
+//            player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
+//        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
