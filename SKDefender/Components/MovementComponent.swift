@@ -30,12 +30,20 @@ class MovementComponent: GKComponent {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func applyImpulse(_ lastUpdateTime: TimeInterval) {
+    func applyImpulseUp(_ lastUpdateTime: TimeInterval) {
         velocity = CGPoint(x: 0, y: impulse)
     }
     
-    func applyOmpulse(_ lastUpdateTime: TimeInterval) {
-        velocity = CGPoint(x: 0, y: ompulse)
+    func applyImpulseDown(_ lastUpdateTime: TimeInterval) {
+        velocity = CGPoint(x: 0, y: -impulse)
+    }
+    
+    func applyImpulseLeft(_ lastUpdateTime: TimeInterval) {
+        velocity = CGPoint(x: -impulse, y: 0)
+    }
+    
+    func applyImpulseRight(_ lastUpdateTime: TimeInterval) {
+        velocity = CGPoint(x: impulse, y: 0)
     }
     
     func applyZero(_ lastUpdateTime: TimeInterval) {
@@ -51,8 +59,22 @@ class MovementComponent: GKComponent {
         
         // Apply Velocity
         
-        let velocityStep = velocity.y * CGFloat(seconds)
-        spriteNode.position.y = spriteNode.position.y + velocityStep
+        let velocityVStep = velocity.y * CGFloat(seconds)
+        spriteNode.position.y = spriteNode.position.y + velocityVStep
+        
+        let velocityHStep = velocity.x * CGFloat(seconds)
+        spriteNode.position.x = spriteNode.position.x + velocityHStep
+        
+        if spriteNode.userData!["direction"] as? String == "right" && velocity.x < 0 {
+            // flip
+            spriteNode.zRotation = CGFloat(180).degreesToRadians()
+            spriteNode.userData?.setObject("left", forKey: "direction" as NSCopying)
+        }
+        if spriteNode.userData!["direction"] as? String == "left" && velocity.x > 0 {
+            // flip
+            spriteNode.zRotation = CGFloat(0).degreesToRadians()
+            spriteNode.userData?.setObject("right", forKey: "direction" as NSCopying)
+        }
         
         
         // Temporary Ground Hit

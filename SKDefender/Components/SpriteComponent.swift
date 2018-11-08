@@ -19,6 +19,8 @@ class SpriteComponent: GKComponent {
     init(entity: GKEntity, texture: SKTexture, size: CGSize) {
         node = EntityNode(texture: texture, color: SKColor.white, size: size)
         node.entity = entity
+        node.userData = NSMutableDictionary()
+        node.userData?.setObject("right", forKey: "direction" as NSCopying)
         super.init()
     }
     

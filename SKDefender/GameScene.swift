@@ -18,14 +18,17 @@ struct PhysicsCat {
 class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     func spriteTouched(box: TouchableSprite) {
-        if box.name == "up" {
-            player.movementComponent.applyImpulse(lastUpdateTimeInterval)
-        }
-        if box.name == "down" {
-            player.movementComponent.applyOmpulse(lastUpdateTimeInterval)
-        }
-        if box.name == "square" {
-            player.movementComponent.applyZero(lastUpdateTimeInterval)
+        switch box.name {
+            case "up":
+                player.movementComponent.applyImpulseUp(lastUpdateTimeInterval)
+            case "down":
+                player.movementComponent.applyImpulseDown(lastUpdateTimeInterval)
+            case "left":
+                player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
+            case "right":
+                player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
+            default:
+                player.movementComponent.applyZero(lastUpdateTimeInterval)
         }
     }
     
@@ -109,46 +112,76 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     func setupPlayer() {
         let playerNode = player.spriteComponent.node
-        playerNode.position = CGPoint(x: 128, y: 256)
+        playerNode.position = CGPoint(x: self.view!.bounds.maxX / 2, y: self.view!.bounds.maxY / 2)
         playerNode.zPosition = Layer.player.rawValue
 //        playerNode.size = CGSize(width: playerNode.size.width/4, height: playerNode.size.height/4)
         addChild(playerNode)
+        playerNode.addChild(cameraNode)
         
 //        player.movementComponent.playableStart = playableStart
     }
     
     func setupHUD() {
         let upArrow = TouchableSprite(imageNamed: "UpArrow")
-        upArrow.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.midY)!) + 64)
+        upArrow.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.maxY)!) + 64)
 //        upArrow.position = CGPoint(x: self.view!.bounds.minX, y: self.view!.bounds.minY)
         upArrow.size = CGSize(width: 64, height: 64)
         upArrow.name = "up"
         upArrow.delegate = self
         let downArrow = TouchableSprite(imageNamed: "DownArrow")
-        downArrow.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.midY)!) - 64)
+        downArrow.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.maxY)!) - 64)
         downArrow.size = CGSize(width: 64, height: 64)
         downArrow.name = "down"
         downArrow.delegate = self
         let stopSquare = TouchableSprite(imageNamed: "Square")
-        stopSquare.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.midY)!))
+        stopSquare.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.maxY)!))
         //        upArrow.position = CGPoint(x: self.view!.bounds.minX, y: self.view!.bounds.minY)
         stopSquare.size = CGSize(width: 64, height: 64)
         stopSquare.name = "square"
         stopSquare.delegate = self
         
+        let leftArrow = TouchableSprite(imageNamed: "LeftArrow")
+        leftArrow.position = CGPoint(x: ((self.view?.bounds.maxX)! * 2) - 128, y: ((self.view?.bounds.maxY)!) + 64)
+        //        upArrow.position = CGPoint(x: self.view!.bounds.minX, y: self.view!.bounds.minY)
+        leftArrow.size = CGSize(width: 64, height: 64)
+        leftArrow.name = "left"
+        leftArrow.delegate = self
+        let rightArrow = TouchableSprite(imageNamed: "RightArrow")
+        rightArrow.position = CGPoint(x: ((self.view?.bounds.maxX)! * 2) - 128, y: ((self.view?.bounds.maxY)!) - 64)
+        rightArrow.size = CGSize(width: 64, height: 64)
+        rightArrow.name = "right"
+        rightArrow.delegate = self
+        
+        let pauseSquare = TouchableSprite(imageNamed: "Square")
+        pauseSquare.position = CGPoint(x: ((self.view?.bounds.maxX)! * 2) - 128, y: ((self.view?.bounds.maxY)!))
+        //        upArrow.position = CGPoint(x: self.view!.bounds.minX, y: self.view!.bounds.minY)
+        pauseSquare.size = CGSize(width: 64, height: 64)
+        pauseSquare.name = "square"
+        pauseSquare.delegate = self
+        
         addChild(upArrow)
         addChild(downArrow)
         addChild(stopSquare)
+        addChild(leftArrow)
+        addChild(rightArrow)
+        addChild(pauseSquare)
     }
+    
+    var cameraNode: SKCameraNode!
     
     override func didMove(to view: SKView) {
         /* Setup your scene here */
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.contactDelegate = self
+        cameraNode = SKCameraNode()
+        cameraNode.position = CGPoint(x: +512, y: +256)
+        scene?.camera = cameraNode
+        
 //        buildGround()
         setupForeground()
         setupPlayer()
         setupHUD()
+        
     }
     
     override func update(_ currentTime: CFTimeInterval) {
@@ -172,10 +205,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         let pointTouched = touches.first?.location(in: self.view)
         
         if pointTouched!.x < (self.view?.bounds.minX)! + 128, pointTouched!.y < ((self.view?.bounds.midY)!){
-            player.movementComponent.applyImpulse(lastUpdateTimeInterval)
+            player.movementComponent.applyImpulseUp(lastUpdateTimeInterval)
+            return
         }
         if pointTouched!.x < (self.view?.bounds.minX)! + 128, pointTouched!.y > ((self.view?.bounds.midY)!){
-            player.movementComponent.applyOmpulse(lastUpdateTimeInterval)
+            player.movementComponent.applyImpulseDown(lastUpdateTimeInterval)
+            return
+        }
+        if pointTouched!.x > (self.view?.bounds.maxX)! - 128, pointTouched!.x < (self.view?.bounds.maxX)! - 64 {
+            player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
+        }
+        if pointTouched!.x > (self.view?.bounds.maxX)! - 64, pointTouched!.x > ((self.view?.bounds.maxX)!){
+            player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
         }
     }
     
@@ -186,5 +227,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     func didBegin(_ contact: SKPhysicsContact) {
         let other = contact.bodyA.categoryBitMask == PhysicsCat.Player ? contact.bodyB : contact.bodyA
         print("\(contact.bodyA.node!.name) \(contact.bodyB.node!.name)")
+    }
+}
+
+public extension CGFloat {
+    public func degreesToRadians() -> CGFloat {
+        return CGFloat.pi * self / 180.0
+    }
+
+    public func radiansToDegrees() -> CGFloat {
+        return self * 180.0 / CGFloat.pi
     }
 }
