@@ -13,6 +13,7 @@ struct PhysicsCat {
     static let None: UInt32 = 0
     static let Player: UInt32 = 0b1
     static let Ground: UInt32 = 0b1 << 1
+    static let Fire: UInt32 = 0b1 << 2
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
@@ -38,6 +39,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 moveLeft = false
                 moveRight = false
                 player.movementComponent.applyZero(lastUpdateTimeInterval)
+                
+                let missile = fire.shapeComponent.node
+                missile.position = player.spriteComponent.node.position
+                if missile.parent == nil {
+                    addChild(missile)
+                    fire.pathComponent.releaseFire(lastUpdateTimeInterval)
+//                    if (!intersects(missile)) {
+//                        print("Offscreen")
+//                    }
+                }
         }
     }
     
@@ -49,6 +60,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     }
     
     let player = PlayerEntity(imageName: "starship")
+    let fire = FireEntity(rect: CGRect(x: 0, y: 0, width: 12, height: 12))
+    
     var playableStart: CGFloat = 0
     
     var deltaTime: TimeInterval = 0
@@ -245,6 +258,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             updateForegroundRight()
         }
         player.update(deltaTime: deltaTime)
+        fire.update(deltaTime: deltaTime)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

@@ -13,6 +13,9 @@
 		7BA5CCD82192F291007EB2E3 /* MovementComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCD72192F291007EB2E3 /* MovementComponent.swift */; };
 		7BA5CCDC21931B30007EB2E3 /* SKTUtils in Resources */ = {isa = PBXBuildFile; fileRef = 7BA5CCDB21931B30007EB2E3 /* SKTUtils */; };
 		7BA5CCDE21937165007EB2E3 /* TouchableSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCDD21937165007EB2E3 /* TouchableSprite.swift */; };
+		7BA5CCE021948E7F007EB2E3 /* FireEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCDF21948E7F007EB2E3 /* FireEntity.swift */; };
+		7BA5CCE221948F8C007EB2E3 /* ShapeComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCE121948F8C007EB2E3 /* ShapeComponent.swift */; };
+		7BA5CCE421949084007EB2E3 /* PathComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCE321949084007EB2E3 /* PathComponent.swift */; };
 		7BE20D09219222B900D68240 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE20D08219222B900D68240 /* AppDelegate.swift */; };
 		7BE20D0F219222B900D68240 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE20D0E219222B900D68240 /* GameScene.swift */; };
 		7BE20D11219222B900D68240 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE20D10219222B900D68240 /* GameViewController.swift */; };
@@ -29,6 +32,9 @@
 		7BA5CCD72192F291007EB2E3 /* MovementComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovementComponent.swift; sourceTree = "<group>"; };
 		7BA5CCDB21931B30007EB2E3 /* SKTUtils */ = {isa = PBXFileReference; lastKnownFileType = folder; path = SKTUtils; sourceTree = "<group>"; };
 		7BA5CCDD21937165007EB2E3 /* TouchableSprite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TouchableSprite.swift; sourceTree = "<group>"; };
+		7BA5CCDF21948E7F007EB2E3 /* FireEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireEntity.swift; sourceTree = "<group>"; };
+		7BA5CCE121948F8C007EB2E3 /* ShapeComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeComponent.swift; sourceTree = "<group>"; };
+		7BA5CCE321949084007EB2E3 /* PathComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathComponent.swift; sourceTree = "<group>"; };
 		7BE20D05219222B900D68240 /* SKDefender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SKDefender.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BE20D08219222B900D68240 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7BE20D0E219222B900D68240 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -55,6 +61,7 @@
 			isa = PBXGroup;
 			children = (
 				7BA5CCD32192E9A4007EB2E3 /* PlayerEntity.swift */,
+				7BA5CCDF21948E7F007EB2E3 /* FireEntity.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -64,6 +71,8 @@
 			children = (
 				7BA5CCD52192EDAA007EB2E3 /* SpriteComponent.swift */,
 				7BA5CCD72192F291007EB2E3 /* MovementComponent.swift */,
+				7BA5CCE121948F8C007EB2E3 /* ShapeComponent.swift */,
+				7BA5CCE321949084007EB2E3 /* PathComponent.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -185,14 +194,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BA5CCE021948E7F007EB2E3 /* FireEntity.swift in Sources */,
 				7BA5CCD42192E9A4007EB2E3 /* PlayerEntity.swift in Sources */,
 				7BA5CCD82192F291007EB2E3 /* MovementComponent.swift in Sources */,
+				7BA5CCE421949084007EB2E3 /* PathComponent.swift in Sources */,
 				7BE20D0F219222B900D68240 /* GameScene.swift in Sources */,
 				7BA5CCCF2192DB72007EB2E3 /* MoveAlongPath.swift in Sources */,
 				7BE20D11219222B900D68240 /* GameViewController.swift in Sources */,
 				7BA5CCD62192EDAA007EB2E3 /* SpriteComponent.swift in Sources */,
 				7BA5CCDE21937165007EB2E3 /* TouchableSprite.swift in Sources */,
 				7BE20D09219222B900D68240 /* AppDelegate.swift in Sources */,
+				7BA5CCE221948F8C007EB2E3 /* ShapeComponent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
