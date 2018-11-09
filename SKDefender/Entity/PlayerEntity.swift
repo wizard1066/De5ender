@@ -29,6 +29,7 @@ class PlayerEntity: GKEntity {
         spriteNode.physicsBody?.categoryBitMask = PhysicsCat.Player
         spriteNode.physicsBody?.collisionBitMask = PhysicsCat.None
         spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.Ground
+        spriteNode.name = "starship"
      }
     
     required init?(coder aDecoder: NSCoder) {

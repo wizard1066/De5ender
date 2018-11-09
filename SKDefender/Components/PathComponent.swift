@@ -12,7 +12,7 @@ import GameplayKit
 class PathComponent: GKComponent {
     let shapeComponent: ShapeComponent
     
-    let impulse: CGFloat = 600
+    let impulse: CGFloat = 800
     var engage: CGFloat = 0
     var velocity = CGPoint.zero
     
@@ -27,18 +27,21 @@ class PathComponent: GKComponent {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func releaseFire(_ lastUpdateTime: TimeInterval) {
+    func releaseFireLeft(_ lastUpdateTime: TimeInterval) {
+        engage = -impulse
+    }
+    
+    func releaseFireRight(_ lastUpdateTime: TimeInterval) {
         engage = impulse
     }
     
     func applyMovement(_ seconds: TimeInterval) {
         
         let spriteNode = shapeComponent.node
-//        print("spriteNode \(spriteNode.position.x)")
         
         let velocityVStep = engage * CGFloat(seconds)
         spriteNode.position.x = spriteNode.position.x + velocityVStep
-        if spriteNode.position.x > 1024 || spriteNode.position.x < -1024 {
+        if spriteNode.position.x > 1600 || spriteNode.position.x < -1600 {
             spriteNode.run(SKAction.removeFromParent())
             engage = 0
         }

@@ -38,10 +38,20 @@ class MovementComponent: GKComponent {
     }
     
     func applyImpulseLeft(_ lastUpdateTime: TimeInterval) {
+        print("applyImpulseRight right")
+        let spriteNode = spriteComponent.node
+        spriteNode.userData?.setObject("right", forKey: "direction" as NSCopying)
+        spriteNode.zRotation = CGFloat(0).degreesToRadians()
+        spriteNode.run(SKAction.move(by: CGVector(dx: -1024, dy: 0), duration: 2))
         velocity = CGPoint(x: -impulse, y: 0)
     }
-    
+
     func applyImpulseRight(_ lastUpdateTime: TimeInterval) {
+        print("applyImpulseRight left")
+        let spriteNode = spriteComponent.node
+        spriteNode.userData?.setObject("left", forKey: "direction" as NSCopying)
+//        spriteNode.zRotation = CGFloat(180).degreesToRadians()
+        spriteNode.run(SKAction.move(by: CGVector(dx: 1024, dy: 0), duration: 2))
         velocity = CGPoint(x: impulse, y: 0)
     }
     
@@ -63,19 +73,6 @@ class MovementComponent: GKComponent {
         
 //        let velocityHStep = velocity.x * CGFloat(seconds)
 //        spriteNode.position.x = spriteNode.position.x + velocityHStep
-        
-        if spriteNode.userData!["direction"] as? String == "right" && velocity.x < 0 {
-            // flip
-            spriteNode.zRotation = CGFloat(180).degreesToRadians()
-            spriteNode.userData?.setObject("left", forKey: "direction" as NSCopying)
-            spriteNode.run(SKAction.move(by: CGVector(dx: 1024, dy: 0), duration: 2))
-        }
-        if spriteNode.userData!["direction"] as? String == "left" && velocity.x > 0 {
-            // flip
-            spriteNode.zRotation = CGFloat(0).degreesToRadians()
-            spriteNode.userData?.setObject("right", forKey: "direction" as NSCopying)
-            spriteNode.run(SKAction.move(by: CGVector(dx: -1024, dy: 0), duration: 2))
-        }
         
         
         // Temporary Ground Hit

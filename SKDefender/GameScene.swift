@@ -14,6 +14,7 @@ struct PhysicsCat {
     static let Player: UInt32 = 0b1
     static let Ground: UInt32 = 0b1 << 1
     static let Fire: UInt32 = 0b1 << 2
+    static let SpaceMan: UInt32 = 0b1 << 3
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
@@ -21,34 +22,53 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var moveLeft = false
     var moveRight = false
     
+    
     func spriteTouched(box: TouchableSprite) {
         switch box.name {
+        case "starship":
+                print("cords \(box.position) \(moveAmount) \(foregroundCGPoint)")
+            case "spaceman":
+                print("cords \(box.position) \(moveAmount)")
             case "up":
                 player.movementComponent.applyImpulseUp(lastUpdateTimeInterval)
             case "down":
                 player.movementComponent.applyImpulseDown(lastUpdateTimeInterval)
-            case "left":
-                moveLeft = true
-                moveRight = false
-                player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
-            case "right":
-                moveRight = true
-                moveLeft = false
-                player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
+//            case "left":
+//                moveLeft = true
+//                moveRight = false
+//                player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
+//            case "right":
+//                moveRight = true
+//                moveLeft = false
+//                player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
+            case "flip":
+                let direct = playerNode.userData?.object(forKey: "direction") as? String
+                switch direct {
+                case "left":
+                    moveLeft = true
+                    moveRight = false
+                    player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
+                case "right":
+                    moveRight = true
+                    moveLeft = false
+                    player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
+                
+                default:
+                    break
+                }
+            case "fire":
+                let missile = SKShapeNode(rect: CGRect(x: 0, y: 0, width: 24, height: 6))
+                missile.fillColor = UIColor.red
+                if missile.parent == nil {
+                    playerNode.addChild(missile)
+                    let path2F = SKAction.move(by: CGVector(dx: 1024, dy: 0), duration: 1)
+                    let removeM = SKAction.removeFromParent()
+                    missile.run(SKAction.sequence([path2F,removeM]))
+                }
             default:
                 moveLeft = false
                 moveRight = false
                 player.movementComponent.applyZero(lastUpdateTimeInterval)
-                
-                let missile = fire.shapeComponent.node
-                missile.position = player.spriteComponent.node.position
-                if missile.parent == nil {
-                    addChild(missile)
-                    fire.pathComponent.releaseFire(lastUpdateTimeInterval)
-//                    if (!intersects(missile)) {
-//                        print("Offscreen")
-//                    }
-                }
         }
     }
     
@@ -57,10 +77,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         case background
         case foreground
         case player
+        case spaceman
     }
     
     let player = PlayerEntity(imageName: "starship")
-    let fire = FireEntity(rect: CGRect(x: 0, y: 0, width: 12, height: 12))
+    let spaceMan = RescueEntity(imageName: "spaceMan")
     
     var playableStart: CGFloat = 0
     
@@ -73,7 +94,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     lazy var screenWidth = view!.bounds.width
     lazy var screenHeight = view!.bounds.height
     
-    func buildGround() -> SKSpriteNode {
+    func buildGround(color: UIColor) -> SKSpriteNode {
         let loopsNeeded = Int(screenWidth / 80)
         var path: CGMutablePath?
         for loop in stride(from: 0, to: Int(screenWidth*2), by: loopsNeeded) {
@@ -90,7 +111,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         let shape = SKShapeNode()
         shape.path = path
-        shape.strokeColor = UIColor.white
+        shape.strokeColor = color
         shape.lineWidth = 2
         shape.zPosition = 1
         
@@ -108,22 +129,41 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     }
     
     func setupForeground() {
+        
+        var color2U:UIColor!
         for i in 0..<numberOfForegrounds {
-            let foreground = buildGround()
+            if i == 0 {
+                color2U = UIColor.red
+            } else {
+                color2U = UIColor.blue
+            }
+            let foreground = buildGround(color: color2U)
+            print("foreground \(foreground.size.width)")
             foreground.anchorPoint = CGPoint(x: 0.0, y: -1.33)
             foreground.position = CGPoint(x: CGFloat(i) * foreground.size.width, y: playableStart)
             foreground.zPosition = Layer.foreground.rawValue
             foreground.name = "foreground"
             addChild(foreground)
+            let spaceNode = spaceMan.rescueComponent.node
+            spaceNode.delegate = self
+            spaceNode.name = "spaceman"
+            spaceNode.position = CGPoint(x: self.view!.bounds.maxX + 256, y: self.view!.bounds.minY + 512)
+            spaceNode.zPosition = Layer.spaceman.rawValue
+            if spaceNode.parent == nil {
+                foreground.addChild(spaceNode)
+            }
         }
     }
     
-    func updateForegroundRight() {
+    var moveAmount: CGPoint!
+    var foregroundCGPoint: CGFloat!
+    
+    func updateForegroundLeft() {
         self.enumerateChildNodes(withName: "foreground") { (node, stop) in
             if let foreground = node as? SKSpriteNode {
-                let moveAmount = CGPoint(x: -CGFloat(self.groundSpeed) * CGFloat(self.deltaTime), y: self.playableStart)
-                foreground.position.x += moveAmount.x
-
+                self.moveAmount = CGPoint(x: -CGFloat(self.groundSpeed) * CGFloat(self.deltaTime), y: self.playableStart)
+                foreground.position.x += self.moveAmount.x
+                self.foregroundCGPoint = foreground.position.x
                 
                 if foreground.position.x < -foreground.size.width {
                     foreground.position.x += foreground.size.width * CGFloat(self.numberOfForegrounds)
@@ -132,12 +172,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         }
     }
     
-    func updateForegroundLeft() {
+    func updateForegroundRight() {
         self.enumerateChildNodes(withName: "foreground") { (node, stop) in
             if let foreground = node as? SKSpriteNode {
-                let moveAmount = CGPoint(x: -CGFloat(self.groundSpeed) * CGFloat(self.deltaTime), y: self.playableStart)
-                foreground.position.x -= moveAmount.x
-                
+                self.moveAmount = CGPoint(x: -CGFloat(self.groundSpeed) * CGFloat(self.deltaTime), y: self.playableStart)
+                foreground.position.x -= self.moveAmount.x
+                self.foregroundCGPoint = foreground.position.x
                 
                 if foreground.position.x > foreground.size.width {
                     foreground.position.x -= foreground.size.width * CGFloat(self.numberOfForegrounds)
@@ -146,11 +186,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         }
     }
     
+    func setupSpaceMen() {
+        let spaceNode = spaceMan.rescueComponent.node
+        spaceNode.position = CGPoint(x: self.view!.bounds.maxX + 256, y: self.view!.bounds.minY + 96)
+        spaceNode.zPosition = Layer.spaceman.rawValue
+        //        playerNode.size = CGSize(width: playerNode.size.width/4, height: playerNode.size.height/4)
+        addChild(spaceNode)
+    }
+    
+    var playerNode: EntityNode!
+    
     func setupPlayer(){
-        let playerNode = player.spriteComponent.node
+        playerNode = player.spriteComponent.node
         playerNode.position = CGPoint(x: self.view!.bounds.maxX / 2, y: self.view!.bounds.maxY / 2)
         playerNode.zPosition = Layer.player.rawValue
 //        playerNode.size = CGSize(width: playerNode.size.width/4, height: playerNode.size.height/4)
+        playerNode.delegate = self
         addChild(playerNode)
         
         
@@ -174,30 +225,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         stopSquare.name = "square"
         stopSquare.delegate = self
         
-        let leftArrow = TouchableSprite(imageNamed: "LeftArrow")
-        leftArrow.position = CGPoint(x: ((self.view?.bounds.maxX)! * 2) - 128, y: ((self.view?.bounds.maxY)!) + 64)
-        leftArrow.size = CGSize(width: 64, height: 64)
-        leftArrow.name = "left"
-        leftArrow.delegate = self
-        
-        let rightArrow = TouchableSprite(imageNamed: "RightArrow")
-        rightArrow.position = CGPoint(x: ((self.view?.bounds.maxX)! * 2) - 128, y: ((self.view?.bounds.maxY)!) - 64)
-        rightArrow.size = CGSize(width: 64, height: 64)
-        rightArrow.name = "right"
-        rightArrow.delegate = self
-        
         let pauseSquare = TouchableSprite(imageNamed: "Square")
         pauseSquare.position = CGPoint(x: ((self.view?.bounds.maxX)! * 2) - 128, y: ((self.view?.bounds.maxY)!))
         pauseSquare.size = CGSize(width: 64, height: 64)
-        pauseSquare.name = "square"
+        pauseSquare.name = "fire"
         pauseSquare.delegate = self
+        
+        let flipButton = TouchableSprite(imageNamed: "SwiftLogo")
+        flipButton.position = CGPoint(x: ((self.view?.bounds.maxX)! * 2) - 128, y: ((self.view?.bounds.maxY)!) - 256)
+        flipButton.size = CGSize(width: 64, height: 64)
+        flipButton.name = "flip"
+        flipButton.delegate = self
         
         addChild(upArrow)
         addChild(downArrow)
         addChild(stopSquare)
-        addChild(leftArrow)
-        addChild(rightArrow)
+
         addChild(pauseSquare)
+        addChild(flipButton)
         
         
     }
@@ -258,7 +303,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             updateForegroundRight()
         }
         player.update(deltaTime: deltaTime)
-        fire.update(deltaTime: deltaTime)
+
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -288,9 +333,48 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         print("ended")
     }
     
+    var pickup: CGPoint!
+    
+    var playerCG: CGFloat!
+    
     func didBegin(_ contact: SKPhysicsContact) {
         let other = contact.bodyA.categoryBitMask == PhysicsCat.Player ? contact.bodyB : contact.bodyA
-        print("\(contact.bodyA.node!.name) \(contact.bodyB.node!.name)")
+//        print("\(contact.bodyA.node!.name) \(contact.bodyB.node!.name)")
+//         pickup space man if starship touches him TECHNICALLLY WRONG never happens in tha game
+        if other.node?.name == "spaceman" && other.node?.parent?.name == "foreground" {
+            print("pickup \(other.node?.position)")
+            pickup = other.node?.position
+            let rmNode = SKAction.run {
+                other.node?.removeFromParent()
+            }
+            let addNode = SKAction.run {
+                other.node?.position = CGPoint(x: 0, y: -96)
+
+                if other.node?.parent == nil {
+                    contact.bodyB.node?.addChild(other.node!)
+                }
+            }
+            contact.bodyB.node?.run(SKAction.sequence([rmNode,addNode]))
+        }
+        // drop spaceman if ground touches him
+        if other.node?.name == "foreground" && contact.bodyB.node?.name == "spaceman" {
+            let rmNode = SKAction.run {
+                contact.bodyB.node?.removeFromParent()
+            }
+            let addNode = SKAction.run {
+                
+//                contact.bodyB.node?.position.x = self.playerNode.position.x
+//                contact.bodyB.node?.position.x = self.foregroundCGPoint
+//                self.playerCG = self.playerNode.position.x
+                contact.bodyB.node?.position.x = self.playerNode.position.x - (other.node?.position.x)!
+                
+                contact.bodyB.node?.position.y = 96
+                if contact.bodyB.node?.parent == nil {
+                    other.node?.addChild(contact.bodyB.node!)
+                }
+            }
+            other.node?.run(SKAction.sequence([rmNode,addNode]))
+        }
     }
 }
 

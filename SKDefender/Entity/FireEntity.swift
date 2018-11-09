@@ -10,6 +10,7 @@ import SpriteKit
 import GameplayKit
 
 class FireEntity: GKEntity {
+    
     var shapeComponent: ShapeComponent!
     var pathComponent: PathComponent!
     
@@ -21,6 +22,7 @@ class FireEntity: GKEntity {
         
         pathComponent = PathComponent(entity: self)
         addComponent(pathComponent)
+    
         
         let shapeNode = shapeComponent.node
         shapeNode.physicsBody = SKPhysicsBody.init(edgeLoopFrom: rect)
