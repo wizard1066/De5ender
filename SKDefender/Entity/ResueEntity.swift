@@ -21,7 +21,8 @@ class RescueEntity: GKEntity {
         
         let spriteNode = rescueComponent.node
 //        spriteNode.size = CGSize(width: spriteNode.size.width/7, height: spriteNode.size.height/6)
-        spriteNode.physicsBody = SKPhysicsBody.init(texture: texture, size: spriteNode.size)
+//        spriteNode.physicsBody = SKPhysicsBody.init(texture: texture, size: spriteNode.size)
+        spriteNode.physicsBody = SKPhysicsBody.init(circleOfRadius: spriteNode.size.width/2 + 8)
         spriteNode.physicsBody?.categoryBitMask = PhysicsCat.SpaceMan
         spriteNode.physicsBody?.collisionBitMask = PhysicsCat.None
         spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.Ground | PhysicsCat.Player | PhysicsCat.Fire

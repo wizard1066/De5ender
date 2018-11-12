@@ -61,7 +61,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             } else {
                 path!.addLine(to: CGPoint(x: loop, y: randomValueY))
             }
-            print("loop \(loop) \(Int(screenWidth*2))")
             if loop + loopsNeeded > Int(screenWidth*2) {
                 lastValue = randomValueY
             }
