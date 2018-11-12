@@ -17,6 +17,7 @@ class MovementComponent: GKComponent {
     let gravity: CGFloat = -1500
     
     var playableStart: CGFloat = 0
+    var playableRegion: CGFloat = UIScreen.main.bounds.maxY * 2
     
   
 
@@ -78,6 +79,9 @@ class MovementComponent: GKComponent {
         // Temporary Ground Hit
         if spriteNode.position.y - spriteNode.size.height / 2 < playableStart {
             spriteNode.position = CGPoint(x: spriteNode.position.x, y: playableStart + spriteNode.size.height / 2)
+        }
+        if spriteNode.position.y + spriteNode.size.height / 2 > playableRegion {
+            spriteNode.position = CGPoint(x: spriteNode.position.x, y: playableRegion - spriteNode.size.height / 2)
         }
     }
     

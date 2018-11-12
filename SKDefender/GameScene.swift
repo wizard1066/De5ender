@@ -255,6 +255,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         /* Setup your scene here */
         physicsWorld.gravity = CGVector(dx: 0, dy: 0)
         physicsWorld.contactDelegate = self
+        
         cameraNode = SKCameraNode()
         cameraNode.position = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
         scene?.camera = cameraNode
@@ -263,25 +264,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         addChild(cameraNode)
         
-//        subWin = SKScene()
-//        subWin.move(toParent: self)
-
-//        let swiftCode = SKSpriteNode(imageNamed: "SwiftLogo")
-//
-//        swiftCode.position = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
-//        subWin.addChild(swiftCode)
-//
-//        cameraNode2 = SKCameraNode()
-//        cameraNode2.position = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
-//        subWin?.camera = cameraNode2
-//
-//        cameraNode2.setScale(8)
-//        subWin.addChild(cameraNode2)
-        
         setupForeground()
         setupPlayer()
         
-        
+//        Add a boundry to the screen
+//        physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
         
 
         
@@ -307,7 +294,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let pointTouched = touches.first?.location(in: self.view)
+//        let pointTouched = touches.first?.location(in: self.view)
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
