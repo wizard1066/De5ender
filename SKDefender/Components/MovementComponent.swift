@@ -38,21 +38,36 @@ class MovementComponent: GKComponent {
         velocity = CGPoint(x: 0, y: -impulse)
     }
     
+    func applyImpulseX(_ lastUpdateTime: TimeInterval) {
+        let spriteNode = spriteComponent.node
+        if spriteNode.userData?.object(forKey: "direction") as? String == "right" {
+            let advanceAction = SKAction.move(by: CGVector(dx: 124, dy: 0), duration: 0.5)
+            let fallBackAction = SKAction.move(by: CGVector(dx: -124, dy: 0), duration: 2)
+            spriteNode.run(SKAction.sequence([advanceAction,fallBackAction]))
+        }
+        if spriteNode.userData?.object(forKey: "direction") as? String == "left" {
+            let advanceAction = SKAction.move(by: CGVector(dx: -124, dy: 0), duration: 0.5)
+            let fallBackAction = SKAction.move(by: CGVector(dx: 124, dy: 0), duration: 2)
+            spriteNode.run(SKAction.sequence([advanceAction,fallBackAction]))
+        }
+        
+    }
+    
     func applyImpulseLeft(_ lastUpdateTime: TimeInterval) {
         print("applyImpulseRight right")
         let spriteNode = spriteComponent.node
         spriteNode.userData?.setObject("right", forKey: "direction" as NSCopying)
-        spriteNode.zRotation = CGFloat(0).degreesToRadians()
-        spriteNode.run(SKAction.move(by: CGVector(dx: -1024, dy: 0), duration: 2))
-        velocity = CGPoint(x: -impulse, y: 0)
+        spriteNode.texture = SKTexture(imageNamed: "starship")
+        spriteNode.run(SKAction.move(by: CGVector(dx: -1024, dy: 0), duration: 4))
+        velocity = CGPoint(x: impulse, y: 0)
     }
 
     func applyImpulseRight(_ lastUpdateTime: TimeInterval) {
         print("applyImpulseRight left")
         let spriteNode = spriteComponent.node
         spriteNode.userData?.setObject("left", forKey: "direction" as NSCopying)
-//        spriteNode.zRotation = CGFloat(180).degreesToRadians()
-        spriteNode.run(SKAction.move(by: CGVector(dx: 1024, dy: 0), duration: 2))
+        spriteNode.texture = SKTexture(imageNamed: "shipstar")
+        spriteNode.run(SKAction.move(by: CGVector(dx: 1024, dy: 0), duration: 4))
         velocity = CGPoint(x: impulse, y: 0)
     }
     

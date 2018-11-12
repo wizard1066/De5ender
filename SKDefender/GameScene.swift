@@ -15,6 +15,7 @@ struct PhysicsCat {
     static let Ground: UInt32 = 0b1 << 1
     static let Fire: UInt32 = 0b1 << 2
     static let SpaceMan: UInt32 = 0b1 << 3
+    static let Alien: UInt32 = 0b1 << 4
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
@@ -22,66 +23,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var moveLeft = false
     var moveRight = false
     
-    
-    func spriteTouched(box: TouchableSprite) {
-        switch box.name {
-        case "starship":
-                print("cords \(box.position) \(moveAmount) \(foregroundCGPoint)")
-            case "spaceman":
-                print("cords \(box.position) \(moveAmount)")
-            case "up":
-                player.movementComponent.applyImpulseUp(lastUpdateTimeInterval)
-            case "down":
-                player.movementComponent.applyImpulseDown(lastUpdateTimeInterval)
-//            case "left":
-//                moveLeft = true
-//                moveRight = false
-//                player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
-//            case "right":
-//                moveRight = true
-//                moveLeft = false
-//                player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
-            case "flip":
-                let direct = playerNode.userData?.object(forKey: "direction") as? String
-                switch direct {
-                case "left":
-                    moveLeft = true
-                    moveRight = false
-                    player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
-                case "right":
-                    moveRight = true
-                    moveLeft = false
-                    player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
-                
-                default:
-                    break
-                }
-            case "fire":
-                let missile = SKShapeNode(rect: CGRect(x: 0, y: 0, width: 24, height: 6))
-                missile.fillColor = UIColor.red
-                if missile.parent == nil {
-                    playerNode.addChild(missile)
-                    let path2F = SKAction.move(by: CGVector(dx: 1024, dy: 0), duration: 1)
-                    let removeM = SKAction.removeFromParent()
-                    missile.run(SKAction.sequence([path2F,removeM]))
-                }
-            default:
-                moveLeft = false
-                moveRight = false
-                player.movementComponent.applyZero(lastUpdateTimeInterval)
-        }
-    }
-    
-    
     enum Layer: CGFloat {
         case background
         case foreground
         case player
         case spaceman
+        case alien
     }
     
     let player = PlayerEntity(imageName: "starship")
     let spaceMan = RescueEntity(imageName: "spaceMan")
+    let alien = AlienEntity(imageName: "alien")
     
     var playableStart: CGFloat = 0
     
@@ -151,7 +103,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             spaceNode.zPosition = Layer.spaceman.rawValue
             if spaceNode.parent == nil {
                 foreground.addChild(spaceNode)
+                let alienNode = alien.spriteComponent.node
+                alienNode.position = CGPoint(x: 0, y: 512)
+                alienNode.zPosition = Layer.alien.rawValue
+                alienNode.delegate = self
+                spaceNode.addChild(alienNode)
             }
+            
         }
     }
     
@@ -194,7 +152,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         addChild(spaceNode)
     }
     
+    func setupAlien() {
+        let alienNode = alien.spriteComponent.node
+        alienNode.position = CGPoint(x: self.view!.bounds.maxX + 256, y: self.view!.bounds.maxY * 2)
+        alienNode.zPosition = Layer.alien.rawValue
+        alienNode.delegate = self
+        addChild(alienNode)
+    }
+    
     var playerNode: EntityNode!
+    var advanceArrow: TouchableSprite!
     
     func setupPlayer(){
         playerNode = player.spriteComponent.node
@@ -219,6 +186,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         downArrow.name = "down"
         downArrow.delegate = self
         
+        advanceArrow = TouchableSprite(imageNamed: "RightArrow")
+        advanceArrow.position = CGPoint(x: ((self.view?.bounds.maxX)! * 2) - 128, y: ((self.view?.bounds.maxY)!) - 64)
+        advanceArrow.size = CGSize(width: 64, height: 64)
+        advanceArrow.name = "advance"
+        advanceArrow.delegate = self
+        
         let stopSquare = TouchableSprite(imageNamed: "Square")
         stopSquare.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.maxY)!))
         stopSquare.size = CGSize(width: 64, height: 64)
@@ -240,6 +213,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         addChild(upArrow)
         addChild(downArrow)
         addChild(stopSquare)
+        addChild(advanceArrow)
 
         addChild(pauseSquare)
         addChild(flipButton)
@@ -266,6 +240,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         setupForeground()
         setupPlayer()
+//        setupAlien()
         
 //        Add a boundry to the screen
 //        physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
@@ -290,6 +265,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             updateForegroundRight()
         }
         player.update(deltaTime: deltaTime)
+        alien.update(deltaTime: deltaTime)
 
     }
     
@@ -328,7 +304,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         let other = contact.bodyA.categoryBitMask == PhysicsCat.Player ? contact.bodyB : contact.bodyA
 //        print("\(contact.bodyA.node!.name) \(contact.bodyB.node!.name)")
 //         pickup space man if starship touches him TECHNICALLLY WRONG never happens in tha game
-        if other.node?.name == "spaceman" && other.node?.parent?.name == "foreground" {
+        let kidnap = contact.bodyA.categoryBitMask == PhysicsCat.Alien ? contact.bodyB : contact.bodyA
+        
+        if kidnap.node?.name == "spaceman" && kidnap.node?.parent?.name == "foreground" {
+            print("pickup \(other.node?.position)")
+            pickup = other.node?.position
+            let rmNode = SKAction.run {
+                kidnap.node?.removeFromParent()
+            }
+            let addNode = SKAction.run {
+                kidnap.node?.position = CGPoint(x: 0, y: -96)
+                
+                if other.node?.parent == nil {
+                    contact.bodyB.node?.addChild(other.node!)
+                    self.alien.alienComponent.changeDirection(self.lastUpdateTimeInterval)
+                }
+            }
+            contact.bodyB.node?.run(SKAction.sequence([rmNode,addNode]))
+        }
+        
+        
+        if other.node?.name == "spaceman" && other.node?.parent?.name == "alien" {
             print("pickup \(other.node?.position)")
             pickup = other.node?.position
             let rmNode = SKAction.run {
@@ -361,6 +357,69 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 }
             }
             other.node?.run(SKAction.sequence([rmNode,addNode]))
+        }
+    }
+    
+    func spriteTouched(box: TouchableSprite) {
+        switch box.name {
+        case "starship":
+            print("cords \(box.position) \(moveAmount) \(foregroundCGPoint)")
+        case "spaceman":
+            print("cords \(box.position) \(moveAmount)")
+        case "up":
+            player.movementComponent.applyImpulseUp(lastUpdateTimeInterval)
+        case "down":
+            player.movementComponent.applyImpulseDown(lastUpdateTimeInterval)
+            //            case "left":
+            //                moveLeft = true
+            //                moveRight = false
+        //                player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
+        case "advance":
+            let direct = playerNode.userData?.object(forKey: "direction") as? String
+            switch direct {
+            case "left":
+                moveRight = true
+                moveLeft = false
+                player.movementComponent.applyImpulseX(lastUpdateTimeInterval)
+            case "right":
+                moveRight = false
+                moveLeft = true
+                player.movementComponent.applyImpulseX(lastUpdateTimeInterval)
+            default:
+                break
+            }
+        //                player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
+        case "flip":
+            let direct = playerNode.userData?.object(forKey: "direction") as? String
+            switch direct {
+            case "left":
+                advanceArrow.texture = SKTexture(imageNamed: "RightArrow")
+                // moveRight/moveLet control the background direction
+                moveLeft = true
+                moveRight = false
+                player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
+            case "right":
+                advanceArrow.texture = SKTexture(imageNamed: "LeftArrow")
+                moveRight = true
+                moveLeft = false
+                player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
+                
+            default:
+                break
+            }
+        case "fire":
+            let missile = SKShapeNode(rect: CGRect(x: 0, y: 0, width: 24, height: 6))
+            missile.fillColor = UIColor.red
+            if missile.parent == nil {
+                playerNode.addChild(missile)
+                let path2F = SKAction.move(by: CGVector(dx: 1024, dy: 0), duration: 1)
+                let removeM = SKAction.removeFromParent()
+                missile.run(SKAction.sequence([path2F,removeM]))
+            }
+        default:
+            moveLeft = false
+            moveRight = false
+            player.movementComponent.applyZero(lastUpdateTimeInterval)
         }
     }
 }

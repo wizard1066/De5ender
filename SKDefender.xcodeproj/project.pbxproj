@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7B20BDA9219983C5002405C1 /* AlienDecentComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B20BDA8219983C5002405C1 /* AlienDecentComponent.swift */; };
+		7B20BDAB21998850002405C1 /* AlienEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B20BDAA21998850002405C1 /* AlienEntity.swift */; };
 		7BA5CCCF2192DB72007EB2E3 /* MoveAlongPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCCE2192DB72007EB2E3 /* MoveAlongPath.swift */; };
 		7BA5CCD42192E9A4007EB2E3 /* PlayerEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCD32192E9A4007EB2E3 /* PlayerEntity.swift */; };
 		7BA5CCD62192EDAA007EB2E3 /* SpriteComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCD52192EDAA007EB2E3 /* SpriteComponent.swift */; };
@@ -28,6 +30,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7B20BDA8219983C5002405C1 /* AlienDecentComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlienDecentComponent.swift; sourceTree = "<group>"; };
+		7B20BDAA21998850002405C1 /* AlienEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlienEntity.swift; sourceTree = "<group>"; };
 		7BA5CCCE2192DB72007EB2E3 /* MoveAlongPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveAlongPath.swift; sourceTree = "<group>"; };
 		7BA5CCD32192E9A4007EB2E3 /* PlayerEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerEntity.swift; sourceTree = "<group>"; };
 		7BA5CCD52192EDAA007EB2E3 /* SpriteComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteComponent.swift; sourceTree = "<group>"; };
@@ -67,6 +71,7 @@
 				7BA5CCD32192E9A4007EB2E3 /* PlayerEntity.swift */,
 				7BA5CCDF21948E7F007EB2E3 /* FireEntity.swift */,
 				7BA5CCE52195C2B1007EB2E3 /* ResueEntity.swift */,
+				7B20BDAA21998850002405C1 /* AlienEntity.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -77,6 +82,7 @@
 				7BA5CCD52192EDAA007EB2E3 /* SpriteComponent.swift */,
 				7BA5CCE72195C44F007EB2E3 /* RescueComponent.swift */,
 				7BA5CCD72192F291007EB2E3 /* MovementComponent.swift */,
+				7B20BDA8219983C5002405C1 /* AlienDecentComponent.swift */,
 				7BA5CCE121948F8C007EB2E3 /* ShapeComponent.swift */,
 				7BA5CCE321949084007EB2E3 /* PathComponent.swift */,
 			);
@@ -202,8 +208,10 @@
 			files = (
 				7BA5CCE021948E7F007EB2E3 /* FireEntity.swift in Sources */,
 				7BA5CCD42192E9A4007EB2E3 /* PlayerEntity.swift in Sources */,
+				7B20BDAB21998850002405C1 /* AlienEntity.swift in Sources */,
 				7BA5CCD82192F291007EB2E3 /* MovementComponent.swift in Sources */,
 				7BA5CCE421949084007EB2E3 /* PathComponent.swift in Sources */,
+				7B20BDA9219983C5002405C1 /* AlienDecentComponent.swift in Sources */,
 				7BA5CCE82195C44F007EB2E3 /* RescueComponent.swift in Sources */,
 				7BE20D0F219222B900D68240 /* GameScene.swift in Sources */,
 				7BA5CCCF2192DB72007EB2E3 /* MoveAlongPath.swift in Sources */,
