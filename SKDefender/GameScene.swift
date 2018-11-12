@@ -48,17 +48,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     lazy var screenHeight = view!.bounds.height
     
     func buildGround(color: UIColor) -> SKSpriteNode {
-        let loopsNeeded = Int(screenWidth / 80)
+        let loopsNeeded = Int(screenWidth / 120)
         var path: CGMutablePath?
+        var lastValue = 96
         for loop in stride(from: 0, to: Int(screenWidth*2), by: loopsNeeded) {
             let randomSource = GKARC4RandomSource()
             let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 80, highestValue: 128)
             let randomValueY = randomDistribution.nextInt()
             if path == nil {
                 path = CGMutablePath()
-                path!.move(to: CGPoint(x: 0, y: randomValueY))
+                path!.move(to: CGPoint(x: 0, y: lastValue))
             } else {
                 path!.addLine(to: CGPoint(x: loop, y: randomValueY))
+            }
+            print("loop \(loop) \(Int(screenWidth*2))")
+            if loop + loopsNeeded > Int(screenWidth*2) {
+                lastValue = randomValueY
             }
         }
         
@@ -75,9 +80,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         sprite.physicsBody?.categoryBitMask = PhysicsCat.Ground
         sprite.physicsBody?.collisionBitMask = 0
         sprite.physicsBody?.contactTestBitMask = PhysicsCat.Player
+        sprite.physicsBody?.affectedByGravity = false
         
-        
-//        addChild(sprite)
         return sprite
     }
     
@@ -88,7 +92,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             if i == 0 {
                 color2U = UIColor.red
             } else {
-                color2U = UIColor.blue
+                color2U = UIColor.red
             }
             let foreground = buildGround(color: color2U)
             print("foreground \(foreground.size.width)")
@@ -104,11 +108,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             spaceNode.zPosition = Layer.spaceman.rawValue
             if spaceNode.parent == nil {
                 foreground.addChild(spaceNode)
-//                let alienNode = alien.spriteComponent.node
-//                alienNode.position = CGPoint(x: 0, y: 512)
-//                alienNode.zPosition = Layer.alien.rawValue
-//                alienNode.delegate = self
-//                spaceNode.addChild(alienNode)
             }
             let alienNode = alien.spriteComponent.node
             alienNode.position = CGPoint(x: self.view!.bounds.maxX + 256, y: self.view!.bounds.maxY)
@@ -235,7 +234,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     override func didMove(to view: SKView) {
         /* Setup your scene here */
-        physicsWorld.gravity = CGVector(dx: 0, dy: 0)
+        physicsWorld.gravity = CGVector(dx: 0, dy: -0.5)
         physicsWorld.contactDelegate = self
         
         cameraNode = SKCameraNode()
@@ -251,8 +250,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
 //        setupAlien()
         
 //        Add a boundry to the screen
-//        physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
-        
+        let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minX * 2)
+        physicsBody = SKPhysicsBody(edgeLoopFrom: rectToSecure)
+        physicsBody?.isDynamic = false
 
         
     }
@@ -309,48 +309,81 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var playerCG: CGFloat!
     
     func didBegin(_ contact: SKPhysicsContact) {
-        var other = contact.bodyA.categoryBitMask == PhysicsCat.Player ? contact.bodyB : contact.bodyA
-        print("\(contact.bodyA.node!.name) \(contact.bodyB.node!.name)")
-        var kidnap = contact.bodyA.categoryBitMask == PhysicsCat.Alien ? contact.bodyB : contact.bodyA
+        let other = contact.bodyA.categoryBitMask == PhysicsCat.Player ? contact.bodyB : contact.bodyA
+        let kidnap = contact.bodyA.categoryBitMask == PhysicsCat.Alien ? contact.bodyB : contact.bodyA
+        let hit = contact.bodyA.categoryBitMask == PhysicsCat.Fire ? contact.bodyB : contact.bodyA
+        
+//        print("other \(other) kidnap \(kidnap) hit \(hit)")
+        
+        // alien kidnaps spaceman
 
-        if kidnap.node?.name == "spaceman" && kidnap.node?.parent?.name == "foreground" {
+        if kidnap.node?.name == "spaceman" && kidnap.node?.parent?.name == "foreground" && contact.bodyB.node!.name == "alien" {
+            print("rule I")
             pickup = other.node?.position
             kidnap.node?.removeFromParent()
+            kidnap.node?.position = CGPoint(x: 0, y: -96)
             contact.bodyB.node?.addChild(kidnap.node!)
             self.alien.alienComponent.changeDirection(self.lastUpdateTimeInterval)
-//            other.node!.addChild(kidnap.node!)
-        }
-        
-        if other.node?.name == "spaceman" && other.node?.parent?.name == "alien" {
-            print("pickup \(other.node?.position)")
-            pickup = other.node?.position
-            let rmNode = SKAction.run {
-                other.node?.removeFromParent()
-            }
-            let addNode = SKAction.run {
-                other.node?.position = CGPoint(x: 0, y: -96)
-
-                if other.node?.parent == nil {
-                    contact.bodyB.node?.addChild(other.node!)
-                }
-            }
-            contact.bodyB.node?.run(SKAction.sequence([rmNode,addNode]))
+            return
         }
         
         // drop spaceman if ground touches him
+        
+        if other.node?.name == "spaceman" && other.node?.parent?.name == "foreground" && contact.bodyB.node!.name == "starship" {
+//        if other.node?.name == "spaceman" && contact.bodyB.node!.name == "starship" {
+            print("rule II")
+            pickup = other.node?.position
+            other.node?.removeFromParent()
+            other.node?.position = CGPoint(x: 0, y: -96)
+            other.node?.physicsBody?.isDynamic = false
+            contact.bodyB.node?.addChild(other.node!)
+            return
+        }
+        
+        // drop spaceman if ground touches him while carried by starship
+        
+        if other.node?.name == "foreground" && contact.bodyB.node?.name == "starship"{
+            print("rule III")
+            let saving = contact.bodyB.node?.childNode(withName: "spaceman")
+            if saving != nil {
+//                saving?.position = (other.node?.position)!
+                saving?.position.x = self.playerNode.position.x - (other.node?.position.x)!
+                saving?.position.y = 96
+                saving?.removeFromParent()
+                other.node?.addChild(saving!)
+            }
+            return
+        }
+        
+        // alien hit, releases spaceman
 
-        if other.node?.name == "foreground" && contact.bodyB.node?.name == "spaceman" && contact.bodyB.node?.parent!.name == "starship" {
-            let rmNode = SKAction.run {
-                contact.bodyB.node?.removeFromParent()
+        if hit.node?.name == "alien" {
+            let victim = hit.node?.childNode(withName: "spaceman")
+            let parent2U = hit.node?.parent
+            hit.node?.removeFromParent()
+            if victim != nil {
+                victim?.position = (hit.node?.position)!
+                victim?.removeFromParent()
+                victim?.physicsBody?.isDynamic = true
+                parent2U?.addChild(victim!)
+//                victim!.run(SKAction.move(to: CGPoint(x: (victim?.position.x)!, y: 96), duration: 16))
             }
-            let addNode = SKAction.run {
-                contact.bodyB.node?.position.x = self.playerNode.position.x - (other.node?.position.x)!
-                contact.bodyB.node?.position.y = 96
-                if contact.bodyB.node?.parent == nil {
-                    other.node?.addChild(contact.bodyB.node!)
-                }
-            }
-            other.node?.run(SKAction.sequence([rmNode,addNode]))
+            return
+        }
+        
+        // spaceman falling to ground
+        
+        if other.node?.name == "foreground" {
+            contact.bodyB.node?.physicsBody?.isDynamic = false
+            let poc = CGPoint(x: (contact.bodyB.node?.position.x)!, y: 96)
+            contact.bodyB.node?.run(SKAction.move(to: poc, duration: 0.5))
+            return
+        }
+        
+        // shoot the spaceman and he will disppear
+        
+        if hit.node?.name == "spaceman" {
+            hit.node?.removeFromParent()
         }
     }
     
@@ -405,10 +438,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             let missile = SKShapeNode(rect: CGRect(x: 0, y: 0, width: 24, height: 6))
             missile.fillColor = UIColor.red
             if missile.parent == nil {
+                missile.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 24, height: 6))
+                missile.physicsBody?.categoryBitMask = PhysicsCat.Fire
+                missile.physicsBody?.collisionBitMask = 0
+                missile.physicsBody?.contactTestBitMask = PhysicsCat.Alien | PhysicsCat.SpaceMan
+                missile.physicsBody?.affectedByGravity = false
+                missile.name = "missile"
                 playerNode.addChild(missile)
-                let path2F = SKAction.move(by: CGVector(dx: 1024, dy: 0), duration: 1)
-                let removeM = SKAction.removeFromParent()
-                missile.run(SKAction.sequence([path2F,removeM]))
+                let direct = playerNode.userData?.object(forKey: "direction") as? String
+                switch direct {
+                case "left":
+                    let path2F = SKAction.move(by: CGVector(dx: -1024, dy: 0), duration: 1)
+                    let removeM = SKAction.removeFromParent()
+                    missile.run(SKAction.sequence([path2F,removeM]))
+                case "right":
+                    let path2F = SKAction.move(by: CGVector(dx: 1024, dy: 0), duration: 1)
+                    let removeM = SKAction.removeFromParent()
+                    missile.run(SKAction.sequence([path2F,removeM]))
+                default:
+                    break
+                    
+                }
             }
         default:
             moveLeft = false

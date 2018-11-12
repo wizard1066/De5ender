@@ -89,7 +89,12 @@ class MovementComponent: GKComponent {
         
 //        let velocityHStep = velocity.x * CGFloat(seconds)
 //        spriteNode.position.x = spriteNode.position.x + velocityHStep
-        
+        if velocity.y < 0 {
+            velocity.y = velocity.y + 10
+        }
+        if velocity.y > 0 {
+            velocity.y = velocity.y - 10
+        }
         
         // Temporary Ground Hit
         if spriteNode.position.y - spriteNode.size.height / 2 < playableStart {

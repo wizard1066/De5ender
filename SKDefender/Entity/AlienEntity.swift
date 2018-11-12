@@ -29,6 +29,7 @@ class AlienEntity: GKEntity {
         spriteNode.physicsBody?.categoryBitMask = PhysicsCat.Alien
         spriteNode.physicsBody?.collisionBitMask = PhysicsCat.None
         spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.SpaceMan | PhysicsCat.Fire
+        spriteNode.physicsBody?.affectedByGravity = false
         spriteNode.name = "alien"
     }
     

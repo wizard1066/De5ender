@@ -24,7 +24,9 @@ class RescueEntity: GKEntity {
         spriteNode.physicsBody = SKPhysicsBody.init(texture: texture, size: spriteNode.size)
         spriteNode.physicsBody?.categoryBitMask = PhysicsCat.SpaceMan
         spriteNode.physicsBody?.collisionBitMask = PhysicsCat.None
-        spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.Ground | PhysicsCat.Player
+        spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.Ground | PhysicsCat.Player | PhysicsCat.Fire
+        spriteNode.physicsBody?.affectedByGravity = true
+        spriteNode.physicsBody?.isDynamic = false
         spriteNode.name = "spaceman"
     }
     
