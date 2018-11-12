@@ -35,6 +35,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     let spaceMan = RescueEntity(imageName: "spaceMan")
     let alien = AlienEntity(imageName: "alien")
     
+    
     var playableStart: CGFloat = 0
     
     var deltaTime: TimeInterval = 0
@@ -99,15 +100,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             let spaceNode = spaceMan.rescueComponent.node
             spaceNode.delegate = self
             spaceNode.name = "spaceman"
-            spaceNode.position = CGPoint(x: self.view!.bounds.maxX + 256, y: self.view!.bounds.minY + 512)
+            spaceNode.position = CGPoint(x: self.view!.bounds.maxX + 256, y: self.view!.bounds.minY + 96)
             spaceNode.zPosition = Layer.spaceman.rawValue
             if spaceNode.parent == nil {
                 foreground.addChild(spaceNode)
-                let alienNode = alien.spriteComponent.node
-                alienNode.position = CGPoint(x: 0, y: 512)
-                alienNode.zPosition = Layer.alien.rawValue
-                alienNode.delegate = self
-                spaceNode.addChild(alienNode)
+//                let alienNode = alien.spriteComponent.node
+//                alienNode.position = CGPoint(x: 0, y: 512)
+//                alienNode.zPosition = Layer.alien.rawValue
+//                alienNode.delegate = self
+//                spaceNode.addChild(alienNode)
+            }
+            let alienNode = alien.spriteComponent.node
+            alienNode.position = CGPoint(x: self.view!.bounds.maxX + 256, y: self.view!.bounds.maxY)
+            alienNode.zPosition = Layer.alien.rawValue
+            alienNode.delegate = self
+            if alienNode.parent == nil {
+                foreground.addChild(alienNode)
             }
             
         }
@@ -301,28 +309,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var playerCG: CGFloat!
     
     func didBegin(_ contact: SKPhysicsContact) {
-        let other = contact.bodyA.categoryBitMask == PhysicsCat.Player ? contact.bodyB : contact.bodyA
-//        print("\(contact.bodyA.node!.name) \(contact.bodyB.node!.name)")
-//         pickup space man if starship touches him TECHNICALLLY WRONG never happens in tha game
-        let kidnap = contact.bodyA.categoryBitMask == PhysicsCat.Alien ? contact.bodyB : contact.bodyA
-        
+        var other = contact.bodyA.categoryBitMask == PhysicsCat.Player ? contact.bodyB : contact.bodyA
+        print("\(contact.bodyA.node!.name) \(contact.bodyB.node!.name)")
+        var kidnap = contact.bodyA.categoryBitMask == PhysicsCat.Alien ? contact.bodyB : contact.bodyA
+
         if kidnap.node?.name == "spaceman" && kidnap.node?.parent?.name == "foreground" {
-            print("pickup \(other.node?.position)")
             pickup = other.node?.position
-            let rmNode = SKAction.run {
-                kidnap.node?.removeFromParent()
-            }
-            let addNode = SKAction.run {
-                kidnap.node?.position = CGPoint(x: 0, y: -96)
-                
-                if other.node?.parent == nil {
-                    contact.bodyB.node?.addChild(other.node!)
-                    self.alien.alienComponent.changeDirection(self.lastUpdateTimeInterval)
-                }
-            }
-            contact.bodyB.node?.run(SKAction.sequence([rmNode,addNode]))
+            kidnap.node?.removeFromParent()
+            contact.bodyB.node?.addChild(kidnap.node!)
+            self.alien.alienComponent.changeDirection(self.lastUpdateTimeInterval)
+//            other.node!.addChild(kidnap.node!)
         }
-        
         
         if other.node?.name == "spaceman" && other.node?.parent?.name == "alien" {
             print("pickup \(other.node?.position)")
@@ -339,18 +336,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             }
             contact.bodyB.node?.run(SKAction.sequence([rmNode,addNode]))
         }
+        
         // drop spaceman if ground touches him
-        if other.node?.name == "foreground" && contact.bodyB.node?.name == "spaceman" {
+
+        if other.node?.name == "foreground" && contact.bodyB.node?.name == "spaceman" && contact.bodyB.node?.parent!.name == "starship" {
             let rmNode = SKAction.run {
                 contact.bodyB.node?.removeFromParent()
             }
             let addNode = SKAction.run {
-                
-//                contact.bodyB.node?.position.x = self.playerNode.position.x
-//                contact.bodyB.node?.position.x = self.foregroundCGPoint
-//                self.playerCG = self.playerNode.position.x
                 contact.bodyB.node?.position.x = self.playerNode.position.x - (other.node?.position.x)!
-                
                 contact.bodyB.node?.position.y = 96
                 if contact.bodyB.node?.parent == nil {
                     other.node?.addChild(contact.bodyB.node!)
