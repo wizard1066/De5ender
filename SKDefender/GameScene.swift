@@ -33,8 +33,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     
     let player = PlayerEntity(imageName: "starship")
+    var alien:AlienEntity!
     
-    let alien = AlienEntity(imageName: "alien")
     
     
     var playableStart: CGFloat = 0
@@ -91,24 +91,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             let foreground = BuildEntity(texture: texture, path: path, i: i)
             let foregroundNode = foreground.buildComponent.node
             addChild(foregroundNode)
-            let spaceManCords = CGPoint(x: view!.bounds.maxX + 256, y: view!.bounds.minY + 96)
-            let spaceMan = RescueEntity(imageName: "spaceMan", position: spaceManCords)
-            let spaceNode = spaceMan.rescueComponent.node
-            spaceNode.delegate = self
-//            spaceNode.position = CGPoint(x: self.view!.bounds.maxX + 256, y: self.view!.bounds.minY + 96)
-            spaceNode.zPosition = Layer.spaceman.rawValue
-            spaceNode.delegate = self
-            if spaceNode.parent == nil {
-                foregroundNode.addChild(spaceNode)
+            if i == 0 {
+                let spaceMan = RescueEntity(imageName: "spaceMan", xCord: view!.bounds.maxX + 256, yCord:view!.bounds.minY + 96)
+                let spaceNode = spaceMan.rescueComponent.node
+                spaceNode.delegate = self
+                spaceNode.zPosition = Layer.spaceman.rawValue
+                spaceNode.delegate = self
+                if spaceNode.parent == nil {
+                    foregroundNode.addChild(spaceNode)
+                }
+                
+//                alien = AlienEntity(imageName: "alien")
+                alien = AlienEntity(imageName: "alien",xCord: view!.bounds.maxX + 256, yCord:self.view!.bounds.maxY)
+                let alienNode = alien.spriteComponent.node
+//                alienNode.position = CGPoint(x: self.view!.bounds.maxX + 256, y: self.view!.bounds.maxY)
+                alienNode.zPosition = Layer.alien.rawValue
+                alienNode.delegate = self
+                if alienNode.parent == nil {
+                    foregroundNode.addChild(alienNode)
+                }
             }
-            let alienNode = alien.spriteComponent.node
-            alienNode.position = CGPoint(x: self.view!.bounds.maxX + 256, y: self.view!.bounds.maxY)
-            alienNode.zPosition = Layer.alien.rawValue
-            alienNode.delegate = self
-            if alienNode.parent == nil {
-                foregroundNode.addChild(alienNode)
-            }
-            
         }
     }
     

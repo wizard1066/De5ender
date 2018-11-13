@@ -13,7 +13,8 @@ class AlienEntity: GKEntity {
     var spriteComponent: SpriteComponent!
     var alienComponent: AlienDecentComponent!
     
-    init(imageName: String) {
+    init(imageName: String, xCord: CGFloat, yCord: CGFloat) {
+//    init(imageName: String) {
         super.init()
         
         let texture = SKTexture(imageNamed: imageName)
@@ -26,6 +27,7 @@ class AlienEntity: GKEntity {
         let spriteNode = spriteComponent.node
         spriteNode.size = CGSize(width: spriteNode.size.width/2, height: spriteNode.size.height/2)
         spriteNode.physicsBody = SKPhysicsBody.init(texture: texture, size: spriteNode.size)
+        spriteNode.position = CGPoint(x: xCord, y: yCord)
 //        spriteNode.physicsBody = SKPhysicsBody.init(circleOfRadius: spriteNode.size.width/2)
         spriteNode.physicsBody?.categoryBitMask = PhysicsCat.Alien
         spriteNode.physicsBody?.collisionBitMask = PhysicsCat.None
