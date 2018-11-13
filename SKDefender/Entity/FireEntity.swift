@@ -14,7 +14,7 @@ class FireEntity: GKEntity {
     var shapeComponent: ShapeComponent!
     var pathComponent: PathComponent!
     
-    init(rect: CGRect) {
+    init(rect: CGRect, xCord: CGFloat, yCord: CGFloat) {
         super.init()
         
         shapeComponent = ShapeComponent(entity: self, rectangle: rect)
@@ -30,6 +30,7 @@ class FireEntity: GKEntity {
         shapeNode.physicsBody?.collisionBitMask = PhysicsCat.None
         shapeNode.physicsBody?.contactTestBitMask = PhysicsCat.Alien | PhysicsCat.Ground
         shapeNode.physicsBody?.affectedByGravity = false
+        shapeNode.position = CGPoint(x: xCord, y: yCord)
         shapeNode.name = "missile"
     }
     

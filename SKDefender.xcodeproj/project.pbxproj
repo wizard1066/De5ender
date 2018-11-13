@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		7B049C1E219B19CE00120A49 /* BuildEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B049C1D219B19CE00120A49 /* BuildEntity.swift */; };
 		7B049C20219B1A2F00120A49 /* BuildComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B049C1F219B1A2F00120A49 /* BuildComponent.swift */; };
+		7B049C22219B5AB600120A49 /* HeadsUpEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B049C21219B5AB600120A49 /* HeadsUpEntity.swift */; };
 		7B20BDA9219983C5002405C1 /* AlienDecentComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B20BDA8219983C5002405C1 /* AlienDecentComponent.swift */; };
 		7B20BDAB21998850002405C1 /* AlienEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B20BDAA21998850002405C1 /* AlienEntity.swift */; };
 		7BA5CCCF2192DB72007EB2E3 /* MoveAlongPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCCE2192DB72007EB2E3 /* MoveAlongPath.swift */; };
@@ -34,6 +35,7 @@
 /* Begin PBXFileReference section */
 		7B049C1D219B19CE00120A49 /* BuildEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildEntity.swift; sourceTree = "<group>"; };
 		7B049C1F219B1A2F00120A49 /* BuildComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildComponent.swift; sourceTree = "<group>"; };
+		7B049C21219B5AB600120A49 /* HeadsUpEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadsUpEntity.swift; sourceTree = "<group>"; };
 		7B20BDA8219983C5002405C1 /* AlienDecentComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlienDecentComponent.swift; sourceTree = "<group>"; };
 		7B20BDAA21998850002405C1 /* AlienEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlienEntity.swift; sourceTree = "<group>"; };
 		7BA5CCCE2192DB72007EB2E3 /* MoveAlongPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveAlongPath.swift; sourceTree = "<group>"; };
@@ -77,6 +79,7 @@
 				7BA5CCDF21948E7F007EB2E3 /* FireEntity.swift */,
 				7BA5CCE52195C2B1007EB2E3 /* ResueEntity.swift */,
 				7B20BDAA21998850002405C1 /* AlienEntity.swift */,
+				7B049C21219B5AB600120A49 /* HeadsUpEntity.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -229,6 +232,7 @@
 				7BE20D09219222B900D68240 /* AppDelegate.swift in Sources */,
 				7BA5CCE221948F8C007EB2E3 /* ShapeComponent.swift in Sources */,
 				7B049C20219B1A2F00120A49 /* BuildComponent.swift in Sources */,
+				7B049C22219B5AB600120A49 /* HeadsUpEntity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

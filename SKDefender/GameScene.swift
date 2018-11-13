@@ -96,15 +96,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 let spaceNode = spaceMan.rescueComponent.node
                 spaceNode.delegate = self
                 spaceNode.zPosition = Layer.spaceman.rawValue
-                spaceNode.delegate = self
                 if spaceNode.parent == nil {
                     foregroundNode.addChild(spaceNode)
                 }
                 
-//                alien = AlienEntity(imageName: "alien")
                 alien = AlienEntity(imageName: "alien",xCord: view!.bounds.maxX + 256, yCord:self.view!.bounds.maxY)
                 let alienNode = alien.spriteComponent.node
-//                alienNode.position = CGPoint(x: self.view!.bounds.maxX + 256, y: self.view!.bounds.maxY)
                 alienNode.zPosition = Layer.alien.rawValue
                 alienNode.delegate = self
                 if alienNode.parent == nil {
@@ -148,7 +145,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     
     var playerNode: EntityNode!
-    var advanceArrow: TouchableSprite!
+//    var advanceArrow: TouchableSprite!
+    var advancedArrow: HeadsUpEntity!
     
     func setupPlayer(){
         playerNode = player.spriteComponent.node
@@ -160,52 +158,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         
 //        player.movementComponent.playableStart = playableStart
-  
-        let upArrow = TouchableSprite(imageNamed: "UpArrow")
-        upArrow.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.maxY)!) + 64)
-        upArrow.size = CGSize(width: 64, height: 64)
-        upArrow.name = "up"
-        upArrow.delegate = self
         
-        let downArrow = TouchableSprite(imageNamed: "DownArrow")
-        downArrow.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.maxY)!) - 64)
-        downArrow.size = CGSize(width: 64, height: 64)
-        downArrow.name = "down"
-        downArrow.delegate = self
-        
-        advanceArrow = TouchableSprite(imageNamed: "RightArrow")
-        advanceArrow.position = CGPoint(x: ((self.view?.bounds.maxX)! * 2) - 128, y: ((self.view?.bounds.maxY)!) - 64)
-        advanceArrow.size = CGSize(width: 64, height: 64)
-        advanceArrow.name = "advance"
-        advanceArrow.delegate = self
-        
-        
-        let stopSquare = TouchableSprite(imageNamed: "Square")
-        stopSquare.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.maxY)!))
-        stopSquare.size = CGSize(width: 64, height: 64)
-        stopSquare.name = "square"
-        stopSquare.delegate = self
-        
-        let pauseSquare = TouchableSprite(imageNamed: "Square")
-        pauseSquare.position = CGPoint(x: ((self.view?.bounds.maxX)! * 2) - 128, y: ((self.view?.bounds.maxY)!))
-        pauseSquare.size = CGSize(width: 64, height: 64)
-        pauseSquare.name = "fire"
-        pauseSquare.delegate = self
-        
-        let flipButton = TouchableSprite(imageNamed: "SwiftLogo")
-        flipButton.position = CGPoint(x: ((self.view?.bounds.maxX)! * 2) - 128, y: ((self.view?.bounds.maxY)!) - 256)
-        flipButton.size = CGSize(width: 64, height: 64)
-        flipButton.name = "flip"
-        flipButton.delegate = self
-        
-        
-        addChild(upArrow)
-        addChild(downArrow)
-        addChild(stopSquare)
-        addChild(advanceArrow)
+        let upArrow = HeadsUpEntity(imageName: "UpArrow", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!) + 64, name: "up")
+        upArrow.hudComponent.node.delegate = self
 
-        addChild(pauseSquare)
-        addChild(flipButton)
+        let downArrow = HeadsUpEntity(imageName: "DownArrow", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!) - 64, name: "down")
+        downArrow.hudComponent.node.delegate = self
+        
+        advancedArrow = HeadsUpEntity(imageName: "RightArrow", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!) - 64, name: "advance")
+        advancedArrow.hudComponent.node.delegate = self
+        
+        let stopSquare = HeadsUpEntity(imageName: "Square", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!), name: "square")
+        stopSquare.hudComponent.node.delegate = self
+        
+        let pauseSquare = HeadsUpEntity(imageName: "Square", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!), name: "fire")
+        pauseSquare.hudComponent.node.delegate = self
+        
+        let flipButton = HeadsUpEntity(imageName: "SwiftLogo", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!) - 256, name: "flip")
+        flipButton.hudComponent.node.delegate = self
+        
+        
+        addChild(upArrow.hudComponent.node)
+        addChild(downArrow.hudComponent.node)
+        addChild(stopSquare.hudComponent.node)
+        addChild(advancedArrow.hudComponent.node)
+
+        addChild(pauseSquare.hudComponent.node)
+        addChild(flipButton.hudComponent.node)
         
         
     }
@@ -287,12 +266,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             player.movementComponent.applyImpulseDown(lastUpdateTimeInterval)
             return
         }
-//        if pointTouched!.x > (self.view?.bounds.maxX)! - 128, pointTouched!.x < (self.view?.bounds.maxX)! - 64 {
-//            player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
-//        }
-//        if pointTouched!.x > (self.view?.bounds.maxX)! - 64, pointTouched!.x > ((self.view?.bounds.maxX)!){
-//            player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
-//        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -423,13 +396,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             brakeSpeed = 0.1
             switch direct {
             case "left":
-                advanceArrow.texture = SKTexture(imageNamed: "RightArrow")
+                advancedArrow.hudComponent.changeTexture(imageNamed: "RightArrow")
                 // moveRight/moveLet control the background direction
                 moveLeft = true
                 moveRight = false
                 player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
             case "right":
-                advanceArrow.texture = SKTexture(imageNamed: "LeftArrow")
+                advancedArrow.hudComponent.changeTexture(imageNamed: "LeftArrow")
                 moveRight = true
                 moveLeft = false
                 player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
@@ -439,10 +412,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             }
         case "fire":
             let mshape = CGRect(x: 0, y: 0, width: 24, height: 6)
-            let missileX = FireEntity(rect: mshape)
+            let missileX = FireEntity(rect: mshape, xCord: 0, yCord: 0)
             
             let fireNode = missileX.shapeComponent.node
-            fireNode.position = CGPoint(x: 0, y: 0)
             fireNode.zPosition = Layer.alien.rawValue
             playerNode.addChild(fireNode)
             
@@ -457,7 +429,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             }
         default:
             moreBreak()
-//            player.movementComponent.applyZero(lastUpdateTimeInterval)
         }
     }
 }

@@ -22,6 +22,9 @@ class BuildComponent: GKComponent {
         fatalError("init(coder:) has not been implemented")
     }
     
- 
+    // HUD function
+    func changeTexture(imageNamed: String) {
+        node.texture = SKTexture(imageNamed: imageNamed)
+    }
 }
 
