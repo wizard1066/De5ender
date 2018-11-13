@@ -28,7 +28,9 @@ class FireEntity: GKEntity {
         shapeNode.physicsBody = SKPhysicsBody.init(edgeLoopFrom: rect)
         shapeNode.physicsBody?.categoryBitMask = PhysicsCat.Fire
         shapeNode.physicsBody?.collisionBitMask = PhysicsCat.None
-        shapeNode.physicsBody?.contactTestBitMask = PhysicsCat.Ground
+        shapeNode.physicsBody?.contactTestBitMask = PhysicsCat.Alien | PhysicsCat.Ground
+        shapeNode.physicsBody?.affectedByGravity = false
+        shapeNode.name = "missile"
     }
     
     required init?(coder aDecoder: NSCoder) {

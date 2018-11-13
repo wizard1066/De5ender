@@ -42,7 +42,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var lastUpdateTimeInterval: TimeInterval = 0
     
     let numberOfForegrounds = 2
-    let groundSpeed = 150
+    var groundSpeed:Double = 150
+    var brakeSpeed:Double = 0.1
     
     lazy var screenWidth = view!.bounds.width
     lazy var screenHeight = view!.bounds.height
@@ -198,6 +199,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         advanceArrow.name = "advance"
         advanceArrow.delegate = self
         
+        
         let stopSquare = TouchableSprite(imageNamed: "Square")
         stopSquare.position = CGPoint(x: (self.view?.bounds.minX)! + 128, y: ((self.view?.bounds.maxY)!))
         stopSquare.size = CGSize(width: 64, height: 64)
@@ -215,6 +217,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         flipButton.size = CGSize(width: 64, height: 64)
         flipButton.name = "flip"
         flipButton.delegate = self
+        
         
         addChild(upArrow)
         addChild(downArrow)
@@ -267,13 +270,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         if moveLeft {
             updateForegroundLeft()
+            lowerSpeed()
         }
         if moveRight {
             updateForegroundRight()
+            lowerSpeed()
         }
         player.update(deltaTime: deltaTime)
         alien.update(deltaTime: deltaTime)
-
+        
+    }
+    
+    func lowerSpeed() {
+        if groundSpeed > 24 {
+            groundSpeed = groundSpeed - brakeSpeed
+        } else {
+            groundSpeed = 24
+        }
+    }
+    
+    func moreBreak() {
+        brakeSpeed = brakeSpeed * 2
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -357,6 +374,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         // alien hit, releases spaceman
 
         if hit.node?.name == "alien" {
+            print("rule IV")
             let victim = hit.node?.childNode(withName: "spaceman")
             let parent2U = hit.node?.parent
             hit.node?.removeFromParent()
@@ -373,6 +391,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         // spaceman falling to ground
         
         if other.node?.name == "foreground" {
+            print("rule V")
             contact.bodyB.node?.physicsBody?.isDynamic = false
             let poc = CGPoint(x: (contact.bodyB.node?.position.x)!, y: 96)
             contact.bodyB.node?.run(SKAction.move(to: poc, duration: 0.5))
@@ -381,27 +400,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         // shoot the spaceman and he will disppear
         
-        if hit.node?.name == "spaceman" {
+        if hit.node?.name == "spaceman" && contact.bodyB.node?.name != "starship" {
+            print("rule VI \(contact.bodyB.node?.name)")
             hit.node?.removeFromParent()
         }
     }
     
+    var previousDirection:String?
+    
     func spriteTouched(box: TouchableSprite) {
         switch box.name {
         case "starship":
-            print("cords \(box.position) \(moveAmount) \(foregroundCGPoint)")
+            print("groundSpeed \(groundSpeed)")
         case "spaceman":
             print("cords \(box.position) \(moveAmount)")
         case "up":
             player.movementComponent.applyImpulseUp(lastUpdateTimeInterval)
         case "down":
             player.movementComponent.applyImpulseDown(lastUpdateTimeInterval)
-            //            case "left":
-            //                moveLeft = true
-            //                moveRight = false
-        //                player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
         case "advance":
             let direct = playerNode.userData?.object(forKey: "direction") as? String
+            if previousDirection == nil || previousDirection != direct {
+                groundSpeed = 150
+                brakeSpeed = 0.1
+                previousDirection = direct
+            } else {
+                groundSpeed += 30
+                previousDirection = direct
+            }
             switch direct {
             case "left":
                 moveRight = true
@@ -417,6 +443,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         //                player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
         case "flip":
             let direct = playerNode.userData?.object(forKey: "direction") as? String
+            groundSpeed = 150
+            brakeSpeed = 0.1
             switch direct {
             case "left":
                 advanceArrow.texture = SKTexture(imageNamed: "RightArrow")
@@ -434,35 +462,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 break
             }
         case "fire":
-            let missile = SKShapeNode(rect: CGRect(x: 0, y: 0, width: 24, height: 6))
-            missile.fillColor = UIColor.red
-            if missile.parent == nil {
-                missile.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 24, height: 6))
-                missile.physicsBody?.categoryBitMask = PhysicsCat.Fire
-                missile.physicsBody?.collisionBitMask = 0
-                missile.physicsBody?.contactTestBitMask = PhysicsCat.Alien | PhysicsCat.SpaceMan
-                missile.physicsBody?.affectedByGravity = false
-                missile.name = "missile"
-                playerNode.addChild(missile)
-                let direct = playerNode.userData?.object(forKey: "direction") as? String
-                switch direct {
-                case "left":
-                    let path2F = SKAction.move(by: CGVector(dx: -1024, dy: 0), duration: 1)
-                    let removeM = SKAction.removeFromParent()
-                    missile.run(SKAction.sequence([path2F,removeM]))
-                case "right":
-                    let path2F = SKAction.move(by: CGVector(dx: 1024, dy: 0), duration: 1)
-                    let removeM = SKAction.removeFromParent()
-                    missile.run(SKAction.sequence([path2F,removeM]))
-                default:
-                    break
-                    
-                }
+            let mshape = CGRect(x: 0, y: 0, width: 24, height: 6)
+            let missileX = FireEntity(rect: mshape)
+            
+            let fireNode = missileX.shapeComponent.node
+            fireNode.position = CGPoint(x: 0, y: 0)
+            fireNode.zPosition = Layer.alien.rawValue
+//            fireNode.delegate = self
+            playerNode.addChild(fireNode)
+            
+//            missileX.pathComponent.releaseFireLeft(lastUpdateTimeInterval)
+            let direct = playerNode.userData?.object(forKey: "direction") as? String
+
+            switch direct {
+            case "left":
+                missileX.pathComponent.releaseFireLeft(lastUpdateTimeInterval)
+            case "right":
+                missileX.pathComponent.releaseFireRight(lastUpdateTimeInterval)
+            default:
+                break
             }
         default:
-            moveLeft = false
-            moveRight = false
-            player.movementComponent.applyZero(lastUpdateTimeInterval)
+            moreBreak()
+//            player.movementComponent.applyZero(lastUpdateTimeInterval)
         }
     }
 }

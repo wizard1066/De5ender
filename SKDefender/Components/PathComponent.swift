@@ -12,11 +12,7 @@ import GameplayKit
 class PathComponent: GKComponent {
     let shapeComponent: ShapeComponent
     
-    let impulse: CGFloat = 800
-    var engage: CGFloat = 0
-    var velocity = CGPoint.zero
-    
-    var playableStart: CGFloat = 0
+    var screenWidth = UIScreen.main.bounds.maxY * 2
     
     init(entity: GKEntity) {
         self.shapeComponent = entity.component(ofType: ShapeComponent.self)!
@@ -28,26 +24,16 @@ class PathComponent: GKComponent {
     }
     
     func releaseFireLeft(_ lastUpdateTime: TimeInterval) {
-        engage = -impulse
+        let amountToMove = screenWidth * 0.80
+        let path2F = SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 1)
+        let removeM = SKAction.removeFromParent()
+        self.shapeComponent.node.run(SKAction.sequence([path2F,removeM]))
     }
     
     func releaseFireRight(_ lastUpdateTime: TimeInterval) {
-        engage = impulse
-    }
-    
-    func applyMovement(_ seconds: TimeInterval) {
-        
-        let spriteNode = shapeComponent.node
-        
-        let velocityVStep = engage * CGFloat(seconds)
-        spriteNode.position.x = spriteNode.position.x + velocityVStep
-        if spriteNode.position.x > 1600 || spriteNode.position.x < -1600 {
-            spriteNode.run(SKAction.removeFromParent())
-            engage = 0
-        }
-    }
-    
-    override func update(deltaTime seconds: TimeInterval) {
-        applyMovement(seconds)
+        let amountToMove = screenWidth * 0.80
+        let path2F = SKAction.move(by: CGVector(dx: amountToMove, dy: 0), duration: 1)
+        let removeM = SKAction.removeFromParent()
+        self.shapeComponent.node.run(SKAction.sequence([path2F,removeM]))
     }
 }

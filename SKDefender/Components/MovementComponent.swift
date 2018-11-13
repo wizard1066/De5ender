@@ -40,14 +40,15 @@ class MovementComponent: GKComponent {
     
     func applyImpulseX(_ lastUpdateTime: TimeInterval) {
         let spriteNode = spriteComponent.node
+        let amountToMove = UIScreen.main.bounds.maxX / 10
         if spriteNode.userData?.object(forKey: "direction") as? String == "right" {
-            let advanceAction = SKAction.move(by: CGVector(dx: 124, dy: 0), duration: 0.5)
-            let fallBackAction = SKAction.move(by: CGVector(dx: -124, dy: 0), duration: 2)
+            let advanceAction = SKAction.move(by: CGVector(dx: amountToMove, dy: 0), duration: 0.5)
+            let fallBackAction = SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 1)
             spriteNode.run(SKAction.sequence([advanceAction,fallBackAction]))
         }
         if spriteNode.userData?.object(forKey: "direction") as? String == "left" {
-            let advanceAction = SKAction.move(by: CGVector(dx: -124, dy: 0), duration: 0.5)
-            let fallBackAction = SKAction.move(by: CGVector(dx: 124, dy: 0), duration: 2)
+            let advanceAction = SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 0.5)
+            let fallBackAction = SKAction.move(by: CGVector(dx: amountToMove, dy: 0), duration: 1)
             spriteNode.run(SKAction.sequence([advanceAction,fallBackAction]))
         }
         
@@ -58,7 +59,8 @@ class MovementComponent: GKComponent {
         let spriteNode = spriteComponent.node
         spriteNode.userData?.setObject("right", forKey: "direction" as NSCopying)
         spriteNode.texture = SKTexture(imageNamed: "starship")
-        spriteNode.run(SKAction.move(by: CGVector(dx: -1024, dy: 0), duration: 4))
+        let amountToMove = UIScreen.main.bounds.maxX
+        spriteNode.run(SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 2))
         velocity = CGPoint(x: impulse, y: 0)
     }
 
@@ -67,7 +69,8 @@ class MovementComponent: GKComponent {
         let spriteNode = spriteComponent.node
         spriteNode.userData?.setObject("left", forKey: "direction" as NSCopying)
         spriteNode.texture = SKTexture(imageNamed: "shipstar")
-        spriteNode.run(SKAction.move(by: CGVector(dx: 1024, dy: 0), duration: 4))
+        let amountToMove = UIScreen.main.bounds.maxX
+        spriteNode.run(SKAction.move(by: CGVector(dx: amountToMove, dy: 0), duration: 2))
         velocity = CGPoint(x: impulse, y: 0)
     }
     

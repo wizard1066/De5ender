@@ -12,6 +12,8 @@ import GameplayKit
 class AlienDecentComponent: GKComponent {
     let spriteComponent: SpriteComponent
     
+    var playableStart: CGFloat = 0
+    var playableRegion: CGFloat = UIScreen.main.bounds.maxY * 2
     var decentRate: CGFloat = -1
     
     init(entity: GKEntity) {
@@ -29,6 +31,16 @@ class AlienDecentComponent: GKComponent {
     
     override func update(deltaTime seconds: TimeInterval) {
         spriteComponent.node.position.y = spriteComponent.node.position.y + decentRate
+        
+        if spriteComponent.node.position.y - spriteComponent.node.size.height / 2 < playableStart {
+            changeDirection(seconds)
+        }
+        
+        if spriteComponent.node.position.y + spriteComponent.node.size.height > playableRegion {
+            let fadeAway = SKAction.fadeOut(withDuration: 0.5)
+            let selfDestruct = SKAction.removeFromParent()
+            spriteComponent.node.run(SKAction.sequence([fadeAway,selfDestruct]))
+        }
     }
     
 }
