@@ -12,7 +12,7 @@ import GameplayKit
 class RescueEntity: GKEntity {
     var rescueComponent: RescueComponent!
     
-    init(imageName: String) {
+    init(imageName: String, position: CGPoint) {
         super.init()
         
         let texture = SKTexture(imageNamed: imageName)
@@ -20,6 +20,8 @@ class RescueEntity: GKEntity {
         addComponent(rescueComponent)
         
         let spriteNode = rescueComponent.node
+        spriteNode.name = "spaceman"
+        spriteNode.position = position
 //        spriteNode.size = CGSize(width: spriteNode.size.width/7, height: spriteNode.size.height/6)
         spriteNode.physicsBody = SKPhysicsBody.init(texture: texture, size: spriteNode.size)
 //        spriteNode.physicsBody = SKPhysicsBody.init(circleOfRadius: spriteNode.size.width/2 + 8)
@@ -28,7 +30,7 @@ class RescueEntity: GKEntity {
         spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.Ground | PhysicsCat.Player | PhysicsCat.Fire
         spriteNode.physicsBody?.affectedByGravity = true
         spriteNode.physicsBody?.isDynamic = false
-        spriteNode.name = "spaceman"
+        
     }
     
     required init?(coder aDecoder: NSCoder) {

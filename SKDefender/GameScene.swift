@@ -31,8 +31,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         case alien
     }
     
+    
     let player = PlayerEntity(imageName: "starship")
-    let spaceMan = RescueEntity(imageName: "spaceMan")
+    
     let alien = AlienEntity(imageName: "alien")
     
     
@@ -48,7 +49,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     lazy var screenWidth = view!.bounds.width
     lazy var screenHeight = view!.bounds.height
     
-    func buildGround(color: UIColor) -> SKSpriteNode {
+    func buildGround(color: UIColor) -> (SKTexture, CGMutablePath) {
         let loopsNeeded = Int(screenWidth / 120)
         var path: CGMutablePath?
         var lastValue = 96
@@ -74,15 +75,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         shape.zPosition = 1
         
         let texture = view?.texture(from: shape)
-        let sprite = SKSpriteNode(texture: texture)
-
-        sprite.physicsBody = SKPhysicsBody(edgeChainFrom: shape.path!)
-        sprite.physicsBody?.categoryBitMask = PhysicsCat.Ground
-        sprite.physicsBody?.collisionBitMask = 0
-        sprite.physicsBody?.contactTestBitMask = PhysicsCat.Player
-        sprite.physicsBody?.affectedByGravity = false
-        
-        return sprite
+        return (texture!,path!)
     }
     
     func setupForeground() {
@@ -94,27 +87,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             } else {
                 color2U = UIColor.red
             }
-            let foreground = buildGround(color: color2U)
-            print("foreground \(foreground.size.width)")
-            foreground.anchorPoint = CGPoint(x: 0.0, y: -1.33)
-            foreground.position = CGPoint(x: CGFloat(i) * foreground.size.width, y: playableStart)
-            foreground.zPosition = Layer.foreground.rawValue
-            foreground.name = "foreground"
-            addChild(foreground)
+            let (texture, path) = buildGround(color: color2U)
+            let foreground = BuildEntity(texture: texture, path: path, i: i)
+            let foregroundNode = foreground.buildComponent.node
+            addChild(foregroundNode)
+            let spaceManCords = CGPoint(x: view!.bounds.maxX + 256, y: view!.bounds.minY + 96)
+            let spaceMan = RescueEntity(imageName: "spaceMan", position: spaceManCords)
             let spaceNode = spaceMan.rescueComponent.node
             spaceNode.delegate = self
-            spaceNode.name = "spaceman"
-            spaceNode.position = CGPoint(x: self.view!.bounds.maxX + 256, y: self.view!.bounds.minY + 96)
+//            spaceNode.position = CGPoint(x: self.view!.bounds.maxX + 256, y: self.view!.bounds.minY + 96)
             spaceNode.zPosition = Layer.spaceman.rawValue
+            spaceNode.delegate = self
             if spaceNode.parent == nil {
-                foreground.addChild(spaceNode)
+                foregroundNode.addChild(spaceNode)
             }
             let alienNode = alien.spriteComponent.node
             alienNode.position = CGPoint(x: self.view!.bounds.maxX + 256, y: self.view!.bounds.maxY)
             alienNode.zPosition = Layer.alien.rawValue
             alienNode.delegate = self
             if alienNode.parent == nil {
-                foreground.addChild(alienNode)
+                foregroundNode.addChild(alienNode)
             }
             
         }
@@ -151,21 +143,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         }
     }
     
-    func setupSpaceMen() {
-        let spaceNode = spaceMan.rescueComponent.node
-        spaceNode.position = CGPoint(x: self.view!.bounds.maxX + 256, y: self.view!.bounds.minY + 96)
-        spaceNode.zPosition = Layer.spaceman.rawValue
-        //        playerNode.size = CGSize(width: playerNode.size.width/4, height: playerNode.size.height/4)
-        addChild(spaceNode)
-    }
     
-    func setupAlien() {
-        let alienNode = alien.spriteComponent.node
-        alienNode.position = CGPoint(x: self.view!.bounds.maxX + 256, y: self.view!.bounds.maxY * 2)
-        alienNode.zPosition = Layer.alien.rawValue
-        alienNode.delegate = self
-        addChild(alienNode)
-    }
     
     var playerNode: EntityNode!
     var advanceArrow: TouchableSprite!
@@ -249,7 +227,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         setupForeground()
         setupPlayer()
-//        setupAlien()
         
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minX * 2)
@@ -329,8 +306,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         let kidnap = contact.bodyA.categoryBitMask == PhysicsCat.Alien ? contact.bodyB : contact.bodyA
         let hit = contact.bodyA.categoryBitMask == PhysicsCat.Fire ? contact.bodyB : contact.bodyA
         
-//        print("other \(other) kidnap \(kidnap) hit \(hit)")
-        
         // alien kidnaps spaceman
 
         if kidnap.node?.name == "spaceman" && kidnap.node?.parent?.name == "foreground" && contact.bodyB.node!.name == "alien" {
@@ -383,7 +358,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 victim?.removeFromParent()
                 victim?.physicsBody?.isDynamic = true
                 parent2U?.addChild(victim!)
-//                victim!.run(SKAction.move(to: CGPoint(x: (victim?.position.x)!, y: 96), duration: 16))
             }
             return
         }
@@ -468,12 +442,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             let fireNode = missileX.shapeComponent.node
             fireNode.position = CGPoint(x: 0, y: 0)
             fireNode.zPosition = Layer.alien.rawValue
-//            fireNode.delegate = self
             playerNode.addChild(fireNode)
             
-//            missileX.pathComponent.releaseFireLeft(lastUpdateTimeInterval)
             let direct = playerNode.userData?.object(forKey: "direction") as? String
-
             switch direct {
             case "left":
                 missileX.pathComponent.releaseFireLeft(lastUpdateTimeInterval)
