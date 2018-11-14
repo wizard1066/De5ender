@@ -31,11 +31,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         case alien
     }
     
-    
     let player = PlayerEntity(imageName: "starship")
     var alien:AlienEntity!
-    
-    
     
     var playableStart: CGFloat = 0
     
@@ -78,6 +75,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         return (texture!,path!)
     }
     
+    var aliens:[GKEntity] = []
+    var foregrounds:[EntityNode] = []
+    
     func setupForeground() {
         
         var color2U:UIColor!
@@ -90,25 +90,48 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             let (texture, path) = buildGround(color: color2U)
             let foreground = BuildEntity(texture: texture, path: path, i: i)
             let foregroundNode = foreground.buildComponent.node
+            foregroundNode.delegate = self
             addChild(foregroundNode)
-            if i == 0 {
-                let spaceMan = RescueEntity(imageName: "spaceMan", xCord: view!.bounds.maxX + 256, yCord:view!.bounds.minY + 96)
-                let spaceNode = spaceMan.rescueComponent.node
-                spaceNode.delegate = self
-                spaceNode.zPosition = Layer.spaceman.rawValue
-                if spaceNode.parent == nil {
-                    foregroundNode.addChild(spaceNode)
-                }
-                
-                alien = AlienEntity(imageName: "alien",xCord: view!.bounds.maxX + 256, yCord:self.view!.bounds.maxY)
-                let alienNode = alien.spriteComponent.node
-                alienNode.zPosition = Layer.alien.rawValue
-                alienNode.delegate = self
-                if alienNode.parent == nil {
-                    foregroundNode.addChild(alienNode)
-                }
-            }
+            foregrounds.append(foregroundNode)
+            // restructure
         }
+        for _ in 0..<4 {
+            let randomSource = GKARC4RandomSource()
+            let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 0, highestValue: 4)
+            let randomValueT = Double(randomDistribution.nextInt())
+            let waitAction = SKAction.wait(forDuration: randomValueT)
+            let runAction = SKAction.run {
+                self.addSpaceMen()
+            }
+            foregrounds[0].run(SKAction.sequence([waitAction,runAction]))
+        }
+    }
+    
+    func addSpaceMen() {
+        let randomSource = GKARC4RandomSource()
+        let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 0, highestValue: Int(self.view!.bounds.width))
+        let randomValueX = CGFloat(randomDistribution.nextInt())
+        
+        let spaceMan = RescueEntity(imageName: "spaceMan", xCord: view!.bounds.maxX + randomValueX, yCord:view!.bounds.minY + 96)
+        let spaceNode = spaceMan.rescueComponent.node
+        spaceNode.delegate = self
+        spaceNode.zPosition = Layer.spaceman.rawValue
+        if spaceNode.parent == nil {
+            //                    foregroundNode.addChild(spaceNode)
+            foregrounds[0].addChild(spaceNode)
+        }
+        
+        let alien = AlienEntity(imageName: "alien",xCord: view!.bounds.maxX + randomValueX, yCord:self.view!.bounds.maxY)
+        let alienNode = alien.spriteComponent.node
+        let procedure = alien.alienComponent
+        alienNode.userData!["procedure"] = procedure
+        alienNode.zPosition = Layer.alien.rawValue
+        alienNode.delegate = self
+        if alienNode.parent == nil {
+            //                    foregroundNode.addChild(alienNode)
+            foregrounds[0].addChild(alienNode)
+        }
+        aliens.append(alien)
     }
     
     var moveAmount: CGPoint!
@@ -235,7 +258,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             lowerSpeed()
         }
         player.update(deltaTime: deltaTime)
-        alien.update(deltaTime: deltaTime)
+        for alien in aliens {
+            alien.update(deltaTime: deltaTime)
+        }
         
     }
     
@@ -286,10 +311,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         if kidnap.node?.name == "spaceman" && kidnap.node?.parent?.name == "foreground" && contact.bodyB.node!.name == "alien" {
             print("rule I")
             pickup = other.node?.position
+            
             kidnap.node?.removeFromParent()
             kidnap.node?.position = CGPoint(x: 0, y: -96)
             contact.bodyB.node?.addChild(kidnap.node!)
-            self.alien.alienComponent.changeDirection(self.lastUpdateTimeInterval)
+//            self.alien.alienComponent.changeDirection(self.lastUpdateTimeInterval)
+//            let execute = contact.bodyB.node?.userData!["procedure"] as? AlienDecentComponent
+//            execute?.stopSpaceMan()
+//            contact.bodyB.node?.run(SKAction.move(to: CGPoint(x: (contact.bodyB.node?.position.x)!, y: 512), duration: 4))
+            //restructure
             return
         }
         

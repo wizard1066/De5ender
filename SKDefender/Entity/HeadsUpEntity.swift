@@ -24,6 +24,8 @@ class HeadsUpEntity: GKEntity {
         spriteNode.name = name
         spriteNode.position = CGPoint(x: xCord, y: yCord)
         spriteNode.size = CGSize(width: 64, height: 64)
+        
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
