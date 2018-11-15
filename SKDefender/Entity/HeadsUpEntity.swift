@@ -23,7 +23,7 @@ class HeadsUpEntity: GKEntity {
         let spriteNode = hudComponent.node
         spriteNode.name = name
         spriteNode.position = CGPoint(x: xCord, y: yCord)
-        spriteNode.size = CGSize(width: 64, height: 64)
+        spriteNode.size = CGSize(width: 128, height: 128)
         
         
     }

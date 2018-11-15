@@ -39,7 +39,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var deltaTime: TimeInterval = 0
     var lastUpdateTimeInterval: TimeInterval = 0
     
-    let numberOfForegrounds = 2
+    let numberOfForegrounds = 4
     var groundSpeed:Double = 150
     var brakeSpeed:Double = 0.1
     
@@ -77,16 +77,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     var aliens:[GKEntity] = []
     var foregrounds:[EntityNode] = []
+    var colours = [UIColor.red, UIColor.blue, UIColor.green, UIColor.purple]
     
     func setupForeground() {
         
-        var color2U:UIColor!
         for i in 0..<numberOfForegrounds {
-            if i == 0 {
-                color2U = UIColor.red
-            } else {
-                color2U = UIColor.red
-            }
+            let color2U = colours[i]
             let (texture, path) = buildGround(color: color2U)
             let foreground = BuildEntity(texture: texture, path: path, i: i)
             let foregroundNode = foreground.buildComponent.node
@@ -95,19 +91,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             foregrounds.append(foregroundNode)
             // restructure
         }
-        for _ in 0..<4 {
+        for loop in 0..<numberOfForegrounds {
             let randomSource = GKARC4RandomSource()
             let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 0, highestValue: 4)
             let randomValueT = Double(randomDistribution.nextInt())
             let waitAction = SKAction.wait(forDuration: randomValueT)
             let runAction = SKAction.run {
-                self.addSpaceMen()
+                self.addSpaceMen(loop: loop)
             }
-            foregrounds[0].run(SKAction.sequence([waitAction,runAction]))
+            foregrounds[loop].run(SKAction.sequence([waitAction,runAction]))
         }
     }
     
-    func addSpaceMen() {
+    func addSpaceMen(loop: Int) {
         let randomSource = GKARC4RandomSource()
         let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 0, highestValue: Int(self.view!.bounds.width))
         let randomValueX = CGFloat(randomDistribution.nextInt())
@@ -118,7 +114,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         spaceNode.zPosition = Layer.spaceman.rawValue
         if spaceNode.parent == nil {
             //                    foregroundNode.addChild(spaceNode)
-            foregrounds[0].addChild(spaceNode)
+            foregrounds[loop].addChild(spaceNode)
         }
         
         let alien = AlienEntity(imageName: "alien",xCord: view!.bounds.maxX + randomValueX, yCord:self.view!.bounds.maxY)
@@ -129,7 +125,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         alienNode.delegate = self
         if alienNode.parent == nil {
             //                    foregroundNode.addChild(alienNode)
-            foregrounds[0].addChild(alienNode)
+            foregrounds[loop].addChild(alienNode)
         }
         aliens.append(alien)
     }
@@ -182,22 +178,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
 //        player.movementComponent.playableStart = playableStart
         
-        let upArrow = HeadsUpEntity(imageName: "UpArrow", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!) + 64, name: "up")
+        let upArrow = HeadsUpEntity(imageName: "UpArrow", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!) + 96, name: "up")
         upArrow.hudComponent.node.delegate = self
 
-        let downArrow = HeadsUpEntity(imageName: "DownArrow", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!) - 64, name: "down")
+        let downArrow = HeadsUpEntity(imageName: "DownArrow", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!) - 96, name: "down")
         downArrow.hudComponent.node.delegate = self
         
-        advancedArrow = HeadsUpEntity(imageName: "RightArrow", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!) - 64, name: "advance")
+        advancedArrow = HeadsUpEntity(imageName: "RightArrow", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!) - 96, name: "advance")
         advancedArrow.hudComponent.node.delegate = self
         
         let stopSquare = HeadsUpEntity(imageName: "Square", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!), name: "square")
         stopSquare.hudComponent.node.delegate = self
         
-        let pauseSquare = HeadsUpEntity(imageName: "Square", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!), name: "fire")
-        pauseSquare.hudComponent.node.delegate = self
+        let fireSquare = HeadsUpEntity(imageName: "Square", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!), name: "fire")
+        fireSquare.hudComponent.node.delegate = self
         
-        let flipButton = HeadsUpEntity(imageName: "SwiftLogo", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!) - 256, name: "flip")
+        let flipButton = HeadsUpEntity(imageName: "SwiftLogo", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!) + 96, name: "flip")
         flipButton.hudComponent.node.delegate = self
         
         
@@ -206,7 +202,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         addChild(stopSquare.hudComponent.node)
         addChild(advancedArrow.hudComponent.node)
 
-        addChild(pauseSquare.hudComponent.node)
+        addChild(fireSquare.hudComponent.node)
         addChild(flipButton.hudComponent.node)
         
         
@@ -297,7 +293,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         print("ended")
     }
     
-    var pickup: CGPoint!
+//    var pickup: CGPoint!
     
     var playerCG: CGFloat!
     
@@ -310,7 +306,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
 
         if kidnap.node?.name == "spaceman" && kidnap.node?.parent?.name == "foreground" && contact.bodyB.node!.name == "alien" {
             print("rule I")
-            pickup = other.node?.position
+//            pickup = other.node?.position
             
             kidnap.node?.removeFromParent()
             kidnap.node?.position = CGPoint(x: 0, y: -96)
@@ -328,7 +324,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         if other.node?.name == "spaceman" && other.node?.parent?.name == "foreground" && contact.bodyB.node!.name == "starship" {
 //        if other.node?.name == "spaceman" && contact.bodyB.node!.name == "starship" {
             print("rule II")
-            pickup = other.node?.position
+//            pickup = other.node?.position
             other.node?.removeFromParent()
             other.node?.position = CGPoint(x: 0, y: -96)
             other.node?.physicsBody?.isDynamic = false
@@ -354,8 +350,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         // alien hit, releases spaceman
 
         if hit.node?.name == "alien" {
-            print("rule IV")
+            print("rule IV bodyA \(contact.bodyA.node!.name) bodyB \(contact.bodyB.node!.name)")
             let victim = hit.node?.childNode(withName: "spaceman")
+            contact.bodyA.node?.removeFromParent()
+            
             let parent2U = hit.node?.parent
             hit.node?.removeFromParent()
             if victim != nil {
