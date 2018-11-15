@@ -220,9 +220,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         cameraNode = SKCameraNode()
         cameraNode.position = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
         scene?.camera = cameraNode
-        
+
         cameraNode.setScale(2)
-        
+
         addChild(cameraNode)
         
         setupForeground()

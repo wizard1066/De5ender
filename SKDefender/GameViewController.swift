@@ -18,7 +18,7 @@ class GameViewController: UIViewController {
         if let skView = self.view as? SKView {
             if skView.scene == nil {
 //                let aspectRatio = skView.bounds.size.height / skView.bounds.size.width
-                let scene = GameScene(size: CGSize(width: self.view!.bounds.width, height: self.view!.bounds.height))
+                let scene = GameScene(size: CGSize(width: self.view!.bounds.width * 2, height: self.view!.bounds.height * 2))
                 
                 skView.showsFPS = true
                 skView.showsNodeCount = true
