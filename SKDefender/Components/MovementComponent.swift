@@ -45,11 +45,13 @@ class MovementComponent: GKComponent {
             let advanceAction = SKAction.move(by: CGVector(dx: amountToMove, dy: 0), duration: 0.5)
             let fallBackAction = SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 1)
             spriteNode.run(SKAction.sequence([advanceAction,fallBackAction]))
+            velocity.y += 20
         }
         if spriteNode.userData?.object(forKey: "direction") as? String == "left" {
             let advanceAction = SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 0.5)
             let fallBackAction = SKAction.move(by: CGVector(dx: amountToMove, dy: 0), duration: 1)
             spriteNode.run(SKAction.sequence([advanceAction,fallBackAction]))
+            velocity.y -= 20
         }
         
     }
@@ -59,6 +61,7 @@ class MovementComponent: GKComponent {
         let spriteNode = spriteComponent.node
         spriteNode.userData?.setObject("right", forKey: "direction" as NSCopying)
         spriteNode.texture = SKTexture(imageNamed: "starship")
+       
         let amountToMove = UIScreen.main.bounds.maxX
         spriteNode.run(SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 2))
         velocity = CGPoint(x: impulse, y: 0)
@@ -69,6 +72,7 @@ class MovementComponent: GKComponent {
         let spriteNode = spriteComponent.node
         spriteNode.userData?.setObject("left", forKey: "direction" as NSCopying)
         spriteNode.texture = SKTexture(imageNamed: "shipstar")
+       
         let amountToMove = UIScreen.main.bounds.maxX
         spriteNode.run(SKAction.move(by: CGVector(dx: amountToMove, dy: 0), duration: 2))
         velocity = CGPoint(x: impulse, y: 0)
@@ -90,8 +94,6 @@ class MovementComponent: GKComponent {
         let velocityVStep = velocity.y * CGFloat(seconds)
         spriteNode.position.y = spriteNode.position.y + velocityVStep
         
-//        let velocityHStep = velocity.x * CGFloat(seconds)
-//        spriteNode.position.x = spriteNode.position.x + velocityHStep
         if velocity.y < 0 {
             velocity.y = velocity.y + 10
         }

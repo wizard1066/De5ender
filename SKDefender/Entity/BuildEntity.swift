@@ -17,21 +17,24 @@ class BuildEntity: GKEntity {
     var playableRegion: CGFloat = UIScreen.main.bounds.maxY * 2
     var screenWidth = UIScreen.main.bounds.maxY * 2
     
-    init(texture: SKTexture, path: CGMutablePath, i: Int) {
+    init(texture: SKTexture, path: CGMutablePath, i: Int, width: CGFloat) {
         super.init()
+
         
 //        buildComponent = BuildComponent(entity: self)
-        buildComponent = BuildComponent(entity: self, texture: texture, size: texture.size())
+        buildComponent = BuildComponent(entity: self, texture: texture, size: CGSize(width: width, height: texture.size().height))
         addComponent(buildComponent)
         
 //        spriteComponent = SpriteComponent(entity: self, texture: texture, size: texture.size())
 //        addComponent(spriteComponent)
         
         let spriteNode = buildComponent.node
-        spriteNode.anchorPoint = CGPoint(x: 0.0, y: -1.33)
-        let texSize = texture.size()
-        spriteNode.position = CGPoint(x: CGFloat(i) * texSize.width, y: playableStart)
+        spriteNode.anchorPoint = CGPoint(x: 0.0, y: -1.0)
+//        spriteNode.position = CGPoint(x: CGFloat(i) * texSize.width, y: playableStart)
+        spriteNode.position = CGPoint(x: width * CGFloat(i), y: playableStart)
         spriteNode.name = "foreground"
+        
+        
         
         spriteNode.physicsBody = SKPhysicsBody(edgeChainFrom: path)
         spriteNode.physicsBody?.categoryBitMask = PhysicsCat.Ground

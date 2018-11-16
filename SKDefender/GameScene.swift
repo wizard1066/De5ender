@@ -31,7 +31,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         case alien
     }
     
-    let player = PlayerEntity(imageName: "starship")
+    var player:PlayerEntity!
+    var shadow:PlayerEntity!
     var alien:AlienEntity!
     
     var playableStart: CGFloat = 0
@@ -39,15 +40,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var deltaTime: TimeInterval = 0
     var lastUpdateTimeInterval: TimeInterval = 0
     
-    let numberOfForegrounds = 4
-    var groundSpeed:Double = 150
-    var brakeSpeed:Double = 0.1
+    let numberOfForegrounds = 8
+    var groundSpeed:CGFloat = 150
+    var brakeSpeed:CGFloat = 0.1
     
     lazy var screenWidth = view!.bounds.width
     lazy var screenHeight = view!.bounds.height
     
     func buildGround(color: UIColor) -> (SKTexture, CGMutablePath) {
-        let loopsNeeded = Int(screenWidth / 120)
+        let loopsNeeded = Int(screenWidth / 128)
         var path: CGMutablePath?
         var lastValue = 96
         for loop in stride(from: 0, to: Int(screenWidth*2), by: loopsNeeded) {
@@ -72,25 +73,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         shape.zPosition = 1
         
         let texture = view?.texture(from: shape)
+        
+        print("texture width \(texture?.size().width)")
         return (texture!,path!)
     }
     
     var aliens:[GKEntity] = []
     var foregrounds:[EntityNode] = []
-    var colours = [UIColor.red, UIColor.blue, UIColor.green, UIColor.purple]
+    var scanNodes:[EntityNode] = []
+    var colours = [UIColor.red, UIColor.blue, UIColor.green, UIColor.magenta, UIColor.purple, UIColor.orange, UIColor.yellow, UIColor.white]
+    
+    let radar = SKNode()
+    
     
     func setupForeground() {
-        
+        print("self.view!.bounds \(self.view!.bounds)")
         for i in 0..<numberOfForegrounds {
             let color2U = colours[i]
             let (texture, path) = buildGround(color: color2U)
-            let foreground = BuildEntity(texture: texture, path: path, i: i)
+            let foreground = BuildEntity(texture: texture, path: path, i: i, width: self.view!.bounds.width * 2)
+            let scanground = BuildEntity(texture: texture, path: path, i: i, width: self.view!.bounds.width * 2)
             let foregroundNode = foreground.buildComponent.node
+            let scanNode = scanground.buildComponent.node
+            scanNode.delegate = self
+            
             foregroundNode.delegate = self
-            addChild(foregroundNode)
-            foregrounds.append(foregroundNode)
-            // restructure
+            addChild(foreground.buildComponent.node)
+            foregrounds.append(foreground.buildComponent.node)
+            scanNodes.append(scanNode)
         }
+        // Add spaceman + aliens
         for loop in 0..<numberOfForegrounds {
             let randomSource = GKARC4RandomSource()
             let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 0, highestValue: 4)
@@ -100,6 +112,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 self.addSpaceMen(loop: loop)
             }
             foregrounds[loop].run(SKAction.sequence([waitAction,runAction]))
+        }
+        radar.position = CGPoint(x: self.view!.bounds.minX, y: self.view!.bounds.maxY * 2 - 256)
+        addChild(radar)
+        for scanNode in scanNodes {
+            print("scanNode \(scanNode.name)")
+            scanNode.scale(to: CGSize(width: scanNode.size.width/4, height: scanNode.size.height/4))
+            scanNode.position.x = scanNode.position.x / 4
+            radar.addChild(scanNode)
         }
     }
     
@@ -119,8 +139,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         let alien = AlienEntity(imageName: "alien",xCord: view!.bounds.maxX + randomValueX, yCord:self.view!.bounds.maxY)
         let alienNode = alien.spriteComponent.node
-        let procedure = alien.alienComponent
-        alienNode.userData!["procedure"] = procedure
+//        let procedure = alien.alienComponent
+//        alienNode.userData!["procedure"] = procedure
         alienNode.zPosition = Layer.alien.rawValue
         alienNode.delegate = self
         if alienNode.parent == nil {
@@ -131,17 +151,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     }
     
     var moveAmount: CGPoint!
-    var foregroundCGPoint: CGFloat!
+//    var foregroundCGPoint: CGFloat!
     
     func updateForegroundLeft() {
         self.enumerateChildNodes(withName: "foreground") { (node, stop) in
             if let foreground = node as? SKSpriteNode {
-                self.moveAmount = CGPoint(x: -CGFloat(self.groundSpeed) * CGFloat(self.deltaTime), y: self.playableStart)
+                self.moveAmount = CGPoint(x: -(self.groundSpeed * CGFloat(self.deltaTime)), y: self.playableStart)
                 foreground.position.x += self.moveAmount.x
-                self.foregroundCGPoint = foreground.position.x
+//                self.foregroundCGPoint = foreground.position.x
                 
                 if foreground.position.x < -foreground.size.width {
                     foreground.position.x += foreground.size.width * CGFloat(self.numberOfForegrounds)
+                }
+            }
+        }
+        self.updateScannerLeft(moveAmount: self.moveAmount.x)
+    }
+    
+    func updateScannerLeft(moveAmount: CGFloat) {
+        radar.enumerateChildNodes(withName: "foreground") { (node, stop) in
+            if let foreground = node as? SKSpriteNode {
+                foreground.position.x +=  moveAmount / CGFloat(4)
+                print("scanSize \(foreground.size.width)")
+                if foreground.position.x < -(foreground.size.width) {
+                    foreground.position.x += ((foreground.size.width * CGFloat(self.numberOfForegrounds)))
                 }
             }
         }
@@ -150,12 +183,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     func updateForegroundRight() {
         self.enumerateChildNodes(withName: "foreground") { (node, stop) in
             if let foreground = node as? SKSpriteNode {
-                self.moveAmount = CGPoint(x: -CGFloat(self.groundSpeed) * CGFloat(self.deltaTime), y: self.playableStart)
+                self.moveAmount = CGPoint(x: -(self.groundSpeed * CGFloat(self.deltaTime)), y: self.playableStart)
                 foreground.position.x -= self.moveAmount.x
-                self.foregroundCGPoint = foreground.position.x
+//                self.foregroundCGPoint = foreground.position.x
                 
                 if foreground.position.x > foreground.size.width {
                     foreground.position.x -= foreground.size.width * CGFloat(self.numberOfForegrounds)
+                }
+            }
+        }
+        self.updateScannerRight(moveAmount: self.moveAmount.x)
+    }
+    
+    func updateScannerRight(moveAmount: CGFloat) {
+        radar.enumerateChildNodes(withName: "foreground") { (node, stop) in
+            if let foreground = node as? SKSpriteNode {
+                foreground.position.x -=  moveAmount / CGFloat(4)
+                if foreground.position.x > -(foreground.size.width) {
+                    foreground.position.x -= ((foreground.size.width * CGFloat(self.numberOfForegrounds)))
                 }
             }
         }
@@ -164,16 +209,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     
     var playerNode: EntityNode!
+    var shadowNode: EntityNode!
 //    var advanceArrow: TouchableSprite!
     var advancedArrow: HeadsUpEntity!
     
     func setupPlayer(){
+        player = PlayerEntity(imageName: "starship")
         playerNode = player.spriteComponent.node
         playerNode.position = CGPoint(x: self.view!.bounds.maxX / 2, y: self.view!.bounds.maxY / 2)
         playerNode.zPosition = Layer.player.rawValue
 //        playerNode.size = CGSize(width: playerNode.size.width/4, height: playerNode.size.height/4)
         playerNode.delegate = self
         addChild(playerNode)
+        
+        shadow = PlayerEntity(imageName: "starship")
+        shadowNode = shadow.spriteComponent.node
+        shadowNode.position = CGPoint(x: self.view!.bounds.maxX / 2, y: self.view!.bounds.maxY / 2)
+        shadowNode.scale(to: CGSize(width: shadowNode.size.width/4, height: shadowNode.size.height/4))
+        shadowNode.position.x = shadowNode.position.x / 4
+        radar.addChild(shadowNode)
         
         
 //        player.movementComponent.playableStart = playableStart
@@ -209,8 +263,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     }
     
     var cameraNode: SKCameraNode!
-    var cameraNode2: SKCameraNode!
-    var subWin: SKScene!
+    
     
     override func didMove(to view: SKView) {
         /* Setup your scene here */
@@ -221,7 +274,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         cameraNode.position = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
         scene?.camera = cameraNode
 
-        cameraNode.setScale(2)
+        cameraNode.setScale(1)
 
         addChild(cameraNode)
         
@@ -257,7 +310,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         for alien in aliens {
             alien.update(deltaTime: deltaTime)
         }
-        
+        shadowNode.position.x = playerNode.position.x / 4
+        shadowNode.position.y = playerNode.position.y / 4
     }
     
     func lowerSpeed() {
