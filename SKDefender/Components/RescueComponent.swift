@@ -22,5 +22,8 @@ class RescueComponent: GKComponent {
         fatalError("init(coder:) has not been implemented")
     }
     
+    public func returnNodePosition() -> CGPoint {
+        return node.position
+    }
     
 }

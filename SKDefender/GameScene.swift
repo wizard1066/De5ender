@@ -33,7 +33,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     var player:PlayerEntity!
     var shadow:PlayerEntity!
-    var alien:AlienEntity!
+//    var alien:AlienEntity!
+    var peopleE: RescueEntity!
+    var aliensE: AlienEntity!
     
     var playableStart: CGFloat = 0
     
@@ -74,20 +76,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         let texture = view?.texture(from: shape)
         
-        print("texture width \(texture?.size().width)")
+        
         return (texture!,path!)
     }
     
     var aliens:[GKEntity] = []
+    var peoples:[EntityNode] = []
+    var others:[EntityNode] = []
     var foregrounds:[EntityNode] = []
     var scanNodes:[EntityNode] = []
     var colours = [UIColor.red, UIColor.blue, UIColor.green, UIColor.magenta, UIColor.purple, UIColor.orange, UIColor.yellow, UIColor.white]
     
-    let radar = SKNode()
+    let radar = SKSpriteNode()
     
     
     func setupForeground() {
-        print("self.view!.bounds \(self.view!.bounds)")
+        
         for i in 0..<numberOfForegrounds {
             let color2U = colours[i]
             let (texture, path) = buildGround(color: color2U)
@@ -103,51 +107,93 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             scanNodes.append(scanNode)
         }
         // Add spaceman + aliens
+        
+        radar.position = CGPoint(x: self.view!.bounds.minX, y: self.view!.bounds.maxY * 2 - 256)
+        radar.anchorPoint = CGPoint(x: 0.0, y: -1.0)
+        addChild(radar)
+        for scanNode in scanNodes {
+
+            scanNode.scale(to: CGSize(width: scanNode.size.width/4, height: scanNode.size.height/4))
+            scanNode.position.x = scanNode.position.x / 4
+            radar.addChild(scanNode)
+            
+        }
+        
+    }
+    
+    func dodo() {
         for loop in 0..<numberOfForegrounds {
             let randomSource = GKARC4RandomSource()
             let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 0, highestValue: 4)
             let randomValueT = Double(randomDistribution.nextInt())
             let waitAction = SKAction.wait(forDuration: randomValueT)
             let runAction = SKAction.run {
-                self.addSpaceMen(loop: loop)
+                let (spaceNode, randX) = self.addSpaceMen(loop: loop)
+                let alienNode = self.addAlien(loop: loop, randX: randX)
+                
+                let sshadow = RescueEntity(imageName: "spaceMan", xCord: spaceNode.position.x, yCord: spaceNode.position.y)
+                let spaceShadow = sshadow.rescueComponent.node
+                spaceShadow.scale(to: CGSize(width: spaceShadow.size.width/4, height: spaceShadow.size.height/4))
+                spaceShadow.delegate = self
+                spaceShadow.zPosition = Layer.spaceman.rawValue
+                spaceShadow.name = "spaceShadow"
+                self.peoples.append(spaceShadow)
+                self.scanNodes[loop].addChild(spaceShadow)
+                spaceNode.userData = NSMutableDictionary()
+                spaceNode.userData?.setObject(spaceShadow, forKey: "shadow" as NSCopying)
+     
+                let ashadow = AlienEntity(imageName: "alien",xCord: self.view!.bounds.maxX + randX, yCord:self.view!.bounds.maxY)
+                let alienShadow = ashadow.spriteComponent.node
+                alienShadow.zPosition = Layer.alien.rawValue
+                alienShadow.delegate = self
+                alienShadow.name = "AlienShadow"
+                alienShadow.zPosition = Layer.alien.rawValue
+                self.scanNodes[loop].addChild(alienShadow)
+                alienNode.userData = NSMutableDictionary()
+                alienNode.userData?.setObject(alienShadow, forKey: "shadow" as NSCopying)
+                
+                let link2D = linkedNodes(bodyA: spaceNode, bodyB: spaceShadow)
+                self.links2F.append(link2D)
+                let link2D2 = linkedNodes(bodyA: alienNode, bodyB: alienShadow)
+                self.links2F.append(link2D2)
             }
             foregrounds[loop].run(SKAction.sequence([waitAction,runAction]))
         }
-        radar.position = CGPoint(x: self.view!.bounds.minX, y: self.view!.bounds.maxY * 2 - 256)
-        addChild(radar)
-        for scanNode in scanNodes {
-            print("scanNode \(scanNode.name)")
-            scanNode.scale(to: CGSize(width: scanNode.size.width/4, height: scanNode.size.height/4))
-            scanNode.position.x = scanNode.position.x / 4
-            radar.addChild(scanNode)
-        }
     }
     
-    func addSpaceMen(loop: Int) {
+    struct linkedNodes {
+        var bodyA: EntityNode!
+        var bodyB: EntityNode!
+    }
+    var links2F:[linkedNodes] = []
+    
+    func addSpaceMen(loop: Int) -> (EntityNode, CGFloat){
         let randomSource = GKARC4RandomSource()
         let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 0, highestValue: Int(self.view!.bounds.width))
         let randomValueX = CGFloat(randomDistribution.nextInt())
-        
+      
         let spaceMan = RescueEntity(imageName: "spaceMan", xCord: view!.bounds.maxX + randomValueX, yCord:view!.bounds.minY + 96)
+        
         let spaceNode = spaceMan.rescueComponent.node
         spaceNode.delegate = self
         spaceNode.zPosition = Layer.spaceman.rawValue
-        if spaceNode.parent == nil {
-            //                    foregroundNode.addChild(spaceNode)
-            foregrounds[loop].addChild(spaceNode)
-        }
+        foregrounds[loop].addChild(spaceNode)
         
-        let alien = AlienEntity(imageName: "alien",xCord: view!.bounds.maxX + randomValueX, yCord:self.view!.bounds.maxY)
+        return (spaceNode, randomValueX)
+    }
+    
+    func addAlien(loop: Int, randX: CGFloat) -> EntityNode {
+        let alien = AlienEntity(imageName: "alien",xCord: view!.bounds.maxX + randX, yCord:self.view!.bounds.maxY)
         let alienNode = alien.spriteComponent.node
-//        let procedure = alien.alienComponent
-//        alienNode.userData!["procedure"] = procedure
         alienNode.zPosition = Layer.alien.rawValue
         alienNode.delegate = self
-        if alienNode.parent == nil {
-            //                    foregroundNode.addChild(alienNode)
-            foregrounds[loop].addChild(alienNode)
-        }
+        foregrounds[loop].addChild(alienNode)
         aliens.append(alien)
+        return alienNode
+//        let alienR = AlienEntity(imageName: "alien",xCord: (view!.bounds.maxX + randomValueX), yCord:(self.view!.bounds.maxY))
+//        let alienRN = alienR.spriteComponent.node
+//        alienRN.delegate = self
+//        others.append(alienRN)
     }
     
     var moveAmount: CGPoint!
@@ -172,7 +218,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         radar.enumerateChildNodes(withName: "foreground") { (node, stop) in
             if let foreground = node as? SKSpriteNode {
                 foreground.position.x +=  moveAmount / CGFloat(4)
-                print("scanSize \(foreground.size.width)")
+
                 if foreground.position.x < -(foreground.size.width) {
                     foreground.position.x += ((foreground.size.width * CGFloat(self.numberOfForegrounds)))
                 }
@@ -199,7 +245,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         radar.enumerateChildNodes(withName: "foreground") { (node, stop) in
             if let foreground = node as? SKSpriteNode {
                 foreground.position.x -=  moveAmount / CGFloat(4)
-                if foreground.position.x > -(foreground.size.width) {
+                if foreground.position.x > (foreground.size.width * CGFloat(self.numberOfForegrounds - 1)) {
                     foreground.position.x -= ((foreground.size.width * CGFloat(self.numberOfForegrounds)))
                 }
             }
@@ -280,7 +326,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         setupForeground()
         setupPlayer()
-        
+        dodo()
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minX * 2)
         physicsBody = SKPhysicsBody(edgeLoopFrom: rectToSecure)
@@ -312,6 +358,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         }
         shadowNode.position.x = playerNode.position.x / 4
         shadowNode.position.y = playerNode.position.y / 4
+        
+        
+        
+        for link in links2F {
+            link.bodyB.position.x = link.bodyA.position.x
+            link.bodyB.position.y = link.bodyA.position.y
+        }
+        
     }
     
     func lowerSpeed() {
@@ -361,15 +415,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         if kidnap.node?.name == "spaceman" && kidnap.node?.parent?.name == "foreground" && contact.bodyB.node!.name == "alien" {
             print("rule I")
 //            pickup = other.node?.position
+
+            let shadow = kidnap.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+            (shadow as? SKSpriteNode)?.removeFromParent()
             
             kidnap.node?.removeFromParent()
             kidnap.node?.position = CGPoint(x: 0, y: -96)
             contact.bodyB.node?.addChild(kidnap.node!)
-//            self.alien.alienComponent.changeDirection(self.lastUpdateTimeInterval)
-//            let execute = contact.bodyB.node?.userData!["procedure"] as? AlienDecentComponent
-//            execute?.stopSpaceMan()
-//            contact.bodyB.node?.run(SKAction.move(to: CGPoint(x: (contact.bodyB.node?.position.x)!, y: 512), duration: 4))
-            //restructure
+            let alienShadow = contact.bodyB.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+            alienShadow.addChild(shadow)
             return
         }
         
@@ -404,8 +458,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         // alien hit, releases spaceman
 
         if hit.node?.name == "alien" {
-            print("rule IV bodyA \(contact.bodyA.node!.name) bodyB \(contact.bodyB.node!.name)")
+            print("rule IV")
             let victim = hit.node?.childNode(withName: "spaceman")
+            
+            let alienShadow = hit.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+            alienShadow.removeFromParent()
             contact.bodyA.node?.removeFromParent()
             
             let parent2U = hit.node?.parent

@@ -66,6 +66,10 @@ class AlienDecentComponent: GKComponent {
         print("HelloWorld")
     }
     
+    public func returnAlienPosition() -> CGPoint {
+        return spriteComponent.node.position
+    }
+    
     override func update(deltaTime seconds: TimeInterval) {
         spriteComponent.node.position.y = spriteComponent.node.position.y + decentRate
 
