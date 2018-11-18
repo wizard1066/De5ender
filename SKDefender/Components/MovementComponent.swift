@@ -12,7 +12,7 @@ import GameplayKit
 class MovementComponent: GKComponent {
     let spriteComponent: SpriteComponent
     
-    let impulse: CGFloat = 400
+    let impulse: CGFloat = 256
     var velocity = CGPoint.zero
     let gravity: CGFloat = -1500
     
@@ -45,13 +45,13 @@ class MovementComponent: GKComponent {
             let advanceAction = SKAction.move(by: CGVector(dx: amountToMove, dy: 0), duration: 0.5)
             let fallBackAction = SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 1)
             spriteNode.run(SKAction.sequence([advanceAction,fallBackAction]))
-            velocity.y += 20
+//            velocity.y += 256
         }
         if spriteNode.userData?.object(forKey: "direction") as? String == "left" {
             let advanceAction = SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 0.5)
             let fallBackAction = SKAction.move(by: CGVector(dx: amountToMove, dy: 0), duration: 1)
             spriteNode.run(SKAction.sequence([advanceAction,fallBackAction]))
-            velocity.y -= 20
+//            velocity.y -= 256
         }
         
     }
@@ -63,6 +63,7 @@ class MovementComponent: GKComponent {
         spriteNode.texture = SKTexture(imageNamed: "starship")
        
         let amountToMove = UIScreen.main.bounds.maxX
+        print("amountToMove \(amountToMove)")
         spriteNode.run(SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 2))
         velocity = CGPoint(x: impulse, y: 0)
     }
@@ -95,10 +96,10 @@ class MovementComponent: GKComponent {
         spriteNode.position.y = spriteNode.position.y + velocityVStep
         
         if velocity.y < 0 {
-            velocity.y = velocity.y + 10
+            velocity.y = velocity.y + 2
         }
         if velocity.y > 0 {
-            velocity.y = velocity.y - 10
+            velocity.y = velocity.y - 2
         }
         
         // Temporary Ground Hit

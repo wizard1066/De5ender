@@ -24,9 +24,9 @@ class PlayerEntity: GKEntity {
         addComponent(movementComponent)
         
         let spriteNode = spriteComponent.node
-        spriteNode.size = CGSize(width: spriteNode.size.width/4, height: spriteNode.size.height/4)
+//        spriteNode.size = CGSize(width: spriteNode.size.width/2, height: spriteNode.size.height/2)
 //        spriteNode.physicsBody = SKPhysicsBody.init(texture: texture, size: spriteNode.size)
-        spriteNode.physicsBody = SKPhysicsBody.init(circleOfRadius: spriteNode.size.width/2 + 8)
+        spriteNode.physicsBody = SKPhysicsBody.init(circleOfRadius: spriteNode.size.width/3 + 8)
         spriteNode.physicsBody?.categoryBitMask = PhysicsCat.Player
         spriteNode.physicsBody?.collisionBitMask = PhysicsCat.None
         spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.Ground

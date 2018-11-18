@@ -293,7 +293,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         let fireSquare = HeadsUpEntity(imageName: "Square", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!), name: "fire")
         fireSquare.hudComponent.node.delegate = self
         
-        let flipButton = HeadsUpEntity(imageName: "SwiftLogo", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!) + 96, name: "flip")
+        let flipButton = HeadsUpEntity(imageName: "SwiftLogo", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!) + 256, name: "flip")
         flipButton.hudComponent.node.delegate = self
         
         
@@ -513,7 +513,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 brakeSpeed = 0.1
                 previousDirection = direct
             } else {
-                groundSpeed += 30
+                groundSpeed += 150
                 previousDirection = direct
             }
             switch direct {
