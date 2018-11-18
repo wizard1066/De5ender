@@ -42,13 +42,13 @@ class MovementComponent: GKComponent {
         let spriteNode = spriteComponent.node
         let amountToMove = UIScreen.main.bounds.maxX / 10
         if spriteNode.userData?.object(forKey: "direction") as? String == "right" {
-            let advanceAction = SKAction.move(by: CGVector(dx: amountToMove, dy: 0), duration: 0.5)
+            let advanceAction = SKAction.move(by: CGVector(dx: amountToMove, dy: 0), duration: 0.4)
             let fallBackAction = SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 1)
             spriteNode.run(SKAction.sequence([advanceAction,fallBackAction]))
 //            velocity.y += 256
         }
         if spriteNode.userData?.object(forKey: "direction") as? String == "left" {
-            let advanceAction = SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 0.5)
+            let advanceAction = SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 0.4)
             let fallBackAction = SKAction.move(by: CGVector(dx: amountToMove, dy: 0), duration: 1)
             spriteNode.run(SKAction.sequence([advanceAction,fallBackAction]))
 //            velocity.y -= 256
@@ -79,6 +79,16 @@ class MovementComponent: GKComponent {
         velocity = CGPoint(x: impulse, y: 0)
     }
     
+    func leftTexture() {
+        let spriteNode = spriteComponent.node
+        spriteNode.texture = SKTexture(imageNamed: "starship")
+    }
+    
+    func rightTexture() {
+        let spriteNode = spriteComponent.node
+        spriteNode.texture = SKTexture(imageNamed: "shipstar")
+    }
+    
     func applyZero(_ lastUpdateTime: TimeInterval) {
         velocity = CGPoint(x: 0, y: 0)
     }
@@ -96,10 +106,10 @@ class MovementComponent: GKComponent {
         spriteNode.position.y = spriteNode.position.y + velocityVStep
         
         if velocity.y < 0 {
-            velocity.y = velocity.y + 2
+            velocity.y = velocity.y + 1
         }
         if velocity.y > 0 {
-            velocity.y = velocity.y - 2
+            velocity.y = velocity.y - 1
         }
         
         // Temporary Ground Hit

@@ -14,7 +14,7 @@ class AlienDecentComponent: GKComponent {
     
     var playableStart: CGFloat = 0
     var playableRegion: CGFloat = UIScreen.main.bounds.maxY * 2
-    var decentRate: CGFloat = -1
+    var decentRate: CGFloat = -0.5
     
     init(entity: GKEntity) {
         self.spriteComponent = entity.component(ofType: SpriteComponent.self)!
@@ -26,7 +26,7 @@ class AlienDecentComponent: GKComponent {
     }
     
     func changeDirection(_ lastUpdateTime: TimeInterval) {
-        decentRate = 1
+        decentRate = 0.5
     }
     
     func runningAction() -> Bool {
@@ -56,7 +56,6 @@ class AlienDecentComponent: GKComponent {
         if let _ = spriteComponent.node.action(forKey: "rtnSpaceMan") {
             // do nothing
         } else {
-            print("fuck")
             let rtnSpaceMan = SKAction.move(to: CGPoint(x: spriteComponent.node.position.x, y: 512), duration: 4)
             spriteComponent.node.run(rtnSpaceMan, withKey: "rtnSpaceMan")
         }

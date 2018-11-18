@@ -284,16 +284,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         let downArrow = HeadsUpEntity(imageName: "DownArrow", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!) - 96, name: "down")
         downArrow.hudComponent.node.delegate = self
         
-        advancedArrow = HeadsUpEntity(imageName: "RightArrow", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!) - 96, name: "advance")
+        advancedArrow = HeadsUpEntity(imageName: "RightArrow", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!) - 128, name: "advance")
         advancedArrow.hudComponent.node.delegate = self
         
         let stopSquare = HeadsUpEntity(imageName: "Square", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!), name: "square")
         stopSquare.hudComponent.node.delegate = self
         
-        let fireSquare = HeadsUpEntity(imageName: "Square", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!), name: "fire")
+        let fireSquare = HeadsUpEntity(imageName: "Circle", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!), name: "fire")
         fireSquare.hudComponent.node.delegate = self
         
-        let flipButton = HeadsUpEntity(imageName: "SwiftLogo", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!) + 256, name: "flip")
+        let flipButton = HeadsUpEntity(imageName: "DoubleArrow", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!) + 160, name: "flip")
         flipButton.hudComponent.node.delegate = self
         
         
@@ -369,15 +369,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     }
     
     func lowerSpeed() {
-        if groundSpeed > 24 {
-            groundSpeed = groundSpeed - brakeSpeed
+        if groundSpeed > 150 {
+            groundSpeed = groundSpeed - 0.1
         } else {
-            groundSpeed = 24
+            groundSpeed = 150
         }
     }
     
     func moreBreak() {
-        brakeSpeed = brakeSpeed * 2
+        if groundSpeed > 150 {
+            groundSpeed = groundSpeed / 2
+        }
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -540,12 +542,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 moveLeft = true
                 moveRight = false
                 player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
+                shadow.movementComponent.leftTexture()
             case "right":
                 advancedArrow.hudComponent.changeTexture(imageNamed: "LeftArrow")
                 moveRight = true
                 moveLeft = false
                 player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
-                
+                shadow.movementComponent.rightTexture()
             default:
                 break
             }
