@@ -11,13 +11,17 @@ import GameplayKit
 
 class BomberComponent: GKComponent {
     let spriteComponent: SpriteComponent
+    let spriteShadow: SpriteComponent
     
     var playableStart: CGFloat = 0
     var playableRegion: CGFloat = UIScreen.main.bounds.maxY * 2
     var localBounds: CGRect!
+    var localView: SKScene!
     
-    init(entity: GKEntity, screenBounds: CGRect) {
+    init(entity: GKEntity, screenBounds: CGRect, view2D: SKScene) {
         localBounds = screenBounds
+        localView = view2D
+        self.spriteShadow = entity.component(ofType: SpriteComponent.self)!
         self.spriteComponent = entity.component(ofType: SpriteComponent.self)!
         super.init()
     }
@@ -34,44 +38,34 @@ class BomberComponent: GKComponent {
         return spriteComponent.node.position
     }
     
-    public func pathToTake() {
-        let path = CGMutablePath()
-        path.move(to:CGPoint(x: spriteComponent.node.position.x, y: spriteComponent.node.position.y))
-        path.addLine(to: CGPoint(x: 0, y: 0))
-        var followLine = SKAction.follow(path, asOffset: true, orientToPath: false, duration: 8.0)
-        spriteComponent.node.run(followLine)
+    public func dropBombs() {
+        let dropMine = SKAction.run {
+            let mine = PlayerEntity(imageName: "mine")
+            let mineNode = mine.spriteComponent.node
+            mineNode.position = self.spriteComponent.node.position
+//            mineNode.zPosition = Layer.mine.rawValue
+            mineNode.name = "mine"
+            //        playerNode.size = CGSize(width: playerNode.size.width/4, height: playerNode.size.height/4)
+//            mineNode.delegate = localView
+            self.localView.addChild(mineNode)
+        }
+        
     }
     
-    var justOnce = true
     override func update(deltaTime seconds: TimeInterval) {
-        if justOnce {
-            pathToTake()
-            justOnce = false
+        spriteShadow.node.position.x -= 1
+        spriteComponent.node.position.x -= 1
+        // 8 landscapes + 1 = 14336
+        if spriteComponent.node.position.x > 14336 + 2048 {
+            spriteShadow.node.position.x -= 0
+            spriteComponent.node.position.x -= 0
+        }
+        if spriteComponent.node.position.x < -(14336 + 2048) {
+            spriteShadow.node.position.x -= 0
+            spriteComponent.node.position.x -= 0
         }
     }
     
-    func sinePath(screenBounds: CGRect) -> CGPath {
-        
-        let graphWidth: CGFloat = 0.8  // Graph is 80% of the width of the view
-        let amplitude: CGFloat = 0.3   // Amplitude of sine wave is 30% of view height
-        
-        let width = screenBounds.width * 2
-        let height = screenBounds.height * 0.50
-        
-        let origin = CGPoint(x: 0, y: height * 0.50)
-        
-        let path = UIBezierPath()
-        path.move(to: origin)
-        
-        for angle in stride(from: 5.0, through: 360.0, by: 5.0) {
-            let x = origin.x + CGFloat(angle/360.0) * width * graphWidth
-            let y = origin.y - CGFloat(sin(angle/180.0 * Double.pi)) * height * amplitude
-            path.addLine(to: CGPoint(x: x, y: y))
-        }
-        
-        
-        
-        return path.cgPath
-    }
+  
     
 }

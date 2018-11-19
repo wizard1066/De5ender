@@ -16,6 +16,8 @@ struct PhysicsCat {
     static let Fire: UInt32 = 0b1 << 2
     static let SpaceMan: UInt32 = 0b1 << 3
     static let Alien: UInt32 = 0b1 << 4
+    static let Bomber: UInt32 = 0b1 << 5
+    static let Bomb: UInt32 = 0b1 << 6
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
@@ -100,10 +102,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             let foregroundNode = foreground.buildComponent.node
             let scanNode = scanground.buildComponent.node
             scanNode.delegate = self
-            
             foregroundNode.delegate = self
             addChild(foreground.buildComponent.node)
             foregrounds.append(foreground.buildComponent.node)
+            print("foreground.position.x \(foregroundNode.position.x)")
             scanNodes.append(scanNode)
         }
         // Add spaceman + aliens
@@ -119,6 +121,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             
         }
         
+    }
+    
+    func bebe() {
+        for loop in 0...3 {
+            let randY = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY - CGFloat(128))) + 128
+            let randX = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX))
+            let (bomberNode,bomberShadow) = addBomber(loop: 4, randX: CGFloat(randX), randY: CGFloat(randY))
+            let link2D3 = linkedNodes(bodyA: bomberShadow, bodyB: bomberNode)
+            self.links2F.append(link2D3)
+        }
     }
     
     func dodo() {
@@ -142,7 +154,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 spaceNode.userData = NSMutableDictionary()
                 spaceNode.userData?.setObject(spaceShadow, forKey: "shadow" as NSCopying)
      
-//                let ashadow = AlienEntity(imageName: "alien",xCord: self.view!.bounds.maxX + randX, yCord:self.view!.bounds.maxY)
                 let ashadow = AlienEntity(imageName: "alien", xCord: self.view!.bounds.maxX + randX, yCord: self.view!.bounds.maxY, screenBounds: self.view!.bounds)
                 let alienShadow = ashadow.spriteComponent.node
                 alienShadow.zPosition = Layer.alien.rawValue
@@ -160,17 +171,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             }
             foregrounds[loop].run(SKAction.sequence([waitAction,runAction]))
         }
-        let bomberNode = addBomber(loop: 0, randX: self.view!.bounds.maxX * 2, randY: self.view!.bounds.maxY)
+        let (bomberNode,bomberShadow) = addBomber(loop: 4, randX: self.view!.bounds.maxX, randY: 128)
+        let link2D3 = linkedNodes(bodyA: bomberShadow, bodyB: bomberNode)
+        self.links2F.append(link2D3)
     }
     
-    func addBomber(loop: Int, randX: CGFloat, randY: CGFloat) -> EntityNode {
-        let bomber = BomberEntity(imageName: "bomber", xCord: randX, yCord: randY, screenBounds: self.view!.bounds)
+    func addBomber(loop: Int, randX: CGFloat, randY: CGFloat) -> (EntityNode, EntityNode) {
+        let bomber = BomberEntity(imageName: "bomber", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: self)
         let bomberNode = bomber.spriteComponent.node
+        let bomberShadow = bomber.shadowComponent.node
         bomberNode.zPosition = Layer.alien.rawValue
         bomberNode.delegate = self
-        foregrounds[0].addChild(bomberNode)
+        
+        bomberShadow.zPosition = Layer.alien.rawValue
+        bomberShadow.delegate = self
+        
+        foregrounds[loop].addChild(bomberNode)
+        scanNodes[loop].addChild(bomberShadow)
         aliens.append(bomber)
-        return bomberNode
+        return (bomberNode,bomberShadow)
     }
     
     struct linkedNodes {
@@ -334,7 +353,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         setupForeground()
         setupPlayer()
-        dodo()
+//        dodo()
+        bebe()
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minX * 2)
         physicsBody = SKPhysicsBody(edgeLoopFrom: rectToSecure)
@@ -487,8 +507,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             return
         }
         
-        // spaceman falling to ground
+        // fire hits bomber
+        if hit.node?.name == "bomber" {
+            let bomberShadow = hit.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+            bomberShadow.removeFromParent()
+            hit.node?.removeFromParent()
+        }
         
+        // spaceman falling to ground
         if other.node?.name == "foreground" {
             print("rule V")
             contact.bodyB.node?.physicsBody?.isDynamic = false
@@ -510,7 +536,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     func spriteTouched(box: TouchableSprite) {
         switch box.name {
         case "starship":
-            print("groundSpeed \(groundSpeed)")
+            print("groundSpeed \(playerNode.position)")
         case "spaceman":
             print("cords \(box.position) \(moveAmount)")
         case "up":

@@ -11,9 +11,10 @@ import GameKit
 
 class BomberEntity: GKEntity {
     var spriteComponent: SpriteComponent!
+    var shadowComponent: SpriteComponent!
     var bomberComponent: BomberComponent!
     
-    init(imageName: String, xCord: CGFloat, yCord: CGFloat, screenBounds: CGRect) {
+    init(imageName: String, xCord: CGFloat, yCord: CGFloat, screenBounds: CGRect, view2D: SKScene) {
         //    init(imageName: String) {
         super.init()
         
@@ -21,7 +22,10 @@ class BomberEntity: GKEntity {
         spriteComponent = SpriteComponent(entity: self, texture: texture, size: texture.size())
         addComponent(spriteComponent)
         
-        bomberComponent = BomberComponent(entity: self, screenBounds: screenBounds)
+        shadowComponent = SpriteComponent(entity: self, texture: texture, size: texture.size())
+        addComponent(shadowComponent)
+        
+        bomberComponent = BomberComponent(entity: self, screenBounds: screenBounds, view2D: view2D)
         addComponent(bomberComponent)
         
         let spriteNode = spriteComponent.node
@@ -34,6 +38,21 @@ class BomberEntity: GKEntity {
         spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.SpaceMan | PhysicsCat.Fire
         spriteNode.physicsBody?.affectedByGravity = false
         spriteNode.name = "bomber"
+        
+        let shadowNode = shadowComponent.node
+        shadowNode.size = CGSize(width: spriteNode.size.width/2, height: spriteNode.size.height/2)
+        shadowNode.physicsBody = SKPhysicsBody.init(texture: texture, size: spriteNode.size)
+        shadowNode.position = CGPoint(x: xCord, y: yCord)
+        //        spriteNode.physicsBody = SKPhysicsBody.init(circleOfRadius: spriteNode.size.width/2)
+        shadowNode.physicsBody?.categoryBitMask = PhysicsCat.Alien
+        shadowNode.physicsBody?.collisionBitMask = PhysicsCat.None
+        shadowNode.physicsBody?.contactTestBitMask = PhysicsCat.SpaceMan | PhysicsCat.Fire
+        shadowNode.physicsBody?.affectedByGravity = false
+        shadowNode.name = "shadow"
+        
+        spriteNode.userData = NSMutableDictionary()
+        spriteNode.userData?.setObject(shadowNode, forKey: "shadow" as NSCopying)
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
