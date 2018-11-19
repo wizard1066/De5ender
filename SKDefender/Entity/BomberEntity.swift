@@ -14,7 +14,7 @@ class BomberEntity: GKEntity {
     var shadowComponent: SpriteComponent!
     var bomberComponent: BomberComponent!
     
-    init(imageName: String, xCord: CGFloat, yCord: CGFloat, screenBounds: CGRect, view2D: SKScene) {
+    init(imageName: String, xCord: CGFloat, yCord: CGFloat, screenBounds: CGRect, view2D: EntityNode) {
         //    init(imageName: String) {
         super.init()
         

@@ -16,9 +16,9 @@ class BomberComponent: GKComponent {
     var playableStart: CGFloat = 0
     var playableRegion: CGFloat = UIScreen.main.bounds.maxY * 2
     var localBounds: CGRect!
-    var localView: SKScene!
+    var localView: EntityNode!
     
-    init(entity: GKEntity, screenBounds: CGRect, view2D: SKScene) {
+    init(entity: GKEntity, screenBounds: CGRect, view2D: EntityNode) {
         localBounds = screenBounds
         localView = view2D
         self.spriteShadow = entity.component(ofType: SpriteComponent.self)!
@@ -38,32 +38,53 @@ class BomberComponent: GKComponent {
         return spriteComponent.node.position
     }
     
-    public func dropBombs() {
-        let dropMine = SKAction.run {
+    public func dropMines() {
+        let mineAction = SKAction.run {
             let mine = PlayerEntity(imageName: "mine")
             let mineNode = mine.spriteComponent.node
+            mineNode.size = CGSize(width: 64, height: 64)
             mineNode.position = self.spriteComponent.node.position
+            mineNode.physicsBody = SKPhysicsBody.init(circleOfRadius: self.spriteComponent.node.size.width/10 + 8)
+            mineNode.physicsBody?.affectedByGravity = false
 //            mineNode.zPosition = Layer.mine.rawValue
             mineNode.name = "mine"
             //        playerNode.size = CGSize(width: playerNode.size.width/4, height: playerNode.size.height/4)
 //            mineNode.delegate = localView
             self.localView.addChild(mineNode)
         }
+        let waitAction = SKAction.run {
+            let pause = GKRandomSource.sharedRandom().nextInt(upperBound: 8)
+            SKAction.wait(forDuration: TimeInterval(pause))
+        }
+        let waitAction2 = SKAction.wait(forDuration: 4)
         
+        spriteComponent.node.run(SKAction.sequence([waitAction2, mineAction]))
     }
     
+    var runOnce = true
+    
     override func update(deltaTime seconds: TimeInterval) {
-        spriteShadow.node.position.x -= 1
-        spriteComponent.node.position.x -= 1
+        if runOnce {
+//            dropMines()
+            runOnce = false
+        }
+
+        spriteComponent.node.position.x += 2
+        spriteShadow.node.position.x += 8
+        
+        if spriteComponent.node.position.x > 8192 {
+            spriteComponent.node.position.x = 0
+        }
+        
         // 8 landscapes + 1 = 14336
-        if spriteComponent.node.position.x > 14336 + 2048 {
-            spriteShadow.node.position.x -= 0
-            spriteComponent.node.position.x -= 0
-        }
-        if spriteComponent.node.position.x < -(14336 + 2048) {
-            spriteShadow.node.position.x -= 0
-            spriteComponent.node.position.x -= 0
-        }
+//        if spriteComponent.node.position.x > 14336 + 2048 {
+//            spriteShadow.node.position.x -= 0
+//            spriteComponent.node.position.x -= 0
+//        }
+//        if spriteComponent.node.position.x < -(14336 + 2048) {
+//            spriteShadow.node.position.x -= 0
+//            spriteComponent.node.position.x -= 0
+//        }
     }
     
   

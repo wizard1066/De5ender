@@ -44,7 +44,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var deltaTime: TimeInterval = 0
     var lastUpdateTimeInterval: TimeInterval = 0
     
-    let numberOfForegrounds = 8
+    let numberOfForegrounds = 4
     var groundSpeed:CGFloat = 150
     var brakeSpeed:CGFloat = 0.1
     
@@ -127,7 +127,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         for loop in 0...3 {
             let randY = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY - CGFloat(128))) + 128
             let randX = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX))
-            let (bomberNode,bomberShadow) = addBomber(loop: 4, randX: CGFloat(randX), randY: CGFloat(randY))
+            let (bomberNode,bomberShadow) = addBomber(loop: 0, randX: CGFloat(randX), randY: CGFloat(randY))
             let link2D3 = linkedNodes(bodyA: bomberShadow, bodyB: bomberNode)
             self.links2F.append(link2D3)
         }
@@ -171,13 +171,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             }
             foregrounds[loop].run(SKAction.sequence([waitAction,runAction]))
         }
-        let (bomberNode,bomberShadow) = addBomber(loop: 4, randX: self.view!.bounds.maxX, randY: 128)
-        let link2D3 = linkedNodes(bodyA: bomberShadow, bodyB: bomberNode)
-        self.links2F.append(link2D3)
+//        let (bomberNode,bomberShadow) = addBomber(loop: 4, randX: self.view!.bounds.maxX, randY: 128)
+//        let link2D3 = linkedNodes(bodyA: bomberShadow, bodyB: bomberNode)
+//        self.links2F.append(link2D3)
     }
     
     func addBomber(loop: Int, randX: CGFloat, randY: CGFloat) -> (EntityNode, EntityNode) {
-        let bomber = BomberEntity(imageName: "bomber", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: self)
+        let bomber = BomberEntity(imageName: "bomber", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0])
         let bomberNode = bomber.spriteComponent.node
         let bomberShadow = bomber.shadowComponent.node
         bomberNode.zPosition = Layer.alien.rawValue
@@ -186,8 +186,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         bomberShadow.zPosition = Layer.alien.rawValue
         bomberShadow.delegate = self
         
-        foregrounds[loop].addChild(bomberNode)
+//        foregrounds[loop].addChild(bomberNode)
+        addChild(bomberNode)
         scanNodes[loop].addChild(bomberShadow)
+//        addChild(bomberShadow)
         aliens.append(bomber)
         return (bomberNode,bomberShadow)
     }
@@ -225,6 +227,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     var moveAmount: CGPoint!
 //    var foregroundCGPoint: CGFloat!
+    // broken
     
     func updateForegroundLeft() {
         self.enumerateChildNodes(withName: "foreground") { (node, stop) in
@@ -234,7 +237,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
 //                self.foregroundCGPoint = foreground.position.x
                 
                 if foreground.position.x < -foreground.size.width {
+                    
+                    if foreground.children.count > 0 {
+                        print("disappear left")
+                    }
+                    
+                    foreground.enumerateChildNodes(withName: "bomber", using: { (node, stop) in
+                        if let bomber = node as? SKSpriteNode {
+                            print("fuck bomber left \(bomber.position.x) \(foreground.position.x) \(foreground.size.width * CGFloat(self.numberOfForegrounds)) \(bomber.positionInScene)")
+                
+                            bomber.position.x += foreground.position.x
+                            
+                        }
+                    })
                     foreground.position.x += foreground.size.width * CGFloat(self.numberOfForegrounds)
+                    
                 }
             }
         }
@@ -247,7 +264,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 foreground.position.x +=  moveAmount / CGFloat(4)
 
                 if foreground.position.x < -(foreground.size.width) {
+                    if foreground.children.count > 0 {
+                        print("disappear right")
+                    }
                     foreground.position.x += ((foreground.size.width * CGFloat(self.numberOfForegrounds)))
+                    foreground.enumerateChildNodes(withName: "bomber", using: { (node, stop) in
+//                        if let bomber = node as? SKSpriteNode {
+//                            bomber.position.x += foreground.size.width * CGFloat(self.numberOfForegrounds)
+//                        }
+                        print("fuck bomber right")
+                    })
                 }
             }
         }
@@ -535,8 +561,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     func spriteTouched(box: TouchableSprite) {
         switch box.name {
+        
+        case "bomber":
+            print("bomber.position \(box.position)")
         case "starship":
-            print("groundSpeed \(playerNode.position)")
+            print("playerNode.position \(playerNode.position)")
         case "spaceman":
             print("cords \(box.position) \(moveAmount)")
         case "up":
@@ -605,6 +634,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 break
             }
         default:
+            print("print \(box.name) \(box.position)")
             player.movementComponent.applyZero(lastUpdateTimeInterval)
 //            moreBreak()
             
@@ -624,4 +654,12 @@ public extension CGFloat {
     }
 }
 
-
+extension SKNode {
+    var positionInScene:CGPoint? {
+        if let scene = scene, let parent = parent {
+            return parent.convert(position, to:scene)
+        } else {
+            return nil
+        }
+    }
+}
