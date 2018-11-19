@@ -30,6 +30,8 @@
 		7BE20D16219222BA00D68240 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7BE20D15219222BA00D68240 /* Assets.xcassets */; };
 		7BE20D19219222BA00D68240 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7BE20D17219222BA00D68240 /* LaunchScreen.storyboard */; };
 		7BE20D252192252200D68240 /* SwiftLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 7BE20D242192252200D68240 /* SwiftLogo.png */; };
+		7BEF7BB321A2C16100681795 /* BomberEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BEF7BB221A2C16100681795 /* BomberEntity.swift */; };
+		7BEF7BB521A2C19D00681795 /* BomberComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BEF7BB421A2C19D00681795 /* BomberComponent.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +60,8 @@
 		7BE20D18219222BA00D68240 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7BE20D1A219222BA00D68240 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7BE20D242192252200D68240 /* SwiftLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SwiftLogo.png; sourceTree = "<group>"; };
+		7BEF7BB221A2C16100681795 /* BomberEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BomberEntity.swift; sourceTree = "<group>"; };
+		7BEF7BB421A2C19D00681795 /* BomberComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BomberComponent.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +84,7 @@
 				7BA5CCE52195C2B1007EB2E3 /* ResueEntity.swift */,
 				7B20BDAA21998850002405C1 /* AlienEntity.swift */,
 				7B049C21219B5AB600120A49 /* HeadsUpEntity.swift */,
+				7BEF7BB221A2C16100681795 /* BomberEntity.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -94,6 +99,7 @@
 				7B20BDA8219983C5002405C1 /* AlienDecentComponent.swift */,
 				7BA5CCE121948F8C007EB2E3 /* ShapeComponent.swift */,
 				7BA5CCE321949084007EB2E3 /* PathComponent.swift */,
+				7BEF7BB421A2C19D00681795 /* BomberComponent.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -230,8 +236,10 @@
 				7BA5CCDE21937165007EB2E3 /* TouchableSprite.swift in Sources */,
 				7BA5CCE62195C2B1007EB2E3 /* ResueEntity.swift in Sources */,
 				7BE20D09219222B900D68240 /* AppDelegate.swift in Sources */,
+				7BEF7BB321A2C16100681795 /* BomberEntity.swift in Sources */,
 				7BA5CCE221948F8C007EB2E3 /* ShapeComponent.swift in Sources */,
 				7B049C20219B1A2F00120A49 /* BuildComponent.swift in Sources */,
+				7BEF7BB521A2C19D00681795 /* BomberComponent.swift in Sources */,
 				7B049C22219B5AB600120A49 /* HeadsUpEntity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

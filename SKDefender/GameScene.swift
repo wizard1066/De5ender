@@ -142,7 +142,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 spaceNode.userData = NSMutableDictionary()
                 spaceNode.userData?.setObject(spaceShadow, forKey: "shadow" as NSCopying)
      
-                let ashadow = AlienEntity(imageName: "alien",xCord: self.view!.bounds.maxX + randX, yCord:self.view!.bounds.maxY)
+//                let ashadow = AlienEntity(imageName: "alien",xCord: self.view!.bounds.maxX + randX, yCord:self.view!.bounds.maxY)
+                let ashadow = AlienEntity(imageName: "alien", xCord: self.view!.bounds.maxX + randX, yCord: self.view!.bounds.maxY, screenBounds: self.view!.bounds)
                 let alienShadow = ashadow.spriteComponent.node
                 alienShadow.zPosition = Layer.alien.rawValue
                 alienShadow.delegate = self
@@ -159,6 +160,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             }
             foregrounds[loop].run(SKAction.sequence([waitAction,runAction]))
         }
+        let bomberNode = addBomber(loop: 0, randX: self.view!.bounds.maxX * 2, randY: self.view!.bounds.maxY)
+    }
+    
+    func addBomber(loop: Int, randX: CGFloat, randY: CGFloat) -> EntityNode {
+        let bomber = BomberEntity(imageName: "bomber", xCord: randX, yCord: randY, screenBounds: self.view!.bounds)
+        let bomberNode = bomber.spriteComponent.node
+        bomberNode.zPosition = Layer.alien.rawValue
+        bomberNode.delegate = self
+        foregrounds[0].addChild(bomberNode)
+        aliens.append(bomber)
+        return bomberNode
     }
     
     struct linkedNodes {
@@ -183,17 +195,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     }
     
     func addAlien(loop: Int, randX: CGFloat) -> EntityNode {
-        let alien = AlienEntity(imageName: "alien",xCord: view!.bounds.maxX + randX, yCord:self.view!.bounds.maxY)
+        let alien = AlienEntity(imageName: "alien", xCord: self.view!.bounds.maxX + randX, yCord: self.view!.bounds.maxY, screenBounds: self.view!.bounds)
         let alienNode = alien.spriteComponent.node
         alienNode.zPosition = Layer.alien.rawValue
         alienNode.delegate = self
         foregrounds[loop].addChild(alienNode)
         aliens.append(alien)
         return alienNode
-//        let alienR = AlienEntity(imageName: "alien",xCord: (view!.bounds.maxX + randomValueX), yCord:(self.view!.bounds.maxY))
-//        let alienRN = alienR.spriteComponent.node
-//        alienRN.delegate = self
-//        others.append(alienRN)
     }
     
     var moveAmount: CGPoint!
@@ -332,6 +340,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         physicsBody = SKPhysicsBody(edgeLoopFrom: rectToSecure)
         physicsBody?.isDynamic = false
 
+        
         
     }
     
@@ -570,9 +579,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 break
             }
         default:
-            moreBreak()
+            player.movementComponent.applyZero(lastUpdateTimeInterval)
+//            moreBreak()
+            
         }
     }
+    
+    
 }
 
 public extension CGFloat {
@@ -584,3 +597,5 @@ public extension CGFloat {
         return self * 180.0 / CGFloat.pi
     }
 }
+
+

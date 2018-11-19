@@ -16,7 +16,7 @@ class AlienDecentComponent: GKComponent {
     var playableRegion: CGFloat = UIScreen.main.bounds.maxY * 2
     var decentRate: CGFloat = -0.5
     
-    init(entity: GKEntity) {
+    init(entity: GKEntity, screenBounds: CGRect) {
         self.spriteComponent = entity.component(ofType: SpriteComponent.self)!
         super.init()
     }
@@ -81,6 +81,30 @@ class AlienDecentComponent: GKComponent {
             let selfDestruct = SKAction.removeFromParent()
             spriteComponent.node.run(SKAction.sequence([fadeAway,selfDestruct]))
         }
+    }
+    
+    func sinePath(screenBounds: CGRect) -> CGPath {
+        
+        let graphWidth: CGFloat = 0.8  // Graph is 80% of the width of the view
+        let amplitude: CGFloat = 0.3   // Amplitude of sine wave is 30% of view height
+        
+        let width = screenBounds.width * 2
+        let height = screenBounds.height * 0.50
+        
+        let origin = CGPoint(x: 0, y: height * 0.50)
+        
+        let path = UIBezierPath()
+        path.move(to: origin)
+        
+        for angle in stride(from: 5.0, through: 360.0, by: 5.0) {
+            let x = origin.x + CGFloat(angle/360.0) * width * graphWidth
+            let y = origin.y - CGFloat(sin(angle/180.0 * Double.pi)) * height * amplitude
+            path.addLine(to: CGPoint(x: x, y: y))
+        }
+        
+        
+        
+        return path.cgPath
     }
 
 }
