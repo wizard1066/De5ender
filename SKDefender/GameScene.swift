@@ -17,7 +17,7 @@ struct PhysicsCat {
     static let SpaceMan: UInt32 = 0b1 << 3
     static let Alien: UInt32 = 0b1 << 4
     static let Bomber: UInt32 = 0b1 << 5
-    static let Bomb: UInt32 = 0b1 << 6
+    static let Mine: UInt32 = 0b1 << 6
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
@@ -189,13 +189,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         bomberNode.zPosition = Layer.alien.rawValue
         bomberNode.delegate = self
         
-        
+        let mineNode = SKSpriteNode(imageNamed: "mine")
+        mineNode.size = CGSize(width: 64, height: 64)
+        mineNode.position.x = bomberNode.position.x
+        mineNode.position.y = bomberNode.position.y + 128
+        mineNode.physicsBody = SKPhysicsBody.init(circleOfRadius: mineNode.size.width/2)
+        mineNode.physicsBody?.affectedByGravity = false
+        mineNode.physicsBody?.isDynamic = false
+        mineNode.physicsBody?.categoryBitMask = PhysicsCat.Mine
+        mineNode.physicsBody?.contactTestBitMask = PhysicsCat.Player
+//        mineNode.zPosition = Layer.mine.rawValue
+        mineNode.name = "mine"
+        foregrounds[loop].addChild(mineNode)
         
         foregrounds[loop].addChild(bomberNode)
-//        addChild(bomberNode)
         scanNodes[loop].addChild(bomberShadow)
-//        addChild(bomberShadow)
-//        aliens.append(bomber)
         bombers.append(bomber)
         return (bomberNode, bomberShadow)
     }
@@ -369,7 +377,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         setupForeground()
         setupPlayer()
-//        dodo()
+        dodo()
         bebe()
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minX * 2)
@@ -527,12 +535,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             return
         }
         
-        // fire hits bomber
-        if hit.node?.name == "bomber" {
-            let bomberShadow = hit.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
-            bomberShadow.removeFromParent()
+        // player hits mine
+        if other.node?.name == "mine" && contact.bodyA.node?.name == "starship" {
+//            let bomberShadow = hit.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+//            bomberShadow.removeFromParent()
+            hit.node?.removeFromParent()
+            other.node?.removeFromParent()
+        }
+        
+        // fir hits bomber or mine
+        if hit.node?.name == "bomber" || hit.node?.name == "mine" {
             hit.node?.removeFromParent()
         }
+        
         
         // spaceman falling to ground
         if other.node?.name == "foreground" {

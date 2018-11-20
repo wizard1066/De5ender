@@ -11,8 +11,8 @@ import GameKit
 
 class BomberEntity: GKEntity {
     var spriteComponent: SpriteComponent!
-//    var shadowComponent: SpriteComponent!
     var bomberComponent: BomberComponent!
+//    var bomb: SKSpriteNode!
     
     init(imageName: String, xCord: CGFloat, yCord: CGFloat, screenBounds: CGRect, view2D: EntityNode, scanNodes: [EntityNode], foregrounds: [EntityNode], shadowNode: EntityNode?) {
         //    init(imageName: String) {
@@ -22,11 +22,12 @@ class BomberEntity: GKEntity {
         spriteComponent = SpriteComponent(entity: self, texture: texture, size: texture.size())
         addComponent(spriteComponent)
         
-//        shadowComponent = SpriteComponent(entity: self, texture: texture, size: texture.size())
-//        addComponent(shadowComponent)
-        
         bomberComponent = BomberComponent(entity: self, screenBounds: screenBounds, view2D: view2D, scanNodes: scanNodes, foregrounds: foregrounds, shadow: shadowNode)
         addComponent(bomberComponent)
+        
+//        bomb = SKSpriteNode(imageNamed: "mine")
+//        bomb.size = CGSize(width: 64, height: 64)
+        
         
         let spriteNode = spriteComponent.node
         spriteNode.size = CGSize(width: spriteNode.size.width/2, height: spriteNode.size.height/2)
@@ -42,20 +43,8 @@ class BomberEntity: GKEntity {
         if shadowNode != nil {
             spriteNode.userData = NSMutableDictionary()
             spriteNode.userData?.setObject(shadowNode, forKey: "shadow" as NSCopying)
+//            spriteNode.userData?.setObject(bomb, forKey: "bomb" as NSCopying)
         }
-        
-//        let shadowNode = shadowComponent.node
-//        shadowNode.size = CGSize(width: spriteNode.size.width/2, height: spriteNode.size.height/2)
-//        shadowNode.physicsBody = SKPhysicsBody.init(texture: texture, size: spriteNode.size)
-//        shadowNode.position = CGPoint(x: xCord, y: yCord)
-//        //        spriteNode.physicsBody = SKPhysicsBody.init(circleOfRadius: spriteNode.size.width/2)
-//        shadowNode.physicsBody?.categoryBitMask = PhysicsCat.Alien
-//        shadowNode.physicsBody?.collisionBitMask = PhysicsCat.None
-//        shadowNode.physicsBody?.contactTestBitMask = PhysicsCat.SpaceMan | PhysicsCat.Fire
-//        shadowNode.physicsBody?.affectedByGravity = false
-//        shadowNode.name = "shadow"
-//
-//
         
     }
     

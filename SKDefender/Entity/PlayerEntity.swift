@@ -29,7 +29,7 @@ class PlayerEntity: GKEntity {
         spriteNode.physicsBody = SKPhysicsBody.init(circleOfRadius: spriteNode.size.width/3 + 8)
         spriteNode.physicsBody?.categoryBitMask = PhysicsCat.Player
         spriteNode.physicsBody?.collisionBitMask = PhysicsCat.None
-        spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.Ground
+        spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.Ground | PhysicsCat.Mine
         spriteNode.physicsBody?.affectedByGravity = false
         spriteNode.name = "starship"
      }
