@@ -104,7 +104,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             scanNode.delegate = self
             foregroundNode.delegate = self
             addChild(foreground.buildComponent.node)
-            foregrounds.append(foreground.buildComponent.node)
+            foregrounds.append(foregroundNode)
             print("foreground.position.x \(foregroundNode.position.x)")
             scanNodes.append(scanNode)
         }
@@ -127,9 +127,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         for loop in 0...3 {
             let randY = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY - CGFloat(128))) + 128
             let randX = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX))
-            let (bomberNode,bomberShadow) = addBomber(loop: 0, randX: CGFloat(randX), randY: CGFloat(randY))
-            let link2D3 = linkedNodes(bodyA: bomberShadow, bodyB: bomberNode)
-            self.links2F.append(link2D3)
+            let (bomberNode, bomberShadow) = addBomber(loop: 0, randX: CGFloat(randX), randY: CGFloat(randY), scanNodes: scanNodes, foregrounds: foregrounds)
+//            let link2D3 = linkedNodes(bodyA: bomberShadow, bodyB: bomberNode)
+//            self.links2F.append(link2D3)
         }
     }
     
@@ -176,22 +176,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
 //        self.links2F.append(link2D3)
     }
     
-    func addBomber(loop: Int, randX: CGFloat, randY: CGFloat) -> (EntityNode, EntityNode) {
-        let bomber = BomberEntity(imageName: "bomber", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0])
-        let bomberNode = bomber.spriteComponent.node
-        let bomberShadow = bomber.shadowComponent.node
-        bomberNode.zPosition = Layer.alien.rawValue
-        bomberNode.delegate = self
-        
+    var bombers:[BomberEntity] = []
+    
+    func addBomber(loop: Int, randX: CGFloat, randY: CGFloat, scanNodes:[EntityNode], foregrounds:[EntityNode]) -> (EntityNode, EntityNode) {
+        let shadow = BomberEntity(imageName: "bomber", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: nil)
+        let bomberShadow = shadow.spriteComponent.node
         bomberShadow.zPosition = Layer.alien.rawValue
         bomberShadow.delegate = self
         
-//        foregrounds[loop].addChild(bomberNode)
-        addChild(bomberNode)
+        let bomber = BomberEntity(imageName: "bomber", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: bomberShadow)
+        let bomberNode = bomber.spriteComponent.node
+        bomberNode.zPosition = Layer.alien.rawValue
+        bomberNode.delegate = self
+        
+        
+        
+        foregrounds[loop].addChild(bomberNode)
+//        addChild(bomberNode)
         scanNodes[loop].addChild(bomberShadow)
 //        addChild(bomberShadow)
-        aliens.append(bomber)
-        return (bomberNode,bomberShadow)
+//        aliens.append(bomber)
+        bombers.append(bomber)
+        return (bomberNode, bomberShadow)
     }
     
     struct linkedNodes {
@@ -241,15 +247,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                     if foreground.children.count > 0 {
                         print("disappear left")
                     }
-                    
-                    foreground.enumerateChildNodes(withName: "bomber", using: { (node, stop) in
-                        if let bomber = node as? SKSpriteNode {
-                            print("fuck bomber left \(bomber.position.x) \(foreground.position.x) \(foreground.size.width * CGFloat(self.numberOfForegrounds)) \(bomber.positionInScene)")
-                
-                            bomber.position.x += foreground.position.x
-                            
-                        }
-                    })
                     foreground.position.x += foreground.size.width * CGFloat(self.numberOfForegrounds)
                     
                 }
@@ -268,12 +265,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                         print("disappear right")
                     }
                     foreground.position.x += ((foreground.size.width * CGFloat(self.numberOfForegrounds)))
-                    foreground.enumerateChildNodes(withName: "bomber", using: { (node, stop) in
-//                        if let bomber = node as? SKSpriteNode {
-//                            bomber.position.x += foreground.size.width * CGFloat(self.numberOfForegrounds)
-//                        }
-                        print("fuck bomber right")
-                    })
                 }
             }
         }
@@ -284,7 +275,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             if let foreground = node as? SKSpriteNode {
                 self.moveAmount = CGPoint(x: -(self.groundSpeed * CGFloat(self.deltaTime)), y: self.playableStart)
                 foreground.position.x -= self.moveAmount.x
-//                self.foregroundCGPoint = foreground.position.x
                 
                 if foreground.position.x > foreground.size.width {
                     foreground.position.x -= foreground.size.width * CGFloat(self.numberOfForegrounds)
@@ -419,6 +409,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         for link in links2F {
             link.bodyB.position.x = link.bodyA.position.x
             link.bodyB.position.y = link.bodyA.position.y
+        }
+        
+        for bomber in bombers {
+            bomber.update(deltaTime: lastUpdateTimeInterval)
         }
         
     }
