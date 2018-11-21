@@ -34,7 +34,6 @@ class PlayerEntity: GKEntity {
         spriteNode.name = "starship"
         
         if shadowNode != nil {
-            spriteNode.userData = NSMutableDictionary()
             spriteNode.userData?.setObject(shadowNode, forKey: "shadow" as NSCopying)
             //            spriteNode.userData?.setObject(bomb, forKey: "bomb" as NSCopying)
         }
