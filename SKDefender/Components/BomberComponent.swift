@@ -57,24 +57,32 @@ class BomberComponent: GKComponent {
         spriteComponent.node.position.x += 2
         spriteShadow?.position.x += 2
         
+        if spriteComponent.node.parent == nil {
+            spriteShadow?.removeFromParent()
+        }
+        
         if spriteComponent.node.position.x > 2048 {
-            spriteComponent.node.removeFromParent()
-            foreGroundIndex += 1
-            if foreGroundIndex == 4 {
-                foreGroundIndex = 0
+            if spriteComponent.node.parent != nil {
+                spriteComponent.node.removeFromParent()
+                foreGroundIndex += 1
+                if foreGroundIndex == 8 {
+                    foreGroundIndex = 0
+                }
+                spriteComponent.node.position.x = 0
+                localForeground[foreGroundIndex].addChild(spriteComponent.node)
             }
-            spriteComponent.node.position.x = 0
-            localForeground[foreGroundIndex].addChild(spriteComponent.node)
         }
         
         if spriteShadow!.position.x > 2048 {
-            spriteShadow?.removeFromParent()
-            scanNodeIndex += 1
-            if scanNodeIndex == 4 {
-                scanNodeIndex = 0
+            if spriteComponent.node.parent != nil {
+                spriteShadow?.removeFromParent()
+                scanNodeIndex += 1
+                if scanNodeIndex == 4 {
+                    scanNodeIndex = 0
+                }
+                spriteShadow?.position.x = 0
+                localScan[scanNodeIndex].addChild(spriteShadow!)
             }
-            spriteShadow?.position.x = 0
-            localScan[scanNodeIndex].addChild(spriteShadow!)
         }
         
     }

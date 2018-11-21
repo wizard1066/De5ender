@@ -13,7 +13,7 @@ class PlayerEntity: GKEntity {
     var spriteComponent: SpriteComponent!
     var movementComponent: MovementComponent!
     
-    init(imageName: String) {
+    init(imageName: String, shadowNode: EntityNode?) {
         super.init()
         
         let texture = SKTexture(imageNamed: imageName)
@@ -32,6 +32,12 @@ class PlayerEntity: GKEntity {
         spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.Ground | PhysicsCat.Mine
         spriteNode.physicsBody?.affectedByGravity = false
         spriteNode.name = "starship"
+        
+        if shadowNode != nil {
+            spriteNode.userData = NSMutableDictionary()
+            spriteNode.userData?.setObject(shadowNode, forKey: "shadow" as NSCopying)
+            //            spriteNode.userData?.setObject(bomb, forKey: "bomb" as NSCopying)
+        }
      }
     
     required init?(coder aDecoder: NSCoder) {

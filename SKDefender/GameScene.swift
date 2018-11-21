@@ -44,7 +44,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var deltaTime: TimeInterval = 0
     var lastUpdateTimeInterval: TimeInterval = 0
     
-    let numberOfForegrounds = 4
+    let numberOfForegrounds = 8
     var groundSpeed:CGFloat = 150
     var brakeSpeed:CGFloat = 0.1
     
@@ -177,6 +177,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     }
     
     var bombers:[BomberEntity] = []
+    var mines:[MineEntity] = []
     
     func addBomber(loop: Int, randX: CGFloat, randY: CGFloat, scanNodes:[EntityNode], foregrounds:[EntityNode]) -> (EntityNode, EntityNode) {
         let shadow = BomberEntity(imageName: "bomber", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: nil)
@@ -189,22 +190,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         bomberNode.zPosition = Layer.alien.rawValue
         bomberNode.delegate = self
         
-        let mineNode = SKSpriteNode(imageNamed: "mine")
-        mineNode.size = CGSize(width: 64, height: 64)
-        mineNode.position.x = bomberNode.position.x
-        mineNode.position.y = bomberNode.position.y + 128
-        mineNode.physicsBody = SKPhysicsBody.init(circleOfRadius: mineNode.size.width/2)
-        mineNode.physicsBody?.affectedByGravity = false
-        mineNode.physicsBody?.isDynamic = false
-        mineNode.physicsBody?.categoryBitMask = PhysicsCat.Mine
-        mineNode.physicsBody?.contactTestBitMask = PhysicsCat.Player
-//        mineNode.zPosition = Layer.mine.rawValue
-        mineNode.name = "mine"
-        foregrounds[loop].addChild(mineNode)
-        
         foregrounds[loop].addChild(bomberNode)
         scanNodes[loop].addChild(bomberShadow)
         bombers.append(bomber)
+        
+        let mine = MineEntity(imageName: "mine", owningNode: bomberNode)
+        mine.spriteComponent.node.zPosition = Layer.alien.rawValue
+        foregrounds[loop].addChild(mine.spriteComponent.node)
+        mines.append(mine)
+        
         return (bomberNode, bomberShadow)
     }
     
@@ -310,8 +304,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
 //    var advanceArrow: TouchableSprite!
     var advancedArrow: HeadsUpEntity!
     
-    func setupPlayer(){
-        player = PlayerEntity(imageName: "starship")
+    func addPlayer(){
+        shadow = PlayerEntity(imageName: "starship", shadowNode: nil)
+        shadowNode = shadow.spriteComponent.node
+        shadowNode.position = CGPoint(x: self.view!.bounds.maxX / 2, y: self.view!.bounds.maxY / 2)
+        shadowNode.scale(to: CGSize(width: shadowNode.size.width/4, height: shadowNode.size.height/4))
+        shadowNode.position.x = shadowNode.position.x / 4
+        radar.addChild(shadowNode)
+        
+        player = PlayerEntity(imageName: "starship", shadowNode: shadowNode)
         playerNode = player.spriteComponent.node
         playerNode.position = CGPoint(x: self.view!.bounds.maxX / 2, y: self.view!.bounds.maxY / 2)
         playerNode.zPosition = Layer.player.rawValue
@@ -319,12 +320,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         playerNode.delegate = self
         addChild(playerNode)
         
-        shadow = PlayerEntity(imageName: "starship")
-        shadowNode = shadow.spriteComponent.node
-        shadowNode.position = CGPoint(x: self.view!.bounds.maxX / 2, y: self.view!.bounds.maxY / 2)
-        shadowNode.scale(to: CGSize(width: shadowNode.size.width/4, height: shadowNode.size.height/4))
-        shadowNode.position.x = shadowNode.position.x / 4
-        radar.addChild(shadowNode)
+   
         
         
 //        player.movementComponent.playableStart = playableStart
@@ -376,7 +372,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         addChild(cameraNode)
         
         setupForeground()
-        setupPlayer()
+        addPlayer()
         dodo()
         bebe()
 //        Add a boundry to the screen
@@ -421,6 +417,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         for bomber in bombers {
             bomber.update(deltaTime: lastUpdateTimeInterval)
+        }
+        
+        for mine in mines {
+            mine.update(deltaTime: lastUpdateTimeInterval)
         }
         
     }
@@ -539,8 +539,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         if other.node?.name == "mine" && contact.bodyA.node?.name == "starship" {
 //            let bomberShadow = hit.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
 //            bomberShadow.removeFromParent()
-            hit.node?.removeFromParent()
+            let shadow = contact.bodyA.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+            (shadow as? SKSpriteNode)?.removeFromParent()
+            contact.bodyA.node?.removeFromParent()
             other.node?.removeFromParent()
+            
         }
         
         // fir hits bomber or mine
