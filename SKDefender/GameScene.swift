@@ -124,9 +124,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     }
     
     func cece(player: PlayerEntity) {
-        let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + 128))
-        let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-        addMutant(randX: randX, randY: randY, player: player)
+        for loop in 0...3 {
+            let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + 128))
+            let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
+            addMutant(randX: randX, randY: randY, player: player)
+        }
     }
     
     func bebe() {
@@ -407,7 +409,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         setupForeground()
         let player = addPlayer()
         dodo()
-//        bebe()
+        bebe()
         cece(player: player)
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minX * 2)

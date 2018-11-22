@@ -111,7 +111,6 @@ class MovementComponent: GKComponent {
         if velocity.y > 0 {
             velocity.y = velocity.y - 1
         }
-        print("velocity \(velocity)")
         
         // Temporary Ground Hit
         if spriteNode.position.y - spriteNode.size.height / 2 < playableStart {
