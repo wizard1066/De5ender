@@ -28,5 +28,9 @@ class SpriteComponent: GKComponent {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func returnPosition() -> CGPoint {
+        return node.position
+    }
+    
     
 }

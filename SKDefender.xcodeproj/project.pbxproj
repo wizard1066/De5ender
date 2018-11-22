@@ -13,7 +13,6 @@
 		7B20BDA9219983C5002405C1 /* AlienDecentComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B20BDA8219983C5002405C1 /* AlienDecentComponent.swift */; };
 		7B20BDAB21998850002405C1 /* AlienEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B20BDAA21998850002405C1 /* AlienEntity.swift */; };
 		7B81710621A55C6A002D9337 /* MineEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B81710521A55C6A002D9337 /* MineEntity.swift */; };
-		7B81710821A55CE4002D9337 /* mineComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B81710721A55CE4002D9337 /* mineComponent.swift */; };
 		7BA5CCCF2192DB72007EB2E3 /* MoveAlongPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCCE2192DB72007EB2E3 /* MoveAlongPath.swift */; };
 		7BA5CCD42192E9A4007EB2E3 /* PlayerEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCD32192E9A4007EB2E3 /* PlayerEntity.swift */; };
 		7BA5CCD62192EDAA007EB2E3 /* SpriteComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCD52192EDAA007EB2E3 /* SpriteComponent.swift */; };
@@ -34,6 +33,10 @@
 		7BE20D252192252200D68240 /* SwiftLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 7BE20D242192252200D68240 /* SwiftLogo.png */; };
 		7BEF7BB321A2C16100681795 /* BomberEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BEF7BB221A2C16100681795 /* BomberEntity.swift */; };
 		7BEF7BB521A2C19D00681795 /* BomberComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BEF7BB421A2C19D00681795 /* BomberComponent.swift */; };
+		7BFEEC2721A6BB37006B5D59 /* Mutant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFEEC2621A6BB37006B5D59 /* Mutant.swift */; };
+		7BFEEC2921A6BB97006B5D59 /* MutantComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFEEC2821A6BB97006B5D59 /* MutantComponent.swift */; };
+		7BFEEC2B21A6BC13006B5D59 /* MineComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFEEC2A21A6BC13006B5D59 /* MineComponent.swift */; };
+		7BFEEC2D21A6F440006B5D59 /* BombEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFEEC2C21A6F440006B5D59 /* BombEntity.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,7 +46,6 @@
 		7B20BDA8219983C5002405C1 /* AlienDecentComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlienDecentComponent.swift; sourceTree = "<group>"; };
 		7B20BDAA21998850002405C1 /* AlienEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlienEntity.swift; sourceTree = "<group>"; };
 		7B81710521A55C6A002D9337 /* MineEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MineEntity.swift; sourceTree = "<group>"; };
-		7B81710721A55CE4002D9337 /* mineComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mineComponent.swift; sourceTree = "<group>"; };
 		7BA5CCCE2192DB72007EB2E3 /* MoveAlongPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveAlongPath.swift; sourceTree = "<group>"; };
 		7BA5CCD32192E9A4007EB2E3 /* PlayerEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerEntity.swift; sourceTree = "<group>"; };
 		7BA5CCD52192EDAA007EB2E3 /* SpriteComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpriteComponent.swift; sourceTree = "<group>"; };
@@ -66,6 +68,10 @@
 		7BE20D242192252200D68240 /* SwiftLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SwiftLogo.png; sourceTree = "<group>"; };
 		7BEF7BB221A2C16100681795 /* BomberEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BomberEntity.swift; sourceTree = "<group>"; };
 		7BEF7BB421A2C19D00681795 /* BomberComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BomberComponent.swift; sourceTree = "<group>"; };
+		7BFEEC2621A6BB37006B5D59 /* Mutant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mutant.swift; sourceTree = "<group>"; };
+		7BFEEC2821A6BB97006B5D59 /* MutantComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutantComponent.swift; sourceTree = "<group>"; };
+		7BFEEC2A21A6BC13006B5D59 /* MineComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MineComponent.swift; sourceTree = "<group>"; };
+		7BFEEC2C21A6F440006B5D59 /* BombEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BombEntity.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +96,8 @@
 				7B049C21219B5AB600120A49 /* HeadsUpEntity.swift */,
 				7BEF7BB221A2C16100681795 /* BomberEntity.swift */,
 				7B81710521A55C6A002D9337 /* MineEntity.swift */,
+				7BFEEC2621A6BB37006B5D59 /* Mutant.swift */,
+				7BFEEC2C21A6F440006B5D59 /* BombEntity.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -97,6 +105,7 @@
 		7BA5CCD22192E96A007EB2E3 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				7BFEEC2A21A6BC13006B5D59 /* MineComponent.swift */,
 				7BA5CCD52192EDAA007EB2E3 /* SpriteComponent.swift */,
 				7B049C1F219B1A2F00120A49 /* BuildComponent.swift */,
 				7BA5CCE72195C44F007EB2E3 /* RescueComponent.swift */,
@@ -105,7 +114,7 @@
 				7BA5CCE121948F8C007EB2E3 /* ShapeComponent.swift */,
 				7BA5CCE321949084007EB2E3 /* PathComponent.swift */,
 				7BEF7BB421A2C19D00681795 /* BomberComponent.swift */,
-				7B81710721A55CE4002D9337 /* mineComponent.swift */,
+				7BFEEC2821A6BB97006B5D59 /* MutantComponent.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -228,14 +237,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				7BA5CCE021948E7F007EB2E3 /* FireEntity.swift in Sources */,
+				7BFEEC2721A6BB37006B5D59 /* Mutant.swift in Sources */,
 				7BA5CCD42192E9A4007EB2E3 /* PlayerEntity.swift in Sources */,
 				7B20BDAB21998850002405C1 /* AlienEntity.swift in Sources */,
+				7BFEEC2921A6BB97006B5D59 /* MutantComponent.swift in Sources */,
 				7BA5CCD82192F291007EB2E3 /* MovementComponent.swift in Sources */,
 				7BA5CCE421949084007EB2E3 /* PathComponent.swift in Sources */,
 				7B20BDA9219983C5002405C1 /* AlienDecentComponent.swift in Sources */,
 				7BA5CCE82195C44F007EB2E3 /* RescueComponent.swift in Sources */,
 				7B81710621A55C6A002D9337 /* MineEntity.swift in Sources */,
-				7B81710821A55CE4002D9337 /* mineComponent.swift in Sources */,
 				7BE20D0F219222B900D68240 /* GameScene.swift in Sources */,
 				7BA5CCCF2192DB72007EB2E3 /* MoveAlongPath.swift in Sources */,
 				7B049C1E219B19CE00120A49 /* BuildEntity.swift in Sources */,
@@ -244,9 +254,11 @@
 				7BA5CCDE21937165007EB2E3 /* TouchableSprite.swift in Sources */,
 				7BA5CCE62195C2B1007EB2E3 /* ResueEntity.swift in Sources */,
 				7BE20D09219222B900D68240 /* AppDelegate.swift in Sources */,
+				7BFEEC2B21A6BC13006B5D59 /* MineComponent.swift in Sources */,
 				7BEF7BB321A2C16100681795 /* BomberEntity.swift in Sources */,
 				7BA5CCE221948F8C007EB2E3 /* ShapeComponent.swift in Sources */,
 				7B049C20219B1A2F00120A49 /* BuildComponent.swift in Sources */,
+				7BFEEC2D21A6F440006B5D59 /* BombEntity.swift in Sources */,
 				7BEF7BB521A2C19D00681795 /* BomberComponent.swift in Sources */,
 				7B049C22219B5AB600120A49 /* HeadsUpEntity.swift in Sources */,
 			);

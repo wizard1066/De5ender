@@ -81,8 +81,6 @@ class BomberComponent: GKComponent {
         for mine in mines {
             mine.update(deltaTime: seconds)
         }
-        
-        // NEED TO CHANGE CODE IF CHANGE DIRECTION, TEST for < 0
 
         spriteComponent.node.position.x -= 2
         spriteShadow?.position.x -= 2

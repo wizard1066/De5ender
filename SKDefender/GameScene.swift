@@ -123,13 +123,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
     }
     
+    func cece(player: PlayerEntity) {
+        let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + 128))
+        let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
+        addMutant(randX: randX, randY: randY, player: player)
+    }
+    
     func bebe() {
         for loop in 0...3 {
             let randY = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY - CGFloat(128))) + 128
             let randX = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2))
             let (bomberNode, bomberShadow) = addBomber(loop: 0, randX: CGFloat(randX), randY: CGFloat(randY), scanNodes: scanNodes, foregrounds: foregrounds)
-//            let link2D3 = linkedNodes(bodyA: bomberShadow, bodyB: bomberNode)
-//            self.links2F.append(link2D3)
+
         }
     }
     
@@ -176,6 +181,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
 //        self.links2F.append(link2D3)
     }
     
+    var mutants:[MutantEntity] = []
+    
+    func addMutant(randX: CGFloat, randY: CGFloat, player: PlayerEntity) -> (EntityNode, EntityNode) {
+        let shadow = MutantEntity(imageName: "mutant", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: nil, playerToKill: nil)
+        let mutantShadow = shadow.spriteComponent.node
+        mutantShadow.zPosition = Layer.alien.rawValue
+        mutantShadow.delegate = self
+        
+        let mutant = MutantEntity(imageName: "mutant", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: mutantShadow, playerToKill: player)
+        let mutantNode = mutant.spriteComponent.node
+        mutantNode.zPosition = Layer.alien.rawValue
+        mutantNode.delegate = self
+        
+        mutant.mutantComponent.setScreen(entity: foregrounds[0])
+        
+        foregrounds[0].addChild(mutantNode)
+        scanNodes[0].addChild(mutantShadow)
+        mutants.append(mutant)
+        
+        return (mutantNode, mutantShadow)
+    }
+    
     var bombers:[BomberEntity] = []
     var mines:[MineEntity] = []
     
@@ -195,19 +222,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         foregrounds[loop].addChild(bomberNode)
         scanNodes[loop].addChild(bomberShadow)
         bombers.append(bomber)
-//        beginBombing(loop: loop, bomber: bomber)
         
         return (bomberNode, bomberShadow)
     }
     
-    func beginBombing(loop: Int, bomber: BomberEntity) {
-        let mine = MineEntity(imageName: "mine", owningNode: bomber.spriteComponent.node)
-        mine.spriteComponent.node.zPosition = Layer.alien.rawValue
-        let bombPosition = bomber.bomberComponent.returnBomberPosition()
-        mine.spriteComponent.node.position = bombPosition
-        foregrounds[loop].addChild(mine.spriteComponent.node)
-        self.mines.append(mine)
-    }
+//    func beginBombing(loop: Int, bomber: BomberEntity) {
+//        let mine = MineEntity(imageName: "mine", owningNode: bomber.spriteComponent.node)
+//        mine.spriteComponent.node.zPosition = Layer.alien.rawValue
+//        let bombPosition = bomber.bomberComponent.returnBomberPosition()
+//        mine.spriteComponent.node.position = bombPosition
+//        foregrounds[loop].addChild(mine.spriteComponent.node)
+//        self.mines.append(mine)
+//    }
     
     struct linkedNodes {
         var bodyA: EntityNode!
@@ -311,7 +337,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
 //    var advanceArrow: TouchableSprite!
     var advancedArrow: HeadsUpEntity!
     
-    func addPlayer(){
+    func addPlayer() -> PlayerEntity {
         shadow = PlayerEntity(imageName: "starship", shadowNode: nil)
         shadowNode = shadow.spriteComponent.node
         shadowNode.position = CGPoint(x: self.view!.bounds.maxX / 2, y: self.view!.bounds.maxY / 2)
@@ -359,7 +385,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         addChild(fireSquare.hudComponent.node)
         addChild(flipButton.hudComponent.node)
         
-        
+        return player
     }
     
     var cameraNode: SKCameraNode!
@@ -379,9 +405,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         addChild(cameraNode)
         
         setupForeground()
-        addPlayer()
+        let player = addPlayer()
         dodo()
-        bebe()
+//        bebe()
+        cece(player: player)
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minX * 2)
         physicsBody = SKPhysicsBody(edgeLoopFrom: rectToSecure)
@@ -424,6 +451,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         for bomber in bombers {
             bomber.update(deltaTime: lastUpdateTimeInterval)
+        }
+        
+        for mutant in mutants {
+            mutant.update(deltaTime: lastUpdateTimeInterval)
         }
         
         
@@ -550,7 +581,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         }
         
         // fir hits bomber or mine
-        if hit.node?.name == "bomber" || hit.node?.name == "mine" {
+        if hit.node?.name == "bomber" || hit.node?.name == "mine" || hit.node?.name == "mutant" {
             hit.node?.removeFromParent()
         }
         
@@ -651,6 +682,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         default:
             print("print \(box.name) \(box.position)")
             player.movementComponent.applyZero(lastUpdateTimeInterval)
+            moveLeft = false
+            moveRight = false
 //            moreBreak()
             
         }

@@ -1,8 +1,8 @@
 //
-//  mineComponent.swift
+//  MineComponent.swift
 //  SKDefender
 //
-//  Created by localadmin on 21.11.18.
+//  Created by localadmin on 22.11.18.
 //  Copyright © 2018 ch.cqd.skdefender. All rights reserved.
 //
 
