@@ -29,16 +29,17 @@ class MineComponent: GKComponent {
     
     override func update(deltaTime seconds: TimeInterval) {
         if spriteComponent.node.alpha == 1 {
-            spriteComponent.node.run(SKAction.fadeOut(withDuration: 1))
+            spriteComponent.node.run(SKAction.fadeOut(withDuration: 0.5))
         }
         if spriteComponent.node.alpha == 0 {
-            spriteComponent.node.run(SKAction.fadeIn(withDuration: 1))
+            spriteComponent.node.run(SKAction.fadeIn(withDuration: 0.5))
             lifetime += 1
         }
         if lifetime == 8 {
             let fadeOut = SKAction.fadeOut(withDuration: 1)
             let fadeAway = SKAction.removeFromParent()
             spriteComponent.node.run(SKAction.sequence([fadeOut, fadeAway]))
+            spriteComponent.node.removeFromParent()
         }
     }
     

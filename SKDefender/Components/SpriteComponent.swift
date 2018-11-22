@@ -32,5 +32,5 @@ class SpriteComponent: GKComponent {
         return node.position
     }
     
-    
+
 }

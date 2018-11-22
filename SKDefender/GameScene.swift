@@ -26,6 +26,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var moveRight = false
     
     enum Layer: CGFloat {
+        case controls
         case background
         case foreground
         case player
@@ -124,7 +125,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     }
     
     func cece(player: PlayerEntity) {
-        for loop in 0...3 {
+        for loop in 0...0 {
             let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + 128))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
             addMutant(randX: randX, randY: randY, player: player)
@@ -132,7 +133,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     }
     
     func bebe() {
-        for loop in 0...3 {
+        for loop in 0...0 {
             let randY = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY - CGFloat(128))) + 128
             let randX = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2))
             let (bomberNode, bomberShadow) = addBomber(loop: 0, randX: CGFloat(randX), randY: CGFloat(randY), scanNodes: scanNodes, foregrounds: foregrounds)
@@ -340,14 +341,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var advancedArrow: HeadsUpEntity!
     
     func addPlayer() -> PlayerEntity {
-        shadow = PlayerEntity(imageName: "starship", shadowNode: nil)
+        shadow = PlayerEntity(imageName: "Ship16", shadowNode: nil)
         shadowNode = shadow.spriteComponent.node
         shadowNode.position = CGPoint(x: self.view!.bounds.maxX / 2, y: self.view!.bounds.maxY / 2)
         shadowNode.scale(to: CGSize(width: shadowNode.size.width/4, height: shadowNode.size.height/4))
         shadowNode.position.x = shadowNode.position.x / 4
         radar.addChild(shadowNode)
         
-        player = PlayerEntity(imageName: "starship", shadowNode: shadowNode)
+        player = PlayerEntity(imageName: "Ship16", shadowNode: shadowNode)
         playerNode = player.spriteComponent.node
         playerNode.position = CGPoint(x: self.view!.bounds.maxX / 2, y: self.view!.bounds.maxY / 2)
         playerNode.zPosition = Layer.player.rawValue
@@ -362,21 +363,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         let upArrow = HeadsUpEntity(imageName: "UpArrow", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!) + 96, name: "up")
         upArrow.hudComponent.node.delegate = self
+         upArrow.hudComponent.node.zPosition = Layer.controls.rawValue
 
         let downArrow = HeadsUpEntity(imageName: "DownArrow", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!) - 96, name: "down")
         downArrow.hudComponent.node.delegate = self
+         downArrow.hudComponent.node.zPosition = Layer.controls.rawValue
         
         advancedArrow = HeadsUpEntity(imageName: "RightArrow", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!) - 128, name: "advance")
         advancedArrow.hudComponent.node.delegate = self
+         advancedArrow.hudComponent.node.zPosition = Layer.controls.rawValue
         
         let stopSquare = HeadsUpEntity(imageName: "Square", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!), name: "square")
         stopSquare.hudComponent.node.delegate = self
+         stopSquare.hudComponent.node.zPosition = Layer.controls.rawValue
         
         let fireSquare = HeadsUpEntity(imageName: "Circle", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!), name: "fire")
         fireSquare.hudComponent.node.delegate = self
+        fireSquare.hudComponent.node.zPosition = Layer.controls.rawValue
         
         let flipButton = HeadsUpEntity(imageName: "DoubleArrow", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!) + 160, name: "flip")
         flipButton.hudComponent.node.delegate = self
+        flipButton.hudComponent.node.zPosition = Layer.controls.rawValue
         
         
         addChild(upArrow.hudComponent.node)
@@ -408,7 +415,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         setupForeground()
         let player = addPlayer()
-        dodo()
+//        dodo()
         bebe()
         cece(player: player)
 //        Add a boundry to the screen
