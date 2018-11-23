@@ -17,7 +17,7 @@ class MutantComponent: GKComponent {
     var localBounds: CGRect!
     var localView: EntityNode!
     var localScan:[EntityNode] = []
-    var localForeground:[EntityNode] = []
+    var localForegrounds:[EntityNode] = []
     var spriteShadow: EntityNode?
     var mines:[BombEntity] = []
     
@@ -25,7 +25,7 @@ class MutantComponent: GKComponent {
         localBounds = screenBounds
         localView = view2D
         localScan = scanNodes
-        localForeground = foregrounds
+        localForegrounds = foregrounds
         self.spriteComponent = entity.component(ofType: SpriteComponent.self)!
         super.init()
     }
@@ -38,12 +38,25 @@ class MutantComponent: GKComponent {
         print("HelloWorld")
     }
     
-    public func returnBomberPosition() -> CGPoint {
+    public func returnMutantPosition() -> CGPoint {
         return spriteComponent.node.position
     }
     
     public func setScreen(entity: EntityNode) {
         localView = entity
+    }
+    
+    public func whereIsPlayer() -> Int {
+        var indexToReturn = 0
+        for foreground in localForegrounds {
+            if playerToKill.spriteComponent.node.position.x < foreground.frame.minX || playerToKill.spriteComponent.node.position.x > foreground.frame.maxX {
+                // do nothing
+            } else {
+                return indexToReturn
+            }
+            indexToReturn += 1
+        }
+        return indexToReturn
     }
     
     func beginBombing(loop: Int, skew: Int) {
@@ -67,7 +80,7 @@ class MutantComponent: GKComponent {
         let followLine = SKAction.follow(path, speed: 128)
         print("playerToKill \(spriteComponent.node.position) \(point1) \(playerToKill.spriteComponent.node.position)")
         
-        localForeground[foreGroundIndex].addChild(mine.spriteComponent.node)
+        localForegrounds[foreGroundIndex].addChild(mine.spriteComponent.node)
         
         mine.spriteComponent.node.run(followLine)
         
@@ -106,19 +119,25 @@ class MutantComponent: GKComponent {
             // CHANGE this so mutant gives up @ some point
             let move = SKAction.run {
                 self.toggle = true
-                let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
-                let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
-                if self.playerToKill.spriteComponent.node.position.x < self.spriteComponent.node.position.x {
-                    self.spriteComponent.node.position.x -= 10 + randX
-                }
-                if self.playerToKill.spriteComponent.node.position.x > self.spriteComponent.node.position.x {
-                    self.spriteComponent.node.position.x += 10 - randY
-                }
-                if self.playerToKill.spriteComponent.node.position.y < self.spriteComponent.node.position.y {
-                    self.spriteComponent.node.position.y -= 10 + randX
-                }
-                if self.playerToKill.spriteComponent.node.position.y > self.spriteComponent.node.position.y {
-                    self.spriteComponent.node.position.y += 10 - randY
+                // foreground index is the number of the foreground that the mutant is on right now...
+                let playerPos = self.whereIsPlayer()
+                if playerPos != self.foreGroundIndex {
+                    self.spriteComponent.node.position.x += 10
+                } else {
+                    let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
+                    let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
+                    if self.playerToKill.spriteComponent.node.position.x < self.spriteComponent.node.position.x {
+                        self.spriteComponent.node.position.x -= 10 + randX
+                    }
+                    if self.playerToKill.spriteComponent.node.position.x > self.spriteComponent.node.position.x {
+                        self.spriteComponent.node.position.x += 10 - randY
+                    }
+                    if self.playerToKill.spriteComponent.node.position.y < self.spriteComponent.node.position.y {
+                        self.spriteComponent.node.position.y -= 10 + randX
+                    }
+                    if self.playerToKill.spriteComponent.node.position.y > self.spriteComponent.node.position.y {
+                        self.spriteComponent.node.position.y += 10 - randY
+                    }
                 }
             }
 //            let amountToRotate:CGFloat = 0.5
@@ -153,7 +172,7 @@ class MutantComponent: GKComponent {
                 }
             }
             spriteComponent.node.position.x = 2048
-            localForeground[foreGroundIndex].addChild(spriteComponent.node)
+            localForegrounds[foreGroundIndex].addChild(spriteComponent.node)
         }
         
         if spriteShadow!.position.x < 0 {
@@ -165,7 +184,7 @@ class MutantComponent: GKComponent {
                 }
             }
             spriteShadow?.position.x = 2048
-            localForeground[scanNodeIndex].addChild(spriteShadow!)
+            localScan[scanNodeIndex].addChild(spriteShadow!)
         }
         
         
@@ -177,7 +196,7 @@ class MutantComponent: GKComponent {
                     foreGroundIndex = 0
                 }
                 spriteComponent.node.position.x = 0
-                localForeground[foreGroundIndex].addChild(spriteComponent.node)
+                localForegrounds[foreGroundIndex].addChild(spriteComponent.node)
             }
         }
         

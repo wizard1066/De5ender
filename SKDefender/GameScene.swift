@@ -621,6 +621,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             print("bomber.position \(box.position)")
         case "starship":
             print("playerNode.position \(playerNode.position)")
+            for foreground in foregrounds {
+                print("forground XY \(foreground.frame.minX) \(foreground.frame.maxX) \(playerNode.position.x)")
+                if playerNode.position.x < foreground.frame.minX || playerNode.position.x > foreground.frame.maxX {
+                    // do nothing
+                } else {
+                    print("fuck")
+                }
+            }
+            
         case "spaceman":
             print("cords \(box.position) \(moveAmount)")
         case "up":
