@@ -20,12 +20,14 @@ class BomberComponent: GKComponent {
     var localForeground:[EntityNode] = []
     var spriteShadow: EntityNode?
     var mines:[MineEntity] = []
+    var bounds: CGRect!
     
     init(entity: GKEntity, screenBounds: CGRect, view2D: EntityNode, scanNodes: [EntityNode], foregrounds: [EntityNode], shadow:EntityNode?) {
         localBounds = screenBounds
         localView = view2D
         localScan = scanNodes
         localForeground = foregrounds
+        bounds = screenBounds
         self.spriteComponent = entity.component(ofType: SpriteComponent.self)!
         super.init()
     }
@@ -58,6 +60,7 @@ class BomberComponent: GKComponent {
     var scanNodeIndex = 0
     var foreGroundIndex = 0
     var toggle = true
+    var change = false
     
     override func update(deltaTime seconds: TimeInterval) {
         if runOnce {
@@ -85,6 +88,19 @@ class BomberComponent: GKComponent {
         spriteComponent.node.position.x -= 2
         spriteShadow?.position.x -= 2
         
+        
+        if spriteComponent.node.position.y < bounds.maxY * 1.6 && !change {
+            spriteComponent.node.position.y += 1
+            change = false
+        } else {
+            change = true
+            if spriteComponent.node.position.y > bounds.minY + 128 {
+                spriteComponent.node.position.y -= 1
+            } else {
+                change = false
+            }
+        }
+        
         if spriteComponent.node.parent == nil {
             spriteShadow?.removeFromParent()
         }
@@ -110,7 +126,7 @@ class BomberComponent: GKComponent {
                 }
             }
             spriteShadow?.position.x = 2048
-            localForeground[scanNodeIndex].addChild(spriteShadow!)
+            localScan[scanNodeIndex].addChild(spriteShadow!)
         }
         
         
