@@ -1,8 +1,8 @@
 //
-//  Mutant.swift
+//  MutantEntity.swift
 //  SKDefender
 //
-//  Created by localadmin on 22.11.18.
+//  Created by localadmin on 26.11.18.
 //  Copyright © 2018 ch.cqd.skdefender. All rights reserved.
 //
 
@@ -54,5 +54,6 @@ class MutantEntity: GKEntity {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
 }
-}
+

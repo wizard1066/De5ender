@@ -34,6 +34,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         case alien
     }
     
+    var baiter: EntityNode!
+    
     var player:PlayerEntity!
     var shadow:PlayerEntity!
 //    var alien:AlienEntity!
@@ -124,7 +126,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
     }
     
-    func cece(player: PlayerEntity) {
+    func doBaiters(player: PlayerEntity) {
+        for loop in 0...0 {
+            let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + 128))
+            let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
+            let (baiter, baiterShdow) = addBaiter(randX: randX, randY: randY, player: player)
+            baiter.delegate = self
+            self.baiter = baiter as? EntityNode
+        }
+    }
+    
+    func doMutants(player: PlayerEntity) {
         for loop in 0...0 {
             let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + 128))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
@@ -132,7 +144,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         }
     }
     
-    func bebe() {
+    func doBombers() {
         for loop in 0...0 {
             let randY = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY - CGFloat(128))) + 128
             let randX = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2))
@@ -183,6 +195,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
 //        let link2D3 = linkedNodes(bodyA: bomberShadow, bodyB: bomberNode)
 //        self.links2F.append(link2D3)
     }
+    
+    var baiters:[BaiterEntity] = []
+    
+    func addBaiter(randX: CGFloat, randY: CGFloat, player: PlayerEntity) -> (EntityNode, EntityNode) {
+        let shadow = BaiterEntity(imageName: "baiter", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: nil, playerToKill: nil)
+        let baiterShadow = shadow.spriteComponent.node
+        baiterShadow.zPosition = Layer.alien.rawValue
+        baiterShadow.delegate = self
+        
+        let baiter = BaiterEntity(imageName: "baiter", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: baiterShadow, playerToKill: player)
+        let baiterNode = baiter.spriteComponent.node
+        baiterNode.zPosition = Layer.alien.rawValue
+        baiterNode.delegate = self
+        
+        baiter.baiterComponent.setScreen(entity: foregrounds[0])
+        
+        foregrounds[0].addChild(baiterNode)
+        scanNodes[0].addChild(baiterShadow)
+        baiters.append(baiter)
+        
+        return (baiterNode, baiterShadow)
+    }
+    
     
     var mutants:[MutantEntity] = []
     
@@ -415,9 +450,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         setupForeground()
         let player = addPlayer()
-//        dodo()
-        bebe()
-        cece(player: player)
+//        doBombers()
+        doBaiters(player: player)
+//        doMutants(player: player)
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minX * 2)
         physicsBody = SKPhysicsBody(edgeLoopFrom: rectToSecure)
@@ -466,7 +501,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             mutant.update(deltaTime: lastUpdateTimeInterval)
         }
         
-        
+        for baiter in baiters {
+            baiter.update(deltaTime: lastUpdateTimeInterval)
+        }
         
     }
     
@@ -620,18 +657,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         case "bomber":
             print("bomber.position \(box.position)")
         case "starship":
-            print("playerNode.position \(playerNode.position)")
-            for foreground in foregrounds {
-                print("forground XY \(foreground.frame.minX) \(foreground.frame.maxX) \(playerNode.position.x)")
-                if playerNode.position.x < foreground.frame.minX || playerNode.position.x > foreground.frame.maxX {
-                    // do nothing
-                } else {
-                    print("fuck")
-                }
-            }
+//            let newX = box.convert(box.position, to: foregrounds[0])
+            let newX = foregrounds[0].convert(box.position, to: baiter)
+            let newY = foregrounds[0].convert(baiter.position, to: box)
+            print("playerNode.position \(box.position) \(newX) \(newY)")
+            
+//            for foreground in foregrounds {
+//                print("forground XY \(foreground.frame.minX) \(foreground.frame.maxX) \(box.position)")
+//                print("player \(box.position)")
+            
+//            }
             
         case "spaceman":
-            print("cords \(box.position) \(moveAmount)")
+            print("player \(box.position)")
+        case "baiter":
+//            let newX = convertPoint(toView: baiter.position)
+//            let newX = parent?.convert(baiter.position, to: scene!) = nil
+//            let newX = baiter.convert(baiter.position, to: scene!)
+//            let newX = playerNode.convert(baiter.position, to: scene!)
+            
+            print("baiter \(box.position) ")
         case "up":
             player.movementComponent.applyImpulseUp(lastUpdateTimeInterval)
         case "down":
