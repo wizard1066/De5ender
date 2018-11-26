@@ -19,7 +19,7 @@ class BaiterComponent: GKComponent {
     var localScan:[EntityNode] = []
     var localForegrounds:[EntityNode] = []
     var spriteShadow: EntityNode?
-    var mines:[BombEntity] = []
+    var mines:[BaitEntity] = []
     
     init(entity: GKEntity, screenBounds: CGRect, view2D: EntityNode, scanNodes: [EntityNode], foregrounds: [EntityNode], shadow:EntityNode?) {
         localBounds = screenBounds
@@ -60,25 +60,25 @@ class BaiterComponent: GKComponent {
     }
     
     func beginBombing(loop: Int, skew: Int) {
-        let mine = BombEntity(imageName: "mine", owningNode: self.spriteComponent.node)
+        let mine = BaitEntity(imageName: "mine", owningNode: self.spriteComponent.node)
         //        mine.spriteComponent.node.zPosition = Layer.alien.rawValue
+        
         let path = CGMutablePath()
-        let point1 = spriteComponent.node.convert(spriteComponent.node.position, to: playerToKill.spriteComponent.node)
-        
-        //        mine.spriteComponent.node.position = spriteComponent.node.position
-        
-        path.move(to: spriteComponent.node.position)
-        var pathToExecute = playerToKill.spriteComponent.node.position
+        mine.spriteComponent.node.position = self.spriteComponent.node.position
+        path.move(to: self.spriteComponent.node.position)
+        var pathToExecute: CGPoint!
         if skew % 2 == 0 {
-            pathToExecute.x += CGFloat(skew)
-            pathToExecute.y += CGFloat(skew)
+            let newX = spriteComponent.node.position.x - CGFloat(512)
+            let newY = spriteComponent.node.position.y - CGFloat(512)
+            pathToExecute = CGPoint(x: newX, y: newY)
         } else {
-            pathToExecute.x -= CGFloat(skew)
-            pathToExecute.y -= CGFloat(skew)
+            let newX = spriteComponent.node.position.x + CGFloat(512)
+            let newY = spriteComponent.node.position.y - CGFloat(512)
+            pathToExecute = CGPoint(x: newX, y: newY)
         }
         path.addLine(to: pathToExecute)
-        let followLine = SKAction.follow(path, speed: 128)
-        print("playerToKill \(spriteComponent.node.position) \(point1) \(playerToKill.spriteComponent.node.position)")
+        
+        let followLine = SKAction.follow(path, asOffset: false, orientToPath: true, speed: 32)
         
         localForegrounds[foreGroundIndex].addChild(mine.spriteComponent.node)
         
@@ -108,51 +108,42 @@ class BaiterComponent: GKComponent {
         if toggle {
             
             toggle = false
-            let rand = GKRandomSource.sharedRandom().nextInt(upperBound: 2)
-            let pause = SKAction.wait(forDuration: TimeInterval(rand))
-            let bomb = SKAction.run {
-                let rand = GKRandomSource.sharedRandom().nextInt(upperBound: 8)
-                if rand == 4 {
-//                    self.beginBombing(loop: 0, skew: rand)
-                }
-            }
+            
+            let pause = SKAction.wait(forDuration: TimeInterval(0.1))
+            
             
             // CHANGE this so mutant gives up @ some point
             let move = SKAction.run {
                 self.toggle = true
                 // foreground index is the number of the foreground that the mutant is on right now...
-                let playerPos = self.whereIsPlayer()
-                if playerPos != self.foreGroundIndex {
-                    self.spriteComponent.node.position.x += 10
-                } else {
-                    
+//                let playerPos = self.whereIsPlayer()
+                
                     let newG = self.localForegrounds[self.foreGroundIndex].convert(self.spriteComponent.node.position, to: self.playerToKill.spriteComponent.node)
-                    print("newG \(newG)")
+                
                     let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
                     let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
-                    if self.playerToKill.spriteComponent.node.position.x < self.spriteComponent.node.position.x {
-                        self.spriteComponent.node.position.x -= 8
+                    
+                    if newG.x > 0 {
+                        self.spriteComponent.node.position.x -= 8 + randX
+                    } else {
+                        self.spriteComponent.node.position.x += 8 + randX
                     }
-                    if self.playerToKill.spriteComponent.node.position.x > self.spriteComponent.node.position.x {
-                        self.spriteComponent.node.position.x += 8
-                    }
-//                    if self.playerToKill.spriteComponent.node.position.y + 128 < self.spriteComponent.node.position.y {
-//                        self.spriteComponent.node.position.y -= 8 + randX
-//                    }
-//                    if self.playerToKill.spriteComponent.node.position.y - 128 > self.spriteComponent.node.position.y {
-//                        self.spriteComponent.node.position.y += 8 - randY
-//                    }
+                    
                     if newG.y > CGFloat(128) {
-                        self.spriteComponent.node.position.y -= 8 + randX
-                    }
-                    if newG.y < CGFloat(128) {
+                        self.spriteComponent.node.position.y -= 8 + randY
+                    } else {
                         self.spriteComponent.node.position.y += 8 - randY
                     }
-                }
+                
+                    if Int(newG.y) == 128 {
+                        let rand = GKRandomSource.sharedRandom().nextInt(upperBound: 8)
+                        self.beginBombing(loop: 0, skew: rand)
+                    }
+                
             }
             //            let amountToRotate:CGFloat = 0.5
             //            let rotateClockwise = SKAction.rotate(byAngle: amountToRotate.degreesToRadians(), duration: 0.2)
-            spriteComponent.node.run(SKAction.sequence([pause,move,bomb]))
+            spriteComponent.node.run(SKAction.sequence([pause,move]))
         }
         
         for mine in mines {

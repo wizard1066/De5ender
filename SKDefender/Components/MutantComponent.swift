@@ -107,8 +107,8 @@ class MutantComponent: GKComponent {
         if toggle {
             
             toggle = false
-            let rand = GKRandomSource.sharedRandom().nextInt(upperBound: 2)
-            let pause = SKAction.wait(forDuration: TimeInterval(rand))
+//            let rand = GKRandomSource.sharedRandom().nextInt(upperBound: 2)
+            let pause = SKAction.wait(forDuration: TimeInterval(0.1))
             let bomb = SKAction.run {
                 let rand = GKRandomSource.sharedRandom().nextInt(upperBound: 8)
                 if rand == 4 {
@@ -121,24 +121,24 @@ class MutantComponent: GKComponent {
                 self.toggle = true
                 // foreground index is the number of the foreground that the mutant is on right now...
                 let playerPos = self.whereIsPlayer()
-                if playerPos != self.foreGroundIndex {
-                    self.spriteComponent.node.position.x += 10
-                } else {
+
+                    let newG = self.localForegrounds[self.foreGroundIndex].convert(self.spriteComponent.node.position, to: self.playerToKill.spriteComponent.node)
+                    
                     let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
                     let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
-                    if self.playerToKill.spriteComponent.node.position.x < self.spriteComponent.node.position.x {
-                        self.spriteComponent.node.position.x -= 10 + randX
+                    
+                    if newG.x > 0 {
+                        self.spriteComponent.node.position.x -= 8 + randX
+                    } else {
+                        self.spriteComponent.node.position.x += 8 + randX
                     }
-                    if self.playerToKill.spriteComponent.node.position.x > self.spriteComponent.node.position.x {
-                        self.spriteComponent.node.position.x += 10 - randY
+                    
+                    if newG.y > 0 {
+                        self.spriteComponent.node.position.y -= 8 + randY
+                    } else {
+                        self.spriteComponent.node.position.y += 8 - randY
                     }
-                    if self.playerToKill.spriteComponent.node.position.y < self.spriteComponent.node.position.y {
-                        self.spriteComponent.node.position.y -= 10 + randX
-                    }
-                    if self.playerToKill.spriteComponent.node.position.y > self.spriteComponent.node.position.y {
-                        self.spriteComponent.node.position.y += 10 - randY
-                    }
-                }
+                
             }
 //            let amountToRotate:CGFloat = 0.5
 //            let rotateClockwise = SKAction.rotate(byAngle: amountToRotate.degreesToRadians(), duration: 0.2)

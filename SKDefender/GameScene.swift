@@ -113,7 +113,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         }
         // Add spaceman + aliens
         
-        radar.position = CGPoint(x: self.view!.bounds.minX, y: self.view!.bounds.maxY * 2 - 256)
+        radar.position = CGPoint(x: self.view!.bounds.minX, y: self.view!.bounds.maxY * 2 - self.view!.bounds.maxY * 0.4)
         radar.anchorPoint = CGPoint(x: 0.0, y: -1.0)
         addChild(radar)
         for scanNode in scanNodes {
@@ -450,11 +450,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         setupForeground()
         let player = addPlayer()
-//        doBombers()
+        doBombers()
         doBaiters(player: player)
-//        doMutants(player: player)
+        doMutants(player: player)
 //        Add a boundry to the screen
-        let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minX * 2)
+        let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minY * 2 )
         physicsBody = SKPhysicsBody(edgeLoopFrom: rectToSecure)
         physicsBody?.isDynamic = false
 
@@ -550,7 +550,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         let other = contact.bodyA.categoryBitMask == PhysicsCat.Player ? contact.bodyB : contact.bodyA
         let kidnap = contact.bodyA.categoryBitMask == PhysicsCat.Alien ? contact.bodyB : contact.bodyA
         let hit = contact.bodyA.categoryBitMask == PhysicsCat.Fire ? contact.bodyB : contact.bodyA
-        
+
         // alien kidnaps spaceman
 
         if kidnap.node?.name == "spaceman" && kidnap.node?.parent?.name == "foreground" && contact.bodyB.node!.name == "alien" {
@@ -559,7 +559,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
 
             let shadow = kidnap.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
             (shadow as? SKSpriteNode)?.removeFromParent()
-            
+
             kidnap.node?.removeFromParent()
             kidnap.node?.position = CGPoint(x: 0, y: -96)
             contact.bodyB.node?.addChild(kidnap.node!)
@@ -567,9 +567,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             alienShadow.addChild(shadow)
             return
         }
-        
+
         // drop spaceman if ground touches him
-        
+
         if other.node?.name == "spaceman" && other.node?.parent?.name == "foreground" && contact.bodyB.node!.name == "starship" {
 //        if other.node?.name == "spaceman" && contact.bodyB.node!.name == "starship" {
             print("rule II")
@@ -580,9 +580,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             contact.bodyB.node?.addChild(other.node!)
             return
         }
-        
+
         // drop spaceman if ground touches him while carried by starship
-        
+
         if other.node?.name == "foreground" && contact.bodyB.node?.name == "starship"{
             print("rule III")
             let saving = contact.bodyB.node?.childNode(withName: "spaceman")
@@ -595,17 +595,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             }
             return
         }
-        
+
         // alien hit, releases spaceman
 
         if hit.node?.name == "alien" {
             print("rule IV")
             let victim = hit.node?.childNode(withName: "spaceman")
-            
+
             let alienShadow = hit.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
             alienShadow.removeFromParent()
             contact.bodyA.node?.removeFromParent()
-            
+
             let parent2U = hit.node?.parent
             hit.node?.removeFromParent()
             if victim != nil {
@@ -616,22 +616,45 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             }
             return
         }
-        
+
         // player hits mine
         if other.node?.name == "mine" && contact.bodyA.node?.name == "starship" {
             let shadow = contact.bodyA.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
             (shadow as? SKSpriteNode)?.removeFromParent()
             contact.bodyA.node?.removeFromParent()
             other.node?.removeFromParent()
+
+        }
+        
+        // player hits baiter
+        
+        if other.node?.name == "baiter" && contact.bodyA.node?.name == "starship" {
+            let shadow = other.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+            (shadow as? SKSpriteNode)?.removeFromParent()
+            other.node?.removeFromParent()
             
         }
         
-        // fir hits bomber or mine
-        if hit.node?.name == "bomber" || hit.node?.name == "mine" || hit.node?.name == "mutant" {
-            hit.node?.removeFromParent()
+        if other.node?.name == "mutant" && contact.bodyA.node?.name == "starship" {
+            let shadow = other.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+            (shadow as? SKSpriteNode)?.removeFromParent()
+            other.node?.removeFromParent()
+            
         }
         
-        
+        if other.node?.name == "bomber" && contact.bodyA.node?.name == "starship" {
+            let shadow = other.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+            (shadow as? SKSpriteNode)?.removeFromParent()
+            other.node?.removeFromParent()
+            
+        }
+
+        // fir hits bomber or mine
+        if hit.node?.name == "bomber" || hit.node?.name == "mine" || hit.node?.name == "mutant" || hit.node?.name == "baiter" {
+            hit.node?.removeFromParent()
+        }
+
+
         // spaceman falling to ground
         if other.node?.name == "foreground" {
             print("rule V")
@@ -640,9 +663,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             contact.bodyB.node?.run(SKAction.move(to: poc, duration: 0.5))
             return
         }
-        
+
         // shoot the spaceman and he will disppear
-        
+
         if hit.node?.name == "spaceman" && contact.bodyB.node?.name != "starship" {
             print("rule VI \(contact.bodyB.node?.name)")
             hit.node?.removeFromParent()
