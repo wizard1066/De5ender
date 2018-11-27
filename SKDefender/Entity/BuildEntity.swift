@@ -17,7 +17,7 @@ class BuildEntity: GKEntity {
     var playableRegion: CGFloat = UIScreen.main.bounds.maxY * 2
     var screenWidth = UIScreen.main.bounds.maxY * 2
     
-    init(texture: SKTexture, path: CGMutablePath, i: Int, width: CGFloat) {
+    init(texture: SKTexture, path: CGMutablePath, i: Int, width: CGFloat, physics: Bool) {
         super.init()
 
         
@@ -34,13 +34,13 @@ class BuildEntity: GKEntity {
         spriteNode.position = CGPoint(x: width * CGFloat(i), y: playableStart)
         spriteNode.name = "foreground"
         
-        
-        
-        spriteNode.physicsBody = SKPhysicsBody(edgeChainFrom: path)
-        spriteNode.physicsBody?.categoryBitMask = PhysicsCat.Ground
-        spriteNode.physicsBody?.collisionBitMask = 0
-        spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.Player
-        spriteNode.physicsBody?.affectedByGravity = false
+        if physics {
+            spriteNode.physicsBody = SKPhysicsBody(edgeChainFrom: path)
+            spriteNode.physicsBody?.categoryBitMask = PhysicsCat.Ground
+            spriteNode.physicsBody?.collisionBitMask = 0
+            spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.Player
+            spriteNode.physicsBody?.affectedByGravity = false
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {

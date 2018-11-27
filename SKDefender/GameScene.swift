@@ -20,6 +20,12 @@ struct PhysicsCat {
     static let Mine: UInt32 = 0b1 << 6
 }
 
+enum status {
+    case untouched
+    case kidnapped
+    case rescued
+}
+
 class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     var moveLeft = false
@@ -100,8 +106,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         for i in 0..<numberOfForegrounds {
             let color2U = colours[i]
             let (texture, path) = buildGround(color: color2U)
-            let foreground = BuildEntity(texture: texture, path: path, i: i, width: self.view!.bounds.width * 2)
-            let scanground = BuildEntity(texture: texture, path: path, i: i, width: self.view!.bounds.width * 2)
+            let foreground = BuildEntity(texture: texture, path: path, i: i, width: self.view!.bounds.width * 2, physics: true)
+            let scanground = BuildEntity(texture: texture, path: path, i: i, width: self.view!.bounds.width * 2, physics: false)
             let foregroundNode = foreground.buildComponent.node
             let scanNode = scanground.buildComponent.node
             scanNode.delegate = self
@@ -158,9 +164,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
             let (_,_) = self.addLander(loop: loop, randX: randX, randY: (self.view?.bounds.maxY)!*2, player: player)
             let (_,_) = self.addItem(loop: loop, randX: randX, player: player)
-//            let item = ItemEntity(imageName: "ItemBlank", xCord: randX, yCord: self.view!.bounds.minY + 96)
-//            let itemNode = item.rescueComponent.node
-//            self.foregrounds[loop].addChild(itemNode)
         }
     }
     
@@ -208,13 +211,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     func addItem(loop: Int, randX: CGFloat, player: PlayerEntity) -> (EntityNode, EntityNode) {
         let shadow = ItemEntity(imageName: "ItemBlank", xCord: randX, yCord: self.view!.bounds.minY + 96, shadowNode: nil)
-        let itemShadow = shadow.rescueComponent.node
+        let itemShadow = shadow.itemComponent.node
         itemShadow.delegate = self
         itemShadow.name = "shadow"
         itemShadow.zPosition = Layer.spaceman.rawValue
         
         let item = ItemEntity(imageName: "ItemBlank", xCord: randX, yCord: self.view!.bounds.minY + 96, shadowNode: itemShadow)
-        let itemNode = item.rescueComponent.node
+        let itemNode = item.itemComponent.node
         itemNode.zPosition = Layer.spaceman.rawValue
         itemNode.delegate = self
         scanNodes[loop].addChild(itemShadow)
@@ -320,36 +323,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
 //        self.mines.append(mine)
 //    }
     
-    struct linkedNodes {
-        var bodyA: EntityNode!
-        var bodyB: EntityNode!
-    }
-    var links2F:[linkedNodes] = []
+//    struct linkedNodes {
+//        var bodyA: EntityNode!
+//        var bodyB: EntityNode!
+//    }
+//    var links2F:[linkedNodes] = []
     
-    func addSpaceMen(loop: Int) -> (EntityNode, CGFloat){
-        let randomSource = GKARC4RandomSource()
-        let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 0, highestValue: Int(self.view!.bounds.width))
-        let randomValueX = CGFloat(randomDistribution.nextInt())
-      
-        let spaceMan = RescueEntity(imageName: "spaceMan", xCord: view!.bounds.maxX + randomValueX, yCord:view!.bounds.minY + 96)
-        
-        let spaceNode = spaceMan.rescueComponent.node
-        spaceNode.delegate = self
-        spaceNode.zPosition = Layer.spaceman.rawValue
-        foregrounds[loop].addChild(spaceNode)
-        
-        return (spaceNode, randomValueX)
-    }
+//    func addSpaceMen(loop: Int) -> (EntityNode, CGFloat){
+//        let randomSource = GKARC4RandomSource()
+//        let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 0, highestValue: Int(self.view!.bounds.width))
+//        let randomValueX = CGFloat(randomDistribution.nextInt())
+//
+//        let spaceMan = RescueEntity(imageName: "spaceMan", xCord: view!.bounds.maxX + randomValueX, yCord:view!.bounds.minY + 96)
+//
+//        let spaceNode = spaceMan.rescueComponent.node
+//        spaceNode.delegate = self
+//        spaceNode.zPosition = Layer.spaceman.rawValue
+//        foregrounds[loop].addChild(spaceNode)
+//
+//        return (spaceNode, randomValueX)
+//    }
     
-    func addAlien(loop: Int, randX: CGFloat) -> EntityNode {
-        let alien = AlienEntity(imageName: "alien", xCord: self.view!.bounds.maxX + randX, yCord: self.view!.bounds.maxY, screenBounds: self.view!.bounds)
-        let alienNode = alien.spriteComponent.node
-        alienNode.zPosition = Layer.alien.rawValue
-        alienNode.delegate = self
-        foregrounds[loop].addChild(alienNode)
-        aliens.append(alien)
-        return alienNode
-    }
+//    func addAlien(loop: Int, randX: CGFloat) -> EntityNode {
+//        let alien = AlienEntity(imageName: "alien", xCord: self.view!.bounds.maxX + randX, yCord: self.view!.bounds.maxY, screenBounds: self.view!.bounds)
+//        let alienNode = alien.spriteComponent.node
+//        alienNode.zPosition = Layer.alien.rawValue
+//        alienNode.delegate = self
+//        foregrounds[loop].addChild(alienNode)
+//        aliens.append(alien)
+//        return alienNode
+//    }
     
     var moveAmount: CGPoint!
 //    var foregroundCGPoint: CGFloat!
@@ -437,11 +440,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
 //        playerNode.size = CGSize(width: playerNode.size.width/4, height: playerNode.size.height/4)
         playerNode.delegate = self
         addChild(playerNode)
-        
-   
-        
-        
-//        player.movementComponent.playableStart = playableStart
         
         let upArrow = HeadsUpEntity(imageName: "UpArrow", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!) + 96, name: "up")
         upArrow.hudComponent.node.delegate = self
@@ -532,10 +530,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         shadowNode.position.x = playerNode.position.x / 4
         shadowNode.position.y = playerNode.position.y / 4
         
-        for link in links2F {
-            link.bodyB.position.x = link.bodyA.position.x
-            link.bodyB.position.y = link.bodyA.position.y
-        }
+//        for link in links2F {
+//            link.bodyB.position.x = link.bodyA.position.x
+//            link.bodyB.position.y = link.bodyA.position.y
+//        }
         
         for lander in landers {
             lander.update(deltaTime: deltaTime)
@@ -610,6 +608,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
 
             kidnap.node?.removeFromParent()
             kidnap.node?.position = CGPoint(x: 0, y: -96)
+            kidnap.node?.userData?.setObject(status.kidnapped, forKey: "status" as NSCopying)
             contact.bodyA.node?.addChild(kidnap.node!)
             let alienShadow = contact.bodyA.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
             alienShadow.position = CGPoint(x: 0, y: -64)
@@ -617,17 +616,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             return
         }
 
-        // drop spaceman if ground touches him
+        // pickup falling spaceman from lander
 
-        if other.node?.name == "spaceman" && other.node?.parent?.name == "foreground" && contact.bodyB.node!.name == "starship" {
+        if other.node?.name == "spaceman" && other.node?.parent?.name == "foreground" && contact.bodyB.node!.name == "starship"  {
 //        if other.node?.name == "spaceman" && contact.bodyB.node!.name == "starship" {
             print("rule II")
 //            pickup = other.node?.position
-            other.node?.removeFromParent()
-            other.node?.position = CGPoint(x: 0, y: -96)
-            other.node?.physicsBody?.isDynamic = false
-            contact.bodyB.node?.addChild(other.node!)
-            return
+            if other.node?.userData?.object(forKey: "status") as? status == status.kidnapped {
+                other.node?.removeFromParent()
+                other.node?.position = CGPoint(x: 0, y: -96)
+                other.node?.physicsBody?.isDynamic = false
+    //            other.node?.userData?.setObject(status.rescued, forKey: "status" as NSCopying)
+                contact.bodyB.node?.addChild(other.node!)
+                return
+            }
         }
 
         // drop spaceman if ground touches him while carried by starship
@@ -635,12 +637,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         if other.node?.name == "foreground" && contact.bodyB.node?.name == "starship"{
             print("rule III")
             let saving = contact.bodyB.node?.childNode(withName: "spaceman")
-            if saving != nil {
+            print("saving ... \(saving?.userData?.object(forKey: "status"))")
+            if saving != nil && saving?.userData?.object(forKey: "status") as? status == status.kidnapped {
 //                saving?.position = (other.node?.position)!
                 saving?.position.x = self.playerNode.position.x - (other.node?.position.x)!
                 saving?.position.y = 96
                 saving?.removeFromParent()
                 other.node?.addChild(saving!)
+                saving?.userData?.setObject(status.rescued, forKey: "status" as NSCopying)
             }
             return
         }

@@ -10,17 +10,17 @@ import SpriteKit
 import GameplayKit
 
 class RescueEntity: GKEntity {
-    var rescueComponent: RescueComponent!
+    var itemComponent: ItemComponent!
     
     init(imageName: String, xCord: CGFloat, yCord: CGFloat) {
 //    init(imageName: String) {
         super.init()
         
         let texture = SKTexture(imageNamed: imageName)
-        rescueComponent = RescueComponent(entity: self, texture: texture, size: texture.size())
-        addComponent(rescueComponent)
+        itemComponent = ItemComponent(entity: self, texture: texture, size: texture.size())
+        addComponent(itemComponent)
         
-        let spriteNode = rescueComponent.node
+        let spriteNode = itemComponent.node
         spriteNode.name = "spaceman"
         spriteNode.position = CGPoint(x: xCord, y: yCord)
         spriteNode.size = CGSize(width: spriteNode.size.width/2, height: spriteNode.size.height/2)

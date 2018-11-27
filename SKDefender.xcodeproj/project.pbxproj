@@ -18,6 +18,7 @@
 		7B16922F21AD999900BCCC21 /* LanderEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B16922E21AD999900BCCC21 /* LanderEntity.swift */; };
 		7B16923121AD9A3F00BCCC21 /* LanderComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B16923021AD9A3F00BCCC21 /* LanderComponent.swift */; };
 		7B16923321ADAD1A00BCCC21 /* ItemEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B16923221ADAD1A00BCCC21 /* ItemEntity.swift */; };
+		7B16923521ADBB9000BCCC21 /* ItemComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B16923421ADBB9000BCCC21 /* ItemComponent.swift */; };
 		7B20BDA9219983C5002405C1 /* AlienDecentComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B20BDA8219983C5002405C1 /* AlienDecentComponent.swift */; };
 		7B20BDAB21998850002405C1 /* AlienEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B20BDAA21998850002405C1 /* AlienEntity.swift */; };
 		7B81710621A55C6A002D9337 /* MineEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B81710521A55C6A002D9337 /* MineEntity.swift */; };
@@ -31,7 +32,6 @@
 		7BA5CCE221948F8C007EB2E3 /* ShapeComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCE121948F8C007EB2E3 /* ShapeComponent.swift */; };
 		7BA5CCE421949084007EB2E3 /* PathComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCE321949084007EB2E3 /* PathComponent.swift */; };
 		7BA5CCE62195C2B1007EB2E3 /* ResueEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCE52195C2B1007EB2E3 /* ResueEntity.swift */; };
-		7BA5CCE82195C44F007EB2E3 /* RescueComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCE72195C44F007EB2E3 /* RescueComponent.swift */; };
 		7BE20D09219222B900D68240 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE20D08219222B900D68240 /* AppDelegate.swift */; };
 		7BE20D0F219222B900D68240 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE20D0E219222B900D68240 /* GameScene.swift */; };
 		7BE20D11219222B900D68240 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE20D10219222B900D68240 /* GameViewController.swift */; };
@@ -58,6 +58,7 @@
 		7B16922E21AD999900BCCC21 /* LanderEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanderEntity.swift; sourceTree = "<group>"; };
 		7B16923021AD9A3F00BCCC21 /* LanderComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanderComponent.swift; sourceTree = "<group>"; };
 		7B16923221ADAD1A00BCCC21 /* ItemEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemEntity.swift; sourceTree = "<group>"; };
+		7B16923421ADBB9000BCCC21 /* ItemComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemComponent.swift; sourceTree = "<group>"; };
 		7B20BDA8219983C5002405C1 /* AlienDecentComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlienDecentComponent.swift; sourceTree = "<group>"; };
 		7B20BDAA21998850002405C1 /* AlienEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlienEntity.swift; sourceTree = "<group>"; };
 		7B81710521A55C6A002D9337 /* MineEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MineEntity.swift; sourceTree = "<group>"; };
@@ -71,7 +72,6 @@
 		7BA5CCE121948F8C007EB2E3 /* ShapeComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeComponent.swift; sourceTree = "<group>"; };
 		7BA5CCE321949084007EB2E3 /* PathComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathComponent.swift; sourceTree = "<group>"; };
 		7BA5CCE52195C2B1007EB2E3 /* ResueEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResueEntity.swift; sourceTree = "<group>"; };
-		7BA5CCE72195C44F007EB2E3 /* RescueComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RescueComponent.swift; sourceTree = "<group>"; };
 		7BE20D05219222B900D68240 /* SKDefender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SKDefender.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BE20D08219222B900D68240 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7BE20D0E219222B900D68240 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -126,7 +126,6 @@
 				7BFEEC2A21A6BC13006B5D59 /* MineComponent.swift */,
 				7BA5CCD52192EDAA007EB2E3 /* SpriteComponent.swift */,
 				7B049C1F219B1A2F00120A49 /* BuildComponent.swift */,
-				7BA5CCE72195C44F007EB2E3 /* RescueComponent.swift */,
 				7BA5CCD72192F291007EB2E3 /* MovementComponent.swift */,
 				7B20BDA8219983C5002405C1 /* AlienDecentComponent.swift */,
 				7BA5CCE121948F8C007EB2E3 /* ShapeComponent.swift */,
@@ -136,6 +135,7 @@
 				7B16922621ABF36A00BCCC21 /* BaiterComponent.swift */,
 				7B16922A21AC31A800BCCC21 /* BaitComponent.swift */,
 				7B16923021AD9A3F00BCCC21 /* LanderComponent.swift */,
+				7B16923421ADBB9000BCCC21 /* ItemComponent.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -268,7 +268,6 @@
 				7BA5CCD82192F291007EB2E3 /* MovementComponent.swift in Sources */,
 				7BA5CCE421949084007EB2E3 /* PathComponent.swift in Sources */,
 				7B20BDA9219983C5002405C1 /* AlienDecentComponent.swift in Sources */,
-				7BA5CCE82195C44F007EB2E3 /* RescueComponent.swift in Sources */,
 				7B16922721ABF36A00BCCC21 /* BaiterComponent.swift in Sources */,
 				7B81710621A55C6A002D9337 /* MineEntity.swift in Sources */,
 				7BE20D0F219222B900D68240 /* GameScene.swift in Sources */,
@@ -286,6 +285,7 @@
 				7BEF7BB321A2C16100681795 /* BomberEntity.swift in Sources */,
 				7BA5CCE221948F8C007EB2E3 /* ShapeComponent.swift in Sources */,
 				7B049C20219B1A2F00120A49 /* BuildComponent.swift in Sources */,
+				7B16923521ADBB9000BCCC21 /* ItemComponent.swift in Sources */,
 				7BFEEC2D21A6F440006B5D59 /* BombEntity.swift in Sources */,
 				7BEF7BB521A2C19D00681795 /* BomberComponent.swift in Sources */,
 				7B049C22219B5AB600120A49 /* HeadsUpEntity.swift in Sources */,
