@@ -153,6 +153,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         }
     }
     
+    func doLanders(player: PlayerEntity) {
+        for loop in 0..<numberOfForegrounds {
+            let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
+            self.addLander(loop: loop, randX: randX, randY: (self.view?.bounds.maxY)!*2, player: player)
+        }
+    }
+    
     func dodo() {
         for loop in 0..<numberOfForegrounds {
             let randomSource = GKARC4RandomSource()
@@ -191,9 +198,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             }
             foregrounds[loop].run(SKAction.sequence([waitAction,runAction]))
         }
-//        let (bomberNode,bomberShadow) = addBomber(loop: 4, randX: self.view!.bounds.maxX, randY: 128)
-//        let link2D3 = linkedNodes(bodyA: bomberShadow, bodyB: bomberNode)
-//        self.links2F.append(link2D3)
+    }
+    
+    var landers:[LanderEntity] = []
+    
+    func addLander(loop: Int, randX: CGFloat, randY: CGFloat, player: PlayerEntity) -> (EntityNode, EntityNode) {
+        let shadow = LanderEntity(imageName: "alien", xCord: self.view!.bounds.maxX + randX, yCord: self.view!.bounds.maxY, screenBounds: self.view!.bounds, shadowNode: nil)
+        let landerShadow = shadow.spriteComponent.node
+        landerShadow.zPosition = Layer.alien.rawValue
+        landerShadow.delegate = self
+        landerShadow.name = "shadow"
+        landerShadow.zPosition = Layer.alien.rawValue
+        
+        let lander = LanderEntity(imageName: "alien", xCord: self.view!.bounds.maxX + randX, yCord: self.view!.bounds.maxY, screenBounds: self.view!.bounds, shadowNode: landerShadow)
+        let landerNode = lander.spriteComponent.node
+        landerNode.zPosition = Layer.alien.rawValue
+        landerNode.delegate = self
+        scanNodes[loop].addChild(landerShadow)
+        foregrounds[loop].addChild(landerNode)
+        landers.append(lander)
+
+        return (landerNode, landerShadow)
     }
     
     var baiters:[BaiterEntity] = []
@@ -450,9 +475,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         setupForeground()
         let player = addPlayer()
-        doBombers()
-        doBaiters(player: player)
-        doMutants(player: player)
+//        doBombers()
+//        doBaiters(player: player)
+//        doMutants(player: player)
+        doLanders(player: player)
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minY * 2 )
         physicsBody = SKPhysicsBody(edgeLoopFrom: rectToSecure)
@@ -480,17 +506,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             lowerSpeed()
         }
         player.update(deltaTime: deltaTime)
-        for alien in aliens {
-            alien.update(deltaTime: deltaTime)
-        }
+
         shadowNode.position.x = playerNode.position.x / 4
         shadowNode.position.y = playerNode.position.y / 4
-        
-        
         
         for link in links2F {
             link.bodyB.position.x = link.bodyA.position.x
             link.bodyB.position.y = link.bodyA.position.y
+        }
+        
+        for lander in landers {
+            lander.update(deltaTime: deltaTime)
         }
         
         for bomber in bombers {
