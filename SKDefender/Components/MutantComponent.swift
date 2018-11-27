@@ -63,9 +63,6 @@ class MutantComponent: GKComponent {
         let mine = BombEntity(imageName: "mine", owningNode: self.spriteComponent.node)
         //        mine.spriteComponent.node.zPosition = Layer.alien.rawValue
         let path = CGMutablePath()
-        let point1 = spriteComponent.node.convert(spriteComponent.node.position, to: playerToKill.spriteComponent.node)
-        
-//        mine.spriteComponent.node.position = spriteComponent.node.position
         
         path.move(to: spriteComponent.node.position)
         var pathToExecute = playerToKill.spriteComponent.node.position
@@ -78,7 +75,6 @@ class MutantComponent: GKComponent {
         }
         path.addLine(to: pathToExecute)
         let followLine = SKAction.follow(path, speed: 128)
-        print("playerToKill \(spriteComponent.node.position) \(point1) \(playerToKill.spriteComponent.node.position)")
         
         localForegrounds[foreGroundIndex].addChild(mine.spriteComponent.node)
         
@@ -129,14 +125,22 @@ class MutantComponent: GKComponent {
                     
                     if newG.x > 0 {
                         self.spriteComponent.node.position.x -= 8 + randX
+                        self.spriteShadow?.position.x = self.spriteComponent.node.position.x
+//                        self.spriteShadow?.position.x -= 8 + randX
                     } else {
                         self.spriteComponent.node.position.x += 8 + randX
+                        self.spriteShadow?.position.x = self.spriteComponent.node.position.x
+//                        self.spriteShadow?.position.x += 8 + randX
                     }
                     
                     if newG.y > 0 {
                         self.spriteComponent.node.position.y -= 8 + randY
+                        self.spriteShadow?.position.y = self.spriteComponent.node.position.y
+//                        self.spriteShadow?.position.y -= 8 + randY
                     } else {
                         self.spriteComponent.node.position.y += 8 - randY
+                        self.spriteShadow?.position.y = self.spriteComponent.node.position.y
+//                        self.spriteShadow?.position.y += 8 - randY
                     }
                 
             }
@@ -173,9 +177,6 @@ class MutantComponent: GKComponent {
             }
             spriteComponent.node.position.x = 2048
             localForegrounds[foreGroundIndex].addChild(spriteComponent.node)
-        }
-        
-        if spriteShadow!.position.x < 0 {
             if spriteShadow?.parent != nil {
                 spriteShadow?.removeFromParent()
                 scanNodeIndex -= 1
@@ -187,7 +188,6 @@ class MutantComponent: GKComponent {
             localScan[scanNodeIndex].addChild(spriteShadow!)
         }
         
-        
         if spriteComponent.node.position.x > 2048 {
             if spriteComponent.node.parent != nil {
                 spriteComponent.node.removeFromParent()
@@ -198,10 +198,7 @@ class MutantComponent: GKComponent {
                 spriteComponent.node.position.x = 0
                 localForegrounds[foreGroundIndex].addChild(spriteComponent.node)
             }
-        }
-        
-        if spriteShadow!.position.x > 2048 {
-            if spriteComponent.node.parent != nil {
+            if spriteShadow?.parent != nil {
                 spriteShadow?.removeFromParent()
                 scanNodeIndex += 1
                 if scanNodeIndex == 8 {
@@ -211,8 +208,6 @@ class MutantComponent: GKComponent {
                 localScan[scanNodeIndex].addChild(spriteShadow!)
             }
         }
-        
     }
-    
 }
 

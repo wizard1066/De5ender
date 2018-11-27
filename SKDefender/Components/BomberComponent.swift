@@ -91,11 +91,15 @@ class BomberComponent: GKComponent {
         
         if spriteComponent.node.position.y < bounds.maxY * 1.6 && !change {
             spriteComponent.node.position.y += 1
+            self.spriteShadow?.position.y = self.spriteComponent.node.position.y
+//            spriteShadow?.position.y += 1
             change = false
         } else {
             change = true
             if spriteComponent.node.position.y > bounds.minY + 128 {
                 spriteComponent.node.position.y -= 1
+                self.spriteShadow?.position.y = self.spriteComponent.node.position.y
+//                spriteShadow?.position.y -= 1
             } else {
                 change = false
             }
@@ -107,50 +111,49 @@ class BomberComponent: GKComponent {
         
         if spriteComponent.node.position.x < 0 {
             if spriteComponent.node.parent != nil {
-                spriteComponent.node.removeFromParent()
+//                spriteComponent.node.removeFromParent()
                 foreGroundIndex -= 1
                 if foreGroundIndex < 0 {
                     foreGroundIndex = 7
                 }
             }
             spriteComponent.node.position.x = 2048
-            localForeground[foreGroundIndex].addChild(spriteComponent.node)
-        }
-        
-        if spriteShadow!.position.x < 0 {
-            if spriteShadow?.parent != nil {
-                spriteShadow?.removeFromParent()
-                scanNodeIndex -= 1
-                if scanNodeIndex < 0 {
-                    scanNodeIndex = 7
+            if spriteComponent.node.parent != nil {
+                spriteComponent.node.removeFromParent()
+                localForeground[foreGroundIndex].addChild(spriteComponent.node)
+                if spriteShadow?.parent != nil {
+                    spriteShadow?.removeFromParent()
+                    scanNodeIndex -= 1
+                    if scanNodeIndex < 0 {
+                        scanNodeIndex = 7
+                    }
                 }
+                spriteShadow?.position.x = 2048
+                localScan[scanNodeIndex].addChild(spriteShadow!)
             }
-            spriteShadow?.position.x = 2048
-            localScan[scanNodeIndex].addChild(spriteShadow!)
         }
-        
         
         if spriteComponent.node.position.x > 2048 {
             if spriteComponent.node.parent != nil {
-                spriteComponent.node.removeFromParent()
+//                spriteComponent.node.removeFromParent()
                 foreGroundIndex += 1
                 if foreGroundIndex == 8 {
                     foreGroundIndex = 0
                 }
                 spriteComponent.node.position.x = 0
-                localForeground[foreGroundIndex].addChild(spriteComponent.node)
-            }
-        }
-        
-        if spriteShadow!.position.x > 2048 {
-            if spriteComponent.node.parent != nil {
-                spriteShadow?.removeFromParent()
-                scanNodeIndex += 1
-                if scanNodeIndex == 8 {
-                    scanNodeIndex = 0
+                if spriteComponent.node.parent != nil {
+                    spriteComponent.node.removeFromParent()
+                    localForeground[foreGroundIndex].addChild(spriteComponent.node)
                 }
-                spriteShadow?.position.x = 0
-                localScan[scanNodeIndex].addChild(spriteShadow!)
+                if spriteShadow?.parent != nil {
+                    spriteShadow?.removeFromParent()
+                    scanNodeIndex += 1
+                    if scanNodeIndex == 8 {
+                        scanNodeIndex = 0
+                    }
+                    spriteShadow?.position.x = 0
+                    localScan[scanNodeIndex].addChild(spriteShadow!)
+                }
             }
         }
         

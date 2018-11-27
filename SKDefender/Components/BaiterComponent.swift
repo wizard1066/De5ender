@@ -125,14 +125,22 @@ class BaiterComponent: GKComponent {
                     
                     if newG.x > 0 {
                         self.spriteComponent.node.position.x -= 8 + randX
+                        self.spriteShadow?.position.x = self.spriteComponent.node.position.x
+//                        self.spriteShadow?.position.x -= 8 + randX
                     } else {
                         self.spriteComponent.node.position.x += 8 + randX
+                        self.spriteShadow?.position.x = self.spriteComponent.node.position.x
+//                        self.spriteShadow?.position.x += 8 + randX
                     }
                     
                     if newG.y > CGFloat(128) {
                         self.spriteComponent.node.position.y -= 8 + randY
+                        self.spriteShadow?.position.y = self.spriteComponent.node.position.y
+//                        self.spriteShadow?.position.y -= 8 + randY
                     } else {
                         self.spriteComponent.node.position.y += 8 - randY
+                        self.spriteShadow?.position.y = self.spriteComponent.node.position.y
+//                        self.spriteShadow?.position.y += 8 + randY
                     }
                 
                     if Int(newG.y) == 128 {
@@ -174,9 +182,6 @@ class BaiterComponent: GKComponent {
             }
             spriteComponent.node.position.x = 2048
             localForegrounds[foreGroundIndex].addChild(spriteComponent.node)
-        }
-        
-        if spriteShadow!.position.x < 0 {
             if spriteShadow?.parent != nil {
                 spriteShadow?.removeFromParent()
                 scanNodeIndex -= 1
@@ -188,7 +193,6 @@ class BaiterComponent: GKComponent {
             localScan[scanNodeIndex].addChild(spriteShadow!)
         }
         
-        
         if spriteComponent.node.position.x > 2048 {
             if spriteComponent.node.parent != nil {
                 spriteComponent.node.removeFromParent()
@@ -199,10 +203,7 @@ class BaiterComponent: GKComponent {
                 spriteComponent.node.position.x = 0
                 localForegrounds[foreGroundIndex].addChild(spriteComponent.node)
             }
-        }
-        
-        if spriteShadow!.position.x > 2048 {
-            if spriteComponent.node.parent != nil {
+            if spriteShadow!.parent != nil {
                 spriteShadow?.removeFromParent()
                 scanNodeIndex += 1
                 if scanNodeIndex == 8 {
@@ -212,7 +213,5 @@ class BaiterComponent: GKComponent {
                 localScan[scanNodeIndex].addChild(spriteShadow!)
             }
         }
-        
     }
-    
 }
