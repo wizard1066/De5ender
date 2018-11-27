@@ -53,7 +53,25 @@ class MovementComponent: GKComponent {
             spriteNode.run(SKAction.sequence([advanceAction,fallBackAction]))
 //            velocity.y -= 256
         }
-        
+    }
+    
+    func applyImpulseXb(_ lastUpdateTime: TimeInterval) {
+        let spriteNode = spriteComponent.node
+        let amountToMove = UIScreen.main.bounds.maxX / 100
+        if spriteNode.userData?.object(forKey: "direction") as? String == "right" {
+            spriteNode.userData?.setObject("right", forKey: "direction" as NSCopying)
+            let advanceAction = SKAction.move(by: CGVector(dx: amountToMove, dy: 0), duration: 0.4)
+            let fallBackAction = SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 1)
+            spriteNode.run(SKAction.sequence([advanceAction,fallBackAction]))
+            
+        }
+        if spriteNode.userData?.object(forKey: "direction") as? String == "left" {
+            spriteNode.userData?.setObject("left", forKey: "direction" as NSCopying)
+            let advanceAction = SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 0.4)
+            let fallBackAction = SKAction.move(by: CGVector(dx: amountToMove, dy: 0), duration: 1)
+            spriteNode.run(SKAction.sequence([advanceAction,fallBackAction]))
+            
+        }
     }
     
     func applyImpulseLeft(_ lastUpdateTime: TimeInterval) {

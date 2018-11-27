@@ -4,10 +4,11 @@
 //
 //  Created by localadmin on 06.11.18.
 //  Copyright © 2018 ch.cqd.skdefender. All rights reserved.
-//
+// 024860
 
 import SpriteKit
 import GameplayKit
+import CoreMotion
 
 struct PhysicsCat {
     static let None: UInt32 = 0
@@ -478,12 +479,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     }
     
     var cameraNode: SKCameraNode!
-    
+    var manager: CMMotionManager!
     
     override func didMove(to view: SKView) {
         /* Setup your scene here */
         physicsWorld.gravity = CGVector(dx: 0, dy: -0.5)
         physicsWorld.contactDelegate = self
+        
+        manager = CMMotionManager()
+        guard manager.isAccelerometerAvailable else {
+            print("no manager")
+            return
+        }
+        
+        manager.startDeviceMotionUpdates()
+        manager.startGyroUpdates()
+        manager.startMagnetometerUpdates()
+        manager.startAccelerometerUpdates()
+        
+        
         
         cameraNode = SKCameraNode()
         cameraNode.position = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
@@ -498,7 +512,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
 //        doBombers()
 //        doBaiters(player: player)
 //        doMutants(player: player)
-        doLanders(player: player)
+//        doLanders(player: player)
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minY * 2 )
         physicsBody = SKPhysicsBody(edgeLoopFrom: rectToSecure)
@@ -509,6 +523,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     }
     
     override func update(_ currentTime: CFTimeInterval) {
+        
+//        print("attitude yaw \(manager?.deviceMotion?.attitude.yaw) pitch \(manager?.deviceMotion?.attitude.pitch) roll \(manager?.deviceMotion?.attitude.roll)")
+        let direct = manager.deviceMotion?.attitude
+        
+        if direct!.pitch > 0.2 {
+            moveRight = false
+            moveLeft = true
+            player.movementComponent.applyImpulseXb(lastUpdateTimeInterval)
+            player.movementComponent.leftTexture()
+            shadow.movementComponent.leftTexture()
+            advancedArrow.hudComponent.changeTexture(imageNamed: "RightArrow")
+        }
+        if direct!.pitch < -0.2 {
+            print("right")
+            moveRight = true
+            moveLeft = false
+            player.movementComponent.applyImpulseXb(lastUpdateTimeInterval)
+            player.movementComponent.rightTexture()
+            shadow.movementComponent.rightTexture()
+            advancedArrow.hudComponent.changeTexture(imageNamed: "LeftArrow")
+        }
+        if direct!.roll > 0.2 {
+            player.movementComponent.applyImpulseUp(lastUpdateTimeInterval)
+        }
+        if direct!.roll < -0.2 {
+            player.movementComponent.applyImpulseDown(lastUpdateTimeInterval)
+        }
         /* Called before each frame is rendered */
         if lastUpdateTimeInterval == 0 {
             lastUpdateTimeInterval = currentTime
@@ -757,6 +798,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             player.movementComponent.applyImpulseUp(lastUpdateTimeInterval)
         case "down":
             player.movementComponent.applyImpulseDown(lastUpdateTimeInterval)
+            //fuck
         case "advance":
             let direct = playerNode.userData?.object(forKey: "direction") as? String
             if previousDirection == nil || previousDirection != direct {
