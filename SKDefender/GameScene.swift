@@ -442,11 +442,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         playerNode.delegate = self
         addChild(playerNode)
         
-        let upArrow = HeadsUpEntity(imageName: "UpArrow", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!) + 96, name: "up")
+        let upArrow = HeadsUpEntity(imageName: "UpArrow", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!) + 128, name: "up")
         upArrow.hudComponent.node.delegate = self
          upArrow.hudComponent.node.zPosition = Layer.controls.rawValue
 
-        let downArrow = HeadsUpEntity(imageName: "DownArrow", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!) - 96, name: "down")
+        let downArrow = HeadsUpEntity(imageName: "DownArrow", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!) - 128, name: "down")
         downArrow.hudComponent.node.delegate = self
          downArrow.hudComponent.node.zPosition = Layer.controls.rawValue
         
@@ -523,32 +523,40 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     }
     
     override func update(_ currentTime: CFTimeInterval) {
-        
+        //fuck
 //        print("attitude yaw \(manager?.deviceMotion?.attitude.yaw) pitch \(manager?.deviceMotion?.attitude.pitch) roll \(manager?.deviceMotion?.attitude.roll)")
         let direct = manager.deviceMotion?.attitude
         
         if direct!.pitch > 0.2 {
             moveRight = false
             moveLeft = true
+            player.movementComponent.setScreen(entity: scene!)
             player.movementComponent.applyImpulseXb(lastUpdateTimeInterval)
             player.movementComponent.leftTexture()
             shadow.movementComponent.leftTexture()
             advancedArrow.hudComponent.changeTexture(imageNamed: "RightArrow")
+            print("playerNode.texture \(playerNode.texture)")
+            player.movementComponent.applyImpulseLeftX(lastUpdateTimeInterval)
         }
         if direct!.pitch < -0.2 {
             print("right")
             moveRight = true
             moveLeft = false
+            player.movementComponent.setScreen(entity: scene!)
             player.movementComponent.applyImpulseXb(lastUpdateTimeInterval)
             player.movementComponent.rightTexture()
             shadow.movementComponent.rightTexture()
             advancedArrow.hudComponent.changeTexture(imageNamed: "LeftArrow")
+            
+            player.movementComponent.applyImpulseRightX(lastUpdateTimeInterval)
         }
-        if direct!.roll > 0.2 {
-            player.movementComponent.applyImpulseUp(lastUpdateTimeInterval)
+        if direct!.roll > 0.1 {
+            player.movementComponent.setScreen(entity: scene!)
+            player.movementComponent.applyImpulseUpX(lastUpdateTimeInterval)
         }
-        if direct!.roll < -0.2 {
-            player.movementComponent.applyImpulseDown(lastUpdateTimeInterval)
+        if direct!.roll < -0.1 {
+            player.movementComponent.setScreen(entity: scene!)
+            player.movementComponent.applyImpulseDownX(lastUpdateTimeInterval)
         }
         /* Called before each frame is rendered */
         if lastUpdateTimeInterval == 0 {
@@ -638,7 +646,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         let kidnap = contact.bodyA.categoryBitMask == PhysicsCat.Alien ? contact.bodyB : contact.bodyA
         let hit = contact.bodyA.categoryBitMask == PhysicsCat.Fire ? contact.bodyB : contact.bodyA
 
-        print("contact \(contact.bodyA.node?.name) \(contact.bodyB.node?.name)")
+        
         // alien kidnaps spaceman
 
         if kidnap.node?.name == "spaceman" && kidnap.node?.parent?.name == "foreground" && contact.bodyA.node!.name == "alien" {
@@ -678,7 +686,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         if other.node?.name == "foreground" && contact.bodyB.node?.name == "starship"{
             print("rule III")
             let saving = contact.bodyB.node?.childNode(withName: "spaceman")
-            print("saving ... \(saving?.userData?.object(forKey: "status"))")
             if saving != nil && saving?.userData?.object(forKey: "status") as? status == status.kidnapped {
 //                saving?.position = (other.node?.position)!
                 saving?.position.x = self.playerNode.position.x - (other.node?.position.x)!
@@ -775,9 +782,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             print("bomber.position \(box.position)")
         case "starship":
 //            let newX = box.convert(box.position, to: foregrounds[0])
-            let newX = foregrounds[0].convert(box.position, to: baiter)
-            let newY = foregrounds[0].convert(baiter.position, to: box)
-            print("playerNode.position \(box.position) \(newX) \(newY)")
+//            let newX = foregrounds[0].convert(box.position, to: baiter)
+//            let newY = foregrounds[0].convert(baiter.position, to: box)
+            print("playerNode.position \(box.position) ")
             
 //            for foreground in foregrounds {
 //                print("forground XY \(foreground.frame.minX) \(foreground.frame.maxX) \(box.position)")
@@ -832,12 +839,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 // moveRight/moveLet control the background direction
                 moveLeft = true
                 moveRight = false
+                player.movementComponent.setScreen(entity: scene!)
                 player.movementComponent.applyImpulseLeft(lastUpdateTimeInterval)
                 shadow.movementComponent.leftTexture()
             case "right":
                 advancedArrow.hudComponent.changeTexture(imageNamed: "LeftArrow")
                 moveRight = true
                 moveLeft = false
+                player.movementComponent.setScreen(entity: scene!)
                 player.movementComponent.applyImpulseRight(lastUpdateTimeInterval)
                 shadow.movementComponent.rightTexture()
             default:
