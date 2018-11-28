@@ -91,8 +91,10 @@ class MovementComponent: GKComponent {
     func applyImpulseLeft(_ lastUpdateTime: TimeInterval) {
         print("applyImpulseRight right")
         let spriteNode = spriteComponent.node
+        let shadowNode = spriteComponent.node.userData?.object(forKey: "shadow") as? EntityNode
         spriteNode.userData?.setObject("right", forKey: "direction" as NSCopying)
         spriteNode.texture = SKTexture(imageNamed: "starship")
+        shadowNode?.texture = SKTexture(imageNamed: "starship")
        
         let amountToMove = UIScreen.main.bounds.maxX
         print("amountToMove \(amountToMove)")
@@ -104,8 +106,10 @@ class MovementComponent: GKComponent {
     func applyImpulseRight(_ lastUpdateTime: TimeInterval) {
         print("applyImpulseRight left")
         let spriteNode = spriteComponent.node
+        let shadowNode = spriteComponent.node.userData?.object(forKey: "shadow") as? EntityNode
         spriteNode.userData?.setObject("left", forKey: "direction" as NSCopying)
         spriteNode.texture = SKTexture(imageNamed: "shipstar")
+        shadowNode?.texture = SKTexture(imageNamed: "shipstar")
        
         let pointToGo = CGPoint(x: localScene!.size.width*0.7, y: spriteNode.position.y)
         spriteNode.run(SKAction.move(to: pointToGo, duration: 0.5))
@@ -117,12 +121,10 @@ class MovementComponent: GKComponent {
     func applyImpulseLeftX(_ lastUpdateTime: TimeInterval) {
         print("applyImpulseRight right")
         let spriteNode = spriteComponent.node
+        let shadowNode = spriteComponent.node.userData?.object(forKey: "shadow") as? EntityNode
         spriteNode.userData?.setObject("right", forKey: "direction" as NSCopying)
         spriteNode.texture = SKTexture(imageNamed: "starship")
-        
-//        let pointToGo = CGPoint(x: localScene!.size.width*0.3, y: spriteNode.position.y)
-//        spriteNode.run(SKAction.move(to: pointToGo, duration: 2))
-//        velocity = CGPoint(x: impulse, y: 0)
+        shadowNode?.texture = SKTexture(imageNamed: "starship")
         slipLeft = true
     }
     
@@ -131,11 +133,10 @@ class MovementComponent: GKComponent {
     func applyImpulseRightX(_ lastUpdateTime: TimeInterval) {
         print("applyImpulseRight left")
         let spriteNode = spriteComponent.node
+        let shadowNode = spriteComponent.node.userData?.object(forKey: "shadow") as? EntityNode
         spriteNode.userData?.setObject("left", forKey: "direction" as NSCopying)
         spriteNode.texture = SKTexture(imageNamed: "shipstar")
-//        let pointToGo = CGPoint(x: localScene!.size.width*0.7, y: spriteNode.position.y)
-//        spriteNode.run(SKAction.move(to: pointToGo, duration: 2))
-//        velocity = CGPoint(x: impulse, y: 0)
+        shadowNode?.texture = SKTexture(imageNamed: "shipstar")
         slipRight = true
     }
     
@@ -155,12 +156,6 @@ class MovementComponent: GKComponent {
     
     func applyMovement(_ seconds: TimeInterval) {
         let spriteNode = spriteComponent.node
-        
-        // Apply Gravity
-//        let gravityStep = gravity * CGFloat(seconds)
-//        velocity.y = velocity.y + gravityStep
-        
-        // Apply Velocity
         
         let velocityVStep = velocity.y * CGFloat(seconds)
         spriteNode.position.y = spriteNode.position.y + velocityVStep
