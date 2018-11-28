@@ -33,11 +33,11 @@ class MovementComponent: GKComponent {
     }
     
     func applyImpulseUp(_ lastUpdateTime: TimeInterval) {
-        velocity = CGPoint(x: 0, y: impulse*4)
+        velocity = CGPoint(x: 0, y: impulse/2)
     }
     
     func applyImpulseDown(_ lastUpdateTime: TimeInterval) {
-        velocity = CGPoint(x: 0, y: -impulse*4)
+        velocity = CGPoint(x: 0, y: -impulse/2)
     }
     
     func applyImpulseUpX(_ lastUpdateTime: TimeInterval) {

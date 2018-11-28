@@ -152,7 +152,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         for loop in 0...0 {
             let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + 128))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-            let (baiter, baiterShdow) = addBaiter(randX: randX, randY: randY, player: player)
+            let (baiter, baiterShdow) = addBaiter(sceneNo: 1,randX: randX, randY: randY, player: player)
             baiter.delegate = self
             self.baiter = baiter as? EntityNode
         }
@@ -162,12 +162,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         for loop in 0...0 {
             let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + 128))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-            addMutant(randX: randX, randY: randY, player: player)
+            addMutant(sceneNo: 7, randX: randX, randY: randY, player: player)
         }
     }
     
     func doBombers() {
-        for loop in 0...0 {
+        for loop in 0...3 {
             let randY = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY - CGFloat(128))) + 128
             let randX = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2))
             let (bomberNode, bomberShadow) = addBomber(loop: 0, randX: CGFloat(randX), randY: CGFloat(randY), scanNodes: scanNodes, foregrounds: foregrounds)
@@ -223,21 +223,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     var baiters:[BaiterEntity] = []
     
-    func addBaiter(randX: CGFloat, randY: CGFloat, player: PlayerEntity) -> (EntityNode, EntityNode) {
+    func addBaiter(sceneNo: Int,randX: CGFloat, randY: CGFloat, player: PlayerEntity) -> (EntityNode, EntityNode) {
         let shadow = BaiterEntity(imageName: "baiter", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: nil, playerToKill: nil)
         let baiterShadow = shadow.spriteComponent.node
+        shadow.baiterComponent.setScene(sceneNo: sceneNo)
         baiterShadow.zPosition = Layer.alien.rawValue
         baiterShadow.delegate = self
         
         let baiter = BaiterEntity(imageName: "baiter", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: baiterShadow, playerToKill: player)
         let baiterNode = baiter.spriteComponent.node
+        baiter.baiterComponent.setScene(sceneNo: sceneNo)
         baiterNode.zPosition = Layer.alien.rawValue
         baiterNode.delegate = self
         
-        baiter.baiterComponent.setScreen(entity: foregrounds[0])
+//        baiter.baiterComponent.setScreen(entity: foregrounds[0])
         
-        foregrounds[0].addChild(baiterNode)
-        scanNodes[0].addChild(baiterShadow)
+        foregrounds[sceneNo].addChild(baiterNode)
+        scanNodes[sceneNo].addChild(baiterShadow)
         baiters.append(baiter)
         
         return (baiterNode, baiterShadow)
@@ -245,21 +247,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     var mutants:[MutantEntity] = []
     
-    func addMutant(randX: CGFloat, randY: CGFloat, player: PlayerEntity) -> (EntityNode, EntityNode) {
+    func addMutant(sceneNo: Int, randX: CGFloat, randY: CGFloat, player: PlayerEntity) -> (EntityNode, EntityNode) {
         let shadow = MutantEntity(imageName: "mutant", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: nil, playerToKill: nil)
         let mutantShadow = shadow.spriteComponent.node
+        shadow.mutantComponent.setScene(sceneNo: sceneNo)
         mutantShadow.zPosition = Layer.alien.rawValue
         mutantShadow.delegate = self
         
         let mutant = MutantEntity(imageName: "mutant", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: mutantShadow, playerToKill: player)
         let mutantNode = mutant.spriteComponent.node
+        mutant.mutantComponent.setScene(sceneNo: sceneNo)
         mutantNode.zPosition = Layer.alien.rawValue
         mutantNode.delegate = self
         
         mutant.mutantComponent.setScreen(entity: foregrounds[0])
         
-        foregrounds[0].addChild(mutantNode)
-        scanNodes[0].addChild(mutantShadow)
+        foregrounds[sceneNo].addChild(mutantNode)
+        scanNodes[sceneNo].addChild(mutantShadow)
         mutants.append(mutant)
         
         return (mutantNode, mutantShadow)
@@ -296,7 +300,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 self.moveAmount = CGPoint(x: -(self.groundSpeed * CGFloat(self.deltaTime)), y: self.playableStart)
                 foreground.position.x += self.moveAmount.x
                 
-                if foreground.position.x < -foreground.size.width * 2 {
+                if foreground.position.x < -foreground.size.width * 3 {
                     foreground.position.x += foreground.size.width * CGFloat(self.numberOfForegrounds)
                     
                 }
@@ -310,7 +314,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             if let foreground = node as? SKSpriteNode {
                 foreground.position.x +=  moveAmount / self.radarScenes
 
-                if foreground.position.x < -(foreground.size.width * 2) {
+                if foreground.position.x < -(foreground.size.width * 3) {
                     foreground.position.x += ((foreground.size.width * CGFloat(self.numberOfForegrounds)))
                 }
             }
@@ -323,7 +327,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 self.moveAmount = CGPoint(x: -(self.groundSpeed * CGFloat(self.deltaTime)), y: self.playableStart)
                 foreground.position.x -= self.moveAmount.x
                 
-                if foreground.position.x > foreground.size.width * 2 {
+                if foreground.position.x > foreground.size.width * 3 {
                     foreground.position.x -= foreground.size.width * CGFloat(self.numberOfForegrounds)
                 }
             }
@@ -335,7 +339,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         radar.enumerateChildNodes(withName: "foreground") { (node, stop) in
             if let foreground = node as? SKSpriteNode {
                 foreground.position.x -=  moveAmount / self.radarScenes
-                if foreground.position.x > (foreground.size.width * CGFloat(self.numberOfForegrounds - 2)) {
+                if foreground.position.x > (foreground.size.width * CGFloat(self.numberOfForegrounds - 3)) {
                     foreground.position.x -= ((foreground.size.width * CGFloat(self.numberOfForegrounds)))
                 }
             }
@@ -413,10 +417,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             return
         }
         
-        manager.startDeviceMotionUpdates()
-        manager.startGyroUpdates()
-        manager.startMagnetometerUpdates()
-        manager.startAccelerometerUpdates()
+//        manager.startDeviceMotionUpdates()
+//        manager.startGyroUpdates()
+//        manager.startMagnetometerUpdates()
+//        manager.startAccelerometerUpdates()
         
         
         
@@ -431,7 +435,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         setupForeground()
         let player = addPlayer()
 //        doBombers()
-//        doBaiters(player: player)
+        doBaiters(player: player)
 //        doMutants(player: player)
 //        doLanders(player: player)
 //        Add a boundry to the screen
@@ -445,31 +449,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     override func update(_ currentTime: CFTimeInterval) {
         let direct = manager.deviceMotion?.attitude
-        if direct!.pitch > 0.1 {
-            moveRight = false
-            moveLeft = true
-            player.movementComponent.setScreen(entity: scene!)
-            player.movementComponent.applyImpulseXb(lastUpdateTimeInterval)
-            advancedArrow.hudComponent.changeTexture(imageNamed: "RightArrow")
-            print("playerNode.texture \(playerNode.texture)")
-            player.movementComponent.applyImpulseLeftX(lastUpdateTimeInterval)
-        }
-        if direct!.pitch < -0.1 {
-            print("right")
-            moveRight = true
-            moveLeft = false
-            player.movementComponent.setScreen(entity: scene!)
-            player.movementComponent.applyImpulseXb(lastUpdateTimeInterval)
-            advancedArrow.hudComponent.changeTexture(imageNamed: "LeftArrow")
-            player.movementComponent.applyImpulseRightX(lastUpdateTimeInterval)
-        }
-        if direct!.roll > 0.1 {
-            player.movementComponent.setScreen(entity: scene!)
-            player.movementComponent.applyImpulseUpX(lastUpdateTimeInterval)
-        }
-        if direct!.roll < -0.1 {
-            player.movementComponent.setScreen(entity: scene!)
-            player.movementComponent.applyImpulseDownX(lastUpdateTimeInterval)
+        if direct != nil {
+            if direct!.pitch > 0.1 {
+                moveRight = false
+                moveLeft = true
+                player.movementComponent.setScreen(entity: scene!)
+                player.movementComponent.applyImpulseXb(lastUpdateTimeInterval)
+                advancedArrow.hudComponent.changeTexture(imageNamed: "RightArrow")
+                print("playerNode.texture \(playerNode.texture)")
+                player.movementComponent.applyImpulseLeftX(lastUpdateTimeInterval)
+            }
+            if direct!.pitch < -0.1 {
+                print("right")
+                moveRight = true
+                moveLeft = false
+                player.movementComponent.setScreen(entity: scene!)
+                player.movementComponent.applyImpulseXb(lastUpdateTimeInterval)
+                advancedArrow.hudComponent.changeTexture(imageNamed: "LeftArrow")
+                player.movementComponent.applyImpulseRightX(lastUpdateTimeInterval)
+            }
+            if direct!.roll > 0.1 {
+                player.movementComponent.setScreen(entity: scene!)
+                player.movementComponent.applyImpulseUpX(lastUpdateTimeInterval)
+            }
+            if direct!.roll < -0.1 {
+                player.movementComponent.setScreen(entity: scene!)
+                player.movementComponent.applyImpulseDownX(lastUpdateTimeInterval)
+            }
         }
         /* Called before each frame is rendered */
         if lastUpdateTimeInterval == 0 {

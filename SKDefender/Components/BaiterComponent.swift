@@ -46,6 +46,11 @@ class BaiterComponent: GKComponent {
         localView = entity
     }
     
+    func setScene(sceneNo: Int) {
+        foreGroundIndex = sceneNo
+        scanNodeIndex = sceneNo
+    }
+    
     public func whereIsPlayer() -> Int {
         var indexToReturn = 0
         for foreground in localForegrounds {
@@ -88,8 +93,8 @@ class BaiterComponent: GKComponent {
     }
     
     var runOnce = true
-    var scanNodeIndex = 0
-    var foreGroundIndex = 0
+    var scanNodeIndex:Int!
+    var foreGroundIndex:Int!
     var toggle = true
     var playerToKill: PlayerEntity!
     
@@ -120,6 +125,7 @@ class BaiterComponent: GKComponent {
                 
                     let newG = self.localForegrounds[self.foreGroundIndex].convert(self.spriteComponent.node.position, to: self.playerToKill.spriteComponent.node)
                 
+                    print("newG \(newG) \(self.foreGroundIndex) \(self.spriteComponent.node.position)")
                     let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
                     let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
                     

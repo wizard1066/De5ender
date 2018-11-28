@@ -34,8 +34,9 @@ class MutantComponent: GKComponent {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func sayHello() {
-        print("HelloWorld")
+    func setScene(sceneNo: Int) {
+        foreGroundIndex = sceneNo
+        scanNodeIndex = sceneNo
     }
     
     public func returnMutantPosition() -> CGPoint {
@@ -60,6 +61,7 @@ class MutantComponent: GKComponent {
     }
     
     func beginBombing(loop: Int, skew: Int) {
+        
         let mine = BombEntity(imageName: "mine", owningNode: self.spriteComponent.node)
         //        mine.spriteComponent.node.zPosition = Layer.alien.rawValue
         let path = CGMutablePath()
@@ -84,14 +86,15 @@ class MutantComponent: GKComponent {
     }
     
     var runOnce = true
-    var scanNodeIndex = 0
-    var foreGroundIndex = 0
+    var scanNodeIndex:Int!
+    var foreGroundIndex:Int!
     var toggle = true
     var playerToKill: PlayerEntity!
-    
+    var tweek: CGFloat?
     
     
     override func update(deltaTime seconds: TimeInterval) {
+        tweek = (localForegrounds.first?.size.width)!
         if runOnce {
             spriteShadow = (self.spriteComponent.node.userData?.object(forKey: "shadow") as? EntityNode)!
             spriteShadow?.alpha = 0.5
@@ -108,7 +111,10 @@ class MutantComponent: GKComponent {
             let bomb = SKAction.run {
                 let rand = GKRandomSource.sharedRandom().nextInt(upperBound: 8)
                 if rand == 4 {
-                    self.beginBombing(loop: 0, skew: rand)
+                    let playerPos = self.whereIsPlayer()
+                    if playerPos == self.foreGroundIndex {
+                        self.beginBombing(loop: 0, skew: rand)
+                    }
                 }
             }
             
@@ -116,21 +122,25 @@ class MutantComponent: GKComponent {
             let move = SKAction.run {
                 self.toggle = true
                 // foreground index is the number of the foreground that the mutant is on right now...
-                let playerPos = self.whereIsPlayer()
+                
 
-                    let newG = self.localForegrounds[self.foreGroundIndex].convert(self.spriteComponent.node.position, to: self.playerToKill.spriteComponent.node)
-                    
+                    var newG = self.localForegrounds[self.foreGroundIndex].convert(self.spriteComponent.node.position, to: self.playerToKill.spriteComponent.node)
+//                    if self.tweek! > CGFloat(0) {
+//                        newG.x = newG.x + self.tweek!
+//                        self.tweek! -= 8
+//                    }
+                    print("newG \(newG) \(self.foreGroundIndex) \(self.spriteComponent.node.position)")
                     let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
                     let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
                     
                     if newG.x > 0 {
                         self.spriteComponent.node.position.x -= 8 + randX
                         self.spriteShadow?.position.x = self.spriteComponent.node.position.x
-//                        self.spriteShadow?.position.x -= 8 + randX
+//
                     } else {
                         self.spriteComponent.node.position.x += 8 + randX
                         self.spriteShadow?.position.x = self.spriteComponent.node.position.x
-//                        self.spriteShadow?.position.x += 8 + randX
+//
                     }
                     
                     if newG.y > 0 {
