@@ -125,11 +125,7 @@ class MutantComponent: GKComponent {
                 
 
                     var newG = self.localForegrounds[self.foreGroundIndex].convert(self.spriteComponent.node.position, to: self.playerToKill.spriteComponent.node)
-//                    if self.tweek! > CGFloat(0) {
-//                        newG.x = newG.x + self.tweek!
-//                        self.tweek! -= 8
-//                    }
-                    print("newG \(newG) \(self.foreGroundIndex) \(self.spriteComponent.node.position)")
+
                     let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
                     let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
                     

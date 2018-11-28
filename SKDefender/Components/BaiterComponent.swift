@@ -125,7 +125,6 @@ class BaiterComponent: GKComponent {
                 
                     let newG = self.localForegrounds[self.foreGroundIndex].convert(self.spriteComponent.node.position, to: self.playerToKill.spriteComponent.node)
                 
-                    print("newG \(newG) \(self.foreGroundIndex) \(self.spriteComponent.node.position)")
                     let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
                     let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
                     
@@ -151,7 +150,10 @@ class BaiterComponent: GKComponent {
                 
                     if Int(newG.y) == 128 {
                         let rand = GKRandomSource.sharedRandom().nextInt(upperBound: 8)
-                        self.beginBombing(loop: 0, skew: rand)
+                        let playerPos = self.whereIsPlayer()
+                        if playerPos == self.foreGroundIndex {
+                            self.beginBombing(loop: 0, skew: rand)
+                        }
                     }
                 
             }

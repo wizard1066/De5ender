@@ -149,20 +149,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     }
     
     func doBaiters(player: PlayerEntity) {
-        for loop in 0...0 {
+        let randomSource = GKARC4RandomSource()
+        let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
+        for _ in 0...4 {
+            let randomValueZ = randomDistribution.nextInt()
             let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + 128))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-            let (baiter, baiterShdow) = addBaiter(sceneNo: 1,randX: randX, randY: randY, player: player)
+            let (baiter, baiterShdow) = addBaiter(sceneNo: randomValueZ,randX: randX, randY: randY, player: player)
             baiter.delegate = self
             self.baiter = baiter as? EntityNode
         }
     }
     
     func doMutants(player: PlayerEntity) {
-        for loop in 0...0 {
+        let randomSource = GKARC4RandomSource()
+        let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
+        for _ in 0...4 {
+            let randomValueZ = randomDistribution.nextInt()
             let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + 128))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-            addMutant(sceneNo: 7, randX: randX, randY: randY, player: player)
+            addMutant(sceneNo: randomValueZ, randX: randX, randY: randY, player: player)
         }
     }
     
