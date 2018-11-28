@@ -15,7 +15,7 @@ class BomberComponent: GKComponent {
     var playableStart: CGFloat = 0
     var playableRegion: CGFloat = UIScreen.main.bounds.maxY * 2
     var localBounds: CGRect!
-    var localView: EntityNode!
+//    var localView: EntityNode!
     var localScan:[EntityNode] = []
     var localForeground:[EntityNode] = []
     var spriteShadow: EntityNode?
@@ -24,7 +24,7 @@ class BomberComponent: GKComponent {
     
     init(entity: GKEntity, screenBounds: CGRect, view2D: EntityNode, scanNodes: [EntityNode], foregrounds: [EntityNode], shadow:EntityNode?) {
         localBounds = screenBounds
-        localView = view2D
+//        localView = view2D
         localScan = scanNodes
         localForeground = foregrounds
         bounds = screenBounds
@@ -36,21 +36,16 @@ class BomberComponent: GKComponent {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func sayHello() {
-        print("HelloWorld")
-    }
-    
     public func returnBomberPosition() -> CGPoint {
         return spriteComponent.node.position
     }
     
-    public func setScreen(entity: EntityNode) {
-        localView = entity
-    }
+//    public func setScreen(entity: EntityNode) {
+//        localView = entity
+//    }
     
     func beginBombing(loop: Int, bomber: EntityNode) {
         let mine = MineEntity(imageName: "mine", owningNode: self.spriteComponent.node)
-//        mine.spriteComponent.node.zPosition = Layer.alien.rawValue
         mine.spriteComponent.node.position = spriteComponent.node.position
         localForeground[foreGroundIndex].addChild(mine.spriteComponent.node)
         self.mines.append(mine)
@@ -61,6 +56,7 @@ class BomberComponent: GKComponent {
     var foreGroundIndex = 0
     var toggle = true
     var change = false
+    var band:CGFloat = 1.6
     
     override func update(deltaTime seconds: TimeInterval) {
         if runOnce {
@@ -88,18 +84,15 @@ class BomberComponent: GKComponent {
         spriteComponent.node.position.x -= 2
         spriteShadow?.position.x -= 2
         
-        
-        if spriteComponent.node.position.y < bounds.maxY * 1.6 && !change {
+        if spriteComponent.node.position.y < bounds.maxY * band && !change {
             spriteComponent.node.position.y += 1
             self.spriteShadow?.position.y = self.spriteComponent.node.position.y
-//            spriteShadow?.position.y += 1
             change = false
         } else {
             change = true
             if spriteComponent.node.position.y > bounds.minY + 128 {
                 spriteComponent.node.position.y -= 1
                 self.spriteShadow?.position.y = self.spriteComponent.node.position.y
-//                spriteShadow?.position.y -= 1
             } else {
                 change = false
             }
@@ -111,7 +104,6 @@ class BomberComponent: GKComponent {
         
         if spriteComponent.node.position.x < 0 {
             if spriteComponent.node.parent != nil {
-//                spriteComponent.node.removeFromParent()
                 foreGroundIndex -= 1
                 if foreGroundIndex < 0 {
                     foreGroundIndex = 7
@@ -135,7 +127,6 @@ class BomberComponent: GKComponent {
         
         if spriteComponent.node.position.x > 2048 {
             if spriteComponent.node.parent != nil {
-//                spriteComponent.node.removeFromParent()
                 foreGroundIndex += 1
                 if foreGroundIndex == 8 {
                     foreGroundIndex = 0

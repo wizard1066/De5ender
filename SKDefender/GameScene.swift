@@ -32,6 +32,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var moveLeft = false
     var moveRight = false
     
+    // Higher values, further back, mask top level here
+    
     enum Layer: CGFloat {
         case background
         case foreground
@@ -42,13 +44,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         case mask
     }
     
-    var baiter: EntityNode!
-    
     var player:PlayerEntity!
     var shadow:PlayerEntity!
-//    var alien:AlienEntity!
-    var peopleE: RescueEntity!
-    var aliensE: AlienEntity!
     
     var playableStart: CGFloat = 0
     
@@ -61,6 +58,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     lazy var screenWidth = view!.bounds.width
     lazy var screenHeight = view!.bounds.height
+    
+    // 128 here is a multiple of the screen width
     
     func buildGround(color: UIColor) -> (SKTexture, CGMutablePath) {
         let loopsNeeded = Int(screenWidth / 128)
@@ -92,17 +91,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         return (texture!,path!)
     }
-    
-    var aliens:[GKEntity] = []
-    var peoples:[EntityNode] = []
-    var others:[EntityNode] = []
+   
     var foregrounds:[EntityNode] = []
     var scanNodes:[EntityNode] = []
     var colours = [UIColor.red, UIColor.blue, UIColor.green, UIColor.magenta, UIColor.purple, UIColor.orange, UIColor.yellow, UIColor.white, UIColor.brown]
     
     let radar = SKSpriteNode()
     let radarScenes:CGFloat = 4
-    
+    let baseCamp = 128
     
     func setupForeground() {
         
@@ -117,21 +113,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             foregroundNode.delegate = self
             addChild(foreground.buildComponent.node)
             foregrounds.append(foregroundNode)
-            print("foreground.position.x \(foregroundNode.position.x)")
             scanNodes.append(scanNode)
         }
         
-        print("self.view!.bounds.minX \(self.view!.bounds.minX)")
+        // add a mother spritenode to add all the scanner nodes too
         radar.position = CGPoint(x: self.view!.bounds.maxX / 2, y: self.view!.bounds.maxY * 2 - self.view!.bounds.maxY * 0.4)
         radar.anchorPoint = CGPoint(x: 0.0, y: -1.0)
         
         addChild(radar)
         for scanNode in scanNodes {
-
             scanNode.scale(to: CGSize(width: scanNode.size.width/radarScenes, height: scanNode.size.height/radarScenes))
             scanNode.position.x = scanNode.position.x / radarScenes
             radar.addChild(scanNode)
-            
         }
         
 //        let block = SKShapeNode(rect: CGRect(x: self.view!.bounds.minX, y: self.view!.bounds.maxY * 2 - self.view!.bounds.maxY * 0.4, width: self.view!.bounds.maxX/2, height:self.view!.bounds.maxY * 0.4 / 2))
@@ -153,11 +146,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
         for _ in 0...4 {
             let randomValueZ = randomDistribution.nextInt()
-            let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + 128))
+            let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + baseCamp))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-            let (baiter, baiterShdow) = addBaiter(sceneNo: randomValueZ,randX: randX, randY: randY, player: player)
-            baiter.delegate = self
-            self.baiter = baiter as? EntityNode
+            let (baiterNode, baiterShdow) = addBaiter(sceneNo: randomValueZ,randX: randX, randY: randY, player: player)
         }
     }
     
@@ -166,26 +157,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
         for _ in 0...4 {
             let randomValueZ = randomDistribution.nextInt()
-            let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + 128))
+            let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + baseCamp))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-            addMutant(sceneNo: randomValueZ, randX: randX, randY: randY, player: player)
+            let (mutantNode, mutantShadow) = addMutant(sceneNo: randomValueZ, randX: randX, randY: randY, player: player)
         }
     }
     
     func doBombers() {
         for loop in 0...3 {
-            let randY = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY - CGFloat(128))) + 128
+            let randY = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY - CGFloat(baseCamp))) + baseCamp
             let randX = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2))
             let (bomberNode, bomberShadow) = addBomber(loop: 0, randX: CGFloat(randX), randY: CGFloat(randY), scanNodes: scanNodes, foregrounds: foregrounds)
-
         }
     }
     
     func doLanders(player: PlayerEntity) {
         for loop in 0..<numberOfForegrounds {
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-            let (_,_) = self.addLander(loop: loop, randX: randX, randY: (self.view?.bounds.maxY)!*2, player: player)
-            let (_,_) = self.addItem(loop: loop, randX: randX, player: player)
+            let (landerNode,_) = self.addLander(loop: loop, randX: randX, randY: (self.view?.bounds.maxY)!*2, player: player)
+            let (itemNode,_) = self.addItem(loop: loop, randX: randX, player: player)
         }
     }
     
@@ -242,8 +232,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         baiterNode.zPosition = Layer.alien.rawValue
         baiterNode.delegate = self
         
-//        baiter.baiterComponent.setScreen(entity: foregrounds[0])
-        
         foregrounds[sceneNo].addChild(baiterNode)
         scanNodes[sceneNo].addChild(baiterShadow)
         baiters.append(baiter)
@@ -288,8 +276,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         let bomberNode = bomber.spriteComponent.node
         bomberNode.zPosition = Layer.alien.rawValue
         bomberNode.delegate = self
-        
-        bomber.bomberComponent.setScreen(entity: foregrounds[loop])
         
         foregrounds[loop].addChild(bomberNode)
         scanNodes[loop].addChild(bomberShadow)
@@ -423,12 +409,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             return
         }
         
-//        manager.startDeviceMotionUpdates()
-//        manager.startGyroUpdates()
-//        manager.startMagnetometerUpdates()
-//        manager.startAccelerometerUpdates()
-        
-        
+        manager.startDeviceMotionUpdates()
         
         cameraNode = SKCameraNode()
         cameraNode.position = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
@@ -442,8 +423,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         let player = addPlayer()
 //        doBombers()
         doBaiters(player: player)
-//        doMutants(player: player)
-//        doLanders(player: player)
+        doMutants(player: player)
+        doLanders(player: player)
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minY * 2 )
         physicsBody = SKPhysicsBody(edgeLoopFrom: rectToSecure)
