@@ -490,11 +490,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 player.movementComponent.setScreen(entity: scene!)
                 player.movementComponent.applyImpulseXb(lastUpdateTimeInterval)
                 advancedArrow.hudComponent.changeTexture(imageNamed: "RightArrow")
-                print("playerNode.texture \(playerNode.texture)")
                 player.movementComponent.applyImpulseLeftX(lastUpdateTimeInterval)
             }
             if direct!.pitch < -0.1 {
-                print("right")
                 moveRight = true
                 moveLeft = false
                 player.movementComponent.setScreen(entity: scene!)
@@ -584,8 +582,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         print("ended")
     }
-    
-//    var pickup: CGPoint!
     
     var playerCG: CGFloat!
     var points: Int = 0
@@ -764,11 +760,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         case "spaceman":
             print("player \(box.position)")
         case "baiter":
-//            let newX = convertPoint(toView: baiter.position)
-//            let newX = parent?.convert(baiter.position, to: scene!) = nil
-//            let newX = baiter.convert(baiter.position, to: scene!)
-//            let newX = playerNode.convert(baiter.position, to: scene!)
-            
             print("baiter \(box.position) ")
         case "up":
             player.movementComponent.applyImpulseUp(lastUpdateTimeInterval)
