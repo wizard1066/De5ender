@@ -64,28 +64,62 @@ class BaiterComponent: GKComponent {
         return indexToReturn
     }
     
+    func findPathToExecute() -> (CGPoint, CGPoint) {
+        var directionToGoA: CGPoint
+        var directionToGoB: CGPoint
+        switch self.running {
+        case .cominNorth?:
+            directionToGoA = CGPoint(x: -512, y: -512)
+            directionToGoB = CGPoint(x: 512, y: -512)
+            break
+        case .cominSouth?:
+            directionToGoA = CGPoint(x: -512, y: 512)
+            directionToGoB = CGPoint(x: 512, y: 512)
+            break
+        case .cominEast?:
+            directionToGoA = CGPoint(x: -512, y: 512)
+            directionToGoB = CGPoint(x: -512, y: -512)
+            break
+        case .cominWest?:
+            directionToGoA = CGPoint(x: 512, y: -512)
+            directionToGoB = CGPoint(x: 512, y: 512)
+            break
+        default:
+            directionToGoA = CGPoint(x: 0, y: 0)
+            directionToGoB = CGPoint(x: 0, y: 0)
+            break
+        }
+        return (directionToGoA, directionToGoB)
+    }
+    
     func beginBombing(loop: Int, skew: Int) {
+        print("beginBoming \(skew)")
         let mine = BaitEntity(imageName: "mine", owningNode: self.spriteComponent.node)
         //        mine.spriteComponent.node.zPosition = Layer.alien.rawValue
         
         let path = CGMutablePath()
-        mine.spriteComponent.node.position = self.spriteComponent.node.position
-        path.move(to: self.spriteComponent.node.position)
+//        mine.spriteComponent.node.position = self.spriteComponent.node.position
+//        path.move(to: self.spriteComponent.node.position)
+        mine.spriteComponent.node.position = CGPoint.zero
+        path.move(to: CGPoint.zero)
         var pathToExecute: CGPoint!
+        let (d2A, d2B) = findPathToExecute()
         if skew % 2 == 0 {
-            let newX = spriteComponent.node.position.x - CGFloat(512)
-            let newY = spriteComponent.node.position.y - CGFloat(512)
+            let newX = d2A.x
+            let newY = d2A.y
             pathToExecute = CGPoint(x: newX, y: newY)
         } else {
-            let newX = spriteComponent.node.position.x + CGFloat(512)
-            let newY = spriteComponent.node.position.y - CGFloat(512)
+            let newX = d2B.x
+            let newY = d2B.y
             pathToExecute = CGPoint(x: newX, y: newY)
         }
         path.addLine(to: pathToExecute)
+        print("beginBoming \(path)")
         
-        let followLine = SKAction.follow(path, asOffset: false, orientToPath: true, speed: 32)
+        let followLine = SKAction.follow(path, speed: 128)
         
-        localForegrounds[foreGroundIndex].addChild(mine.spriteComponent.node)
+//        localForegrounds[foreGroundIndex].addChild(mine.spriteComponent.node)
+        self.spriteComponent.node.addChild(mine.spriteComponent.node)
         
         mine.spriteComponent.node.run(followLine)
         
@@ -97,7 +131,13 @@ class BaiterComponent: GKComponent {
     var foreGroundIndex:Int!
     var toggle = true
     var playerToKill: PlayerEntity!
+    var running: spriteAttack?
+    var runLess: Int? = 0
+    var randQ: Int = 0
     
+    func setRunning(value2D: spriteAttack) {
+        running = value2D
+    }
     
     
     
@@ -123,10 +163,27 @@ class BaiterComponent: GKComponent {
                 // foreground index is the number of the foreground that the mutant is on right now...
 //                let playerPos = self.whereIsPlayer()
                 
-                    let newG = self.localForegrounds[self.foreGroundIndex].convert(self.spriteComponent.node.position, to: self.playerToKill.spriteComponent.node)
+                    var newG = self.localForegrounds[self.foreGroundIndex].convert(self.spriteComponent.node.position, to: self.playerToKill.spriteComponent.node)
                 
                     let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
                     let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
+                
+                switch self.running {
+                case .cominNorth?:
+                    newG.y = newG.y - 128
+                    break
+                case .cominSouth?:
+                    newG.y = newG.y + 128
+                    break
+                case .cominEast?:
+                    newG.x = newG.x - 192
+                    break
+                case .cominWest?:
+                    newG.x = newG.x + 192
+                    break
+                default:
+                    break
+                }
                     
                     if newG.x > 0 {
                         self.spriteComponent.node.position.x -= 8 + randX
@@ -137,8 +194,11 @@ class BaiterComponent: GKComponent {
                         self.spriteShadow?.position.x = self.spriteComponent.node.position.x
 //                        self.spriteShadow?.position.x += 8 + randX
                     }
+                
+                let playerIndex = self.whereIsPlayer()
+                if self.foreGroundIndex == playerIndex {
                     
-                    if newG.y > CGFloat(128) {
+                    if newG.y > 0 {
                         self.spriteComponent.node.position.y -= 8 + randY
                         self.spriteShadow?.position.y = self.spriteComponent.node.position.y
 //                        self.spriteShadow?.position.y -= 8 + randY
@@ -148,13 +208,16 @@ class BaiterComponent: GKComponent {
 //                        self.spriteShadow?.position.y += 8 + randY
                     }
                 
-                    if Int(newG.y) == 128 {
-                        let rand = GKRandomSource.sharedRandom().nextInt(upperBound: 8)
-                        let playerPos = self.whereIsPlayer()
-                        if playerPos == self.foreGroundIndex {
-                            self.beginBombing(loop: 0, skew: rand)
-                        }
+                    if self.runLess! < 15 + self.randQ {
+                        self.runLess! += 1
+                    } else {
+                        self.randQ = GKRandomSource.sharedRandom().nextInt(upperBound: 30)
+                        self.beginBombing(loop: self.randQ, skew: self.randQ)
+                        self.runLess = 0
                     }
+//                            self.beginBombing(loop: 0, skew: rand)
+     
+                }
                 
             }
             //            let amountToRotate:CGFloat = 0.5

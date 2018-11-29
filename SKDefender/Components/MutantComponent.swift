@@ -95,7 +95,13 @@ class MutantComponent: GKComponent {
     var toggle = true
     var playerToKill: PlayerEntity!
     var runLess: Int = 0
+    var runFrame: Int = 0
+    var running: spriteAttack?
+    var randQ: Int = 0
     
+    func setRunning(value2D: spriteAttack) {
+        running = value2D
+    }
     
     
     override func update(deltaTime seconds: TimeInterval) {
@@ -107,11 +113,18 @@ class MutantComponent: GKComponent {
             
         }
         
-        if runLess < 120 {
+        if runLess < 120 + randQ {
             runLess += 1
         } else {
-            self.beginBombing(loop: 0, skew: 4)
+            self.randQ = GKRandomSource.sharedRandom().nextInt(upperBound: 30)
+            self.beginBombing(loop: self.randQ, skew: self.randQ)
             runLess = 0
+        }
+        
+        if runFrame < 60 {
+            
+        } else {
+            
         }
         
         if toggle {
@@ -122,13 +135,21 @@ class MutantComponent: GKComponent {
                 // foreground index is the number of the foreground that the mutant is on right now...
                 
                     var newG = self.localForegrounds[self.foreGroundIndex].convert(self.spriteComponent.node.position, to: self.playerToKill.spriteComponent.node)
-                    newG.y = newG.y + 128
+                    switch self.running {
+                        case .cominNorth?:
+                            newG.y = newG.y - 128
+                            break
+                        case .cominSouth?:
+                            newG.y = newG.y + 128
+                            break
+                        default:
+                            break
+                        }
+                
 
                     let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
                     let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
                 
-                    let tweek = randX * randY
-                    newG.y = newG.y - tweek
                     
                     if newG.x > 0 {
                         self.spriteComponent.node.position.x -= 8 + randX
@@ -139,15 +160,18 @@ class MutantComponent: GKComponent {
                         self.spriteShadow?.position.x = self.spriteComponent.node.position.x
 //
                     }
-                    
-                    if newG.y > 0 {
-                        self.spriteComponent.node.position.y -= 8 + randY
-                        self.spriteShadow?.position.y = self.spriteComponent.node.position.y
-//                        self.spriteShadow?.position.y -= 8 + randY
-                    } else {
-                        self.spriteComponent.node.position.y += 8 - randY
-                        self.spriteShadow?.position.y = self.spriteComponent.node.position.y
-//                        self.spriteShadow?.position.y += 8 - randY
+            
+                    let playerIndex = self.whereIsPlayer()
+                    if self.foreGroundIndex == playerIndex {
+                        if newG.y > 0 {
+                            self.spriteComponent.node.position.y -= 8 + randY
+                            self.spriteShadow?.position.y = self.spriteComponent.node.position.y
+    //                        self.spriteShadow?.position.y -= 8 + randY
+                        } else {
+                            self.spriteComponent.node.position.y += 8 - randY
+                            self.spriteShadow?.position.y = self.spriteComponent.node.position.y
+    //                        self.spriteShadow?.position.y += 8 - randY
+                        }
                     }
                 
             }

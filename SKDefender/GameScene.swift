@@ -27,6 +27,13 @@ enum status {
     case rescued
 }
 
+enum spriteAttack {
+    case cominNorth
+    case cominSouth
+    case cominEast
+    case cominWest
+}
+
 class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     var moveLeft = false
@@ -144,18 +151,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     func doBaiters(player: PlayerEntity) {
         let randomSource = GKARC4RandomSource()
         let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
-        for _ in 0...4 {
+        for loop in 0...0 {
             let randomValueZ = randomDistribution.nextInt()
             let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + baseCamp))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-            let (baiterNode, baiterShdow) = addBaiter(sceneNo: randomValueZ,randX: randX, randY: randY, player: player)
+            let (baiterNode, baiterShdow) = addBaiter(sceneNo: 3,randX: randX, randY: randY, player: player)
         }
     }
     
     func doMutants(player: PlayerEntity) {
         let randomSource = GKARC4RandomSource()
         let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
-        for _ in 0...4 {
+        for loop in 0...3 {
             let randomValueZ = randomDistribution.nextInt()
             let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + baseCamp))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
@@ -223,12 +230,39 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         let shadow = BaiterEntity(imageName: "baiter", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: nil, playerToKill: nil)
         let baiterShadow = shadow.spriteComponent.node
         shadow.baiterComponent.setScene(sceneNo: sceneNo)
+        switch sceneNo {
+        case 0:
+            shadow.baiterComponent.setRunning(value2D: .cominNorth)
+            break
+        case 1:
+            shadow.baiterComponent.setRunning(value2D: .cominSouth)
+            break
+        case 2:
+            shadow.baiterComponent.setRunning(value2D: .cominEast)
+            break
+        default:
+            shadow.baiterComponent.setRunning(value2D: .cominWest)
+        }
+    
         baiterShadow.zPosition = Layer.alien.rawValue
         baiterShadow.delegate = self
         
         let baiter = BaiterEntity(imageName: "baiter", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: baiterShadow, playerToKill: player)
         let baiterNode = baiter.spriteComponent.node
         baiter.baiterComponent.setScene(sceneNo: sceneNo)
+        switch sceneNo {
+        case 0:
+            baiter.baiterComponent.setRunning(value2D: .cominNorth)
+            break
+        case 1:
+            baiter.baiterComponent.setRunning(value2D: .cominSouth)
+            break
+        case 2:
+            baiter.baiterComponent.setRunning(value2D: .cominEast)
+            break
+        default:
+            baiter.baiterComponent.setRunning(value2D: .cominWest)
+        }
         baiterNode.zPosition = Layer.alien.rawValue
         baiterNode.delegate = self
         
@@ -242,15 +276,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var mutants:[MutantEntity] = []
     
     func addMutant(sceneNo: Int, randX: CGFloat, randY: CGFloat, player: PlayerEntity) -> (EntityNode, EntityNode) {
+        
         let shadow = MutantEntity(imageName: "mutant", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: nil, playerToKill: nil)
         let mutantShadow = shadow.spriteComponent.node
         shadow.mutantComponent.setScene(sceneNo: sceneNo)
+        if sceneNo % 2 == 0 {
+            shadow.mutantComponent.setRunning(value2D: .cominNorth)
+        } else {
+            shadow.mutantComponent.setRunning(value2D: .cominSouth)
+        }
         mutantShadow.zPosition = Layer.alien.rawValue
         mutantShadow.delegate = self
         
         let mutant = MutantEntity(imageName: "mutant", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: mutantShadow, playerToKill: player)
         let mutantNode = mutant.spriteComponent.node
         mutant.mutantComponent.setScene(sceneNo: sceneNo)
+        if sceneNo % 2 == 0 {
+            mutant.mutantComponent.setRunning(value2D: .cominNorth)
+        } else {
+            mutant.mutantComponent.setRunning(value2D: .cominSouth)
+        }
         mutantNode.zPosition = Layer.alien.rawValue
         mutantNode.delegate = self
         
@@ -424,8 +469,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         setupForeground()
         let player = addPlayer()
 //        doBombers()
-//        doBaiters(player: player)
-        doMutants(player: player)
+        doBaiters(player: player)
+//        doMutants(player: player)
 //        doLanders()
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minY * 2 )
