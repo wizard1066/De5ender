@@ -93,8 +93,8 @@ class MovementComponent: GKComponent {
         let spriteNode = spriteComponent.node
         let shadowNode = spriteComponent.node.userData?.object(forKey: "shadow") as? EntityNode
         spriteNode.userData?.setObject("right", forKey: "direction" as NSCopying)
-        spriteNode.texture = SKTexture(imageNamed: "starship")
-        shadowNode?.texture = SKTexture(imageNamed: "starship")
+        spriteNode.texture = SKTexture(imageNamed: "ship16")
+        shadowNode?.texture = SKTexture(imageNamed: "ship16")
        
         let amountToMove = UIScreen.main.bounds.maxX
         print("amountToMove \(amountToMove)")
@@ -108,8 +108,8 @@ class MovementComponent: GKComponent {
         let spriteNode = spriteComponent.node
         let shadowNode = spriteComponent.node.userData?.object(forKey: "shadow") as? EntityNode
         spriteNode.userData?.setObject("left", forKey: "direction" as NSCopying)
-        spriteNode.texture = SKTexture(imageNamed: "shipstar")
-        shadowNode?.texture = SKTexture(imageNamed: "shipstar")
+        spriteNode.texture = SKTexture(imageNamed: "ship16b")
+        shadowNode?.texture = SKTexture(imageNamed: "ship16b")
        
         let pointToGo = CGPoint(x: localScene!.size.width*0.7, y: spriteNode.position.y)
         spriteNode.run(SKAction.move(to: pointToGo, duration: 0.5))
@@ -123,8 +123,8 @@ class MovementComponent: GKComponent {
         let spriteNode = spriteComponent.node
         let shadowNode = spriteComponent.node.userData?.object(forKey: "shadow") as? EntityNode
         spriteNode.userData?.setObject("right", forKey: "direction" as NSCopying)
-        spriteNode.texture = SKTexture(imageNamed: "starship")
-        shadowNode?.texture = SKTexture(imageNamed: "starship")
+        spriteNode.texture = SKTexture(imageNamed: "ship16")
+        shadowNode?.texture = SKTexture(imageNamed: "ship16")
         slipLeft = true
     }
     
@@ -135,19 +135,19 @@ class MovementComponent: GKComponent {
         let spriteNode = spriteComponent.node
         let shadowNode = spriteComponent.node.userData?.object(forKey: "shadow") as? EntityNode
         spriteNode.userData?.setObject("left", forKey: "direction" as NSCopying)
-        spriteNode.texture = SKTexture(imageNamed: "shipstar")
-        shadowNode?.texture = SKTexture(imageNamed: "shipstar")
+        spriteNode.texture = SKTexture(imageNamed: "ship16b")
+        shadowNode?.texture = SKTexture(imageNamed: "ship16b")
         slipRight = true
     }
     
     func leftTexture() {
         let spriteNode = spriteComponent.node
-        spriteNode.texture = SKTexture(imageNamed: "starship")
+        spriteNode.texture = SKTexture(imageNamed: "ship16")
     }
     
     func rightTexture() {
         let spriteNode = spriteComponent.node
-        spriteNode.texture = SKTexture(imageNamed: "shipstar")
+        spriteNode.texture = SKTexture(imageNamed: "ship16b")
     }
     
     func applyZero(_ lastUpdateTime: TimeInterval) {

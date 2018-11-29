@@ -151,22 +151,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     func doBaiters(player: PlayerEntity) {
         let randomSource = GKARC4RandomSource()
         let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
-        for loop in 0...0 {
+        for loop in 0...3 {
             let randomValueZ = randomDistribution.nextInt()
             let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + baseCamp))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-            let (baiterNode, baiterShdow) = addBaiter(sceneNo: 3,randX: randX, randY: randY, player: player)
+            let (baiterNode, baiterShdow) = addBaiter(sceneNo: randomValueZ,randX: randX, randY: randY, player: player)
         }
     }
     
     func doMutants(player: PlayerEntity) {
         let randomSource = GKARC4RandomSource()
         let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
-        for loop in 0...0 {
+        for loop in 0...3 {
             let randomValueZ = randomDistribution.nextInt()
             let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + baseCamp))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-            let (mutantNode, mutantShadow) = addMutant(sceneNo: 2, randX: randX, randY: randY, player: player)
+            let (mutantNode, mutantShadow) = addMutant(sceneNo: randomValueZ, randX: randX, randY: randY, player: player)
         }
     }
     
@@ -392,14 +392,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var advancedArrow: HeadsUpEntity!
     
     func addPlayer() -> PlayerEntity {
-        shadow = PlayerEntity(imageName: "Ship16", shadowNode: nil)
+        shadow = PlayerEntity(imageName: "ship16", shadowNode: nil, physics: false)
         shadowNode = shadow.spriteComponent.node
         shadowNode.position = CGPoint(x: self.view!.bounds.maxX / 2, y: self.view!.bounds.maxY / 2)
         shadowNode.scale(to: CGSize(width: shadowNode.size.width/4, height: shadowNode.size.height/4))
         shadowNode.position.x = shadowNode.position.x / 4
         radar.addChild(shadowNode)
         
-        player = PlayerEntity(imageName: "Ship16", shadowNode: shadowNode)
+        player = PlayerEntity(imageName: "ship16", shadowNode: shadowNode, physics: true)
         playerNode = player.spriteComponent.node
         playerNode.position = CGPoint(x: self.view!.bounds.maxX / 2, y: self.view!.bounds.maxY / 2)
         playerNode.zPosition = Layer.player.rawValue
@@ -456,7 +456,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             return
         }
         
-//        manager.startDeviceMotionUpdates()
+        manager.startDeviceMotionUpdates()
         
         cameraNode = SKCameraNode()
         cameraNode.position = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
@@ -468,10 +468,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         setupForeground()
         let player = addPlayer()
-//        doBombers()
-//        doBaiters(player: player)
+        doBombers()
+        doBaiters(player: player)
         doMutants(player: player)
-//        doLanders()
+        doLanders(player: player)
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minY * 2 )
         physicsBody = SKPhysicsBody(edgeLoopFrom: rectToSecure)
@@ -532,11 +532,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         shadowNode.position.x = playerNode.position.x / 4
         shadowNode.position.y = playerNode.position.y / 4
         
-//        for link in links2F {
-//            link.bodyB.position.x = link.bodyA.position.x
-//            link.bodyB.position.y = link.bodyA.position.y
-//        }
-        
         for lander in landers {
             lander.update(deltaTime: deltaTime)
         }
@@ -593,6 +588,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
 //    var pickup: CGPoint!
     
     var playerCG: CGFloat!
+    var points: Int = 0
     
     func didBegin(_ contact: SKPhysicsContact) {
         let other = contact.bodyA.categoryBitMask == PhysicsCat.Player ? contact.bodyB : contact.bodyA
@@ -615,6 +611,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             let alienShadow = contact.bodyA.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
             alienShadow.position = CGPoint(x: 0, y: -64)
             alienShadow.addChild(shadow)
+            points -= 1000
             return
         }
 
@@ -630,6 +627,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 other.node?.physicsBody?.isDynamic = false
     //            other.node?.userData?.setObject(status.rescued, forKey: "status" as NSCopying)
                 contact.bodyB.node?.addChild(other.node!)
+                points += 500
                 return
             }
         }
@@ -646,6 +644,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 saving?.removeFromParent()
                 other.node?.addChild(saving!)
                 saving?.userData?.setObject(status.rescued, forKey: "status" as NSCopying)
+                points += 250
             }
             return
         }
@@ -677,7 +676,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             (shadow as? SKSpriteNode)?.removeFromParent()
             contact.bodyA.node?.removeFromParent()
             other.node?.removeFromParent()
-
+            print("GameOver \(points)")
+            
+            let gameOver = SKLabelNode()
+            gameOver.text = "Game Over"
+            gameOver.position = CGPoint(x: self.view!.bounds.midX, y: self.view!.bounds.midY)
+            addChild(gameOver)
+            let restart = TouchableSprite(imageNamed: "OrangeBulletExplo1")
+            restart.name = "restart"
+            restart.position = CGPoint(x: self.view!.bounds.midX, y: self.view!.bounds.midY + 128)
+            restart.delegate = self
+            addChild(restart)
         }
         
         // player hits baiter
@@ -703,9 +712,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             
         }
 
-        // fir hits bomber or mine
+        // fir hits bomber or mine or mutant or baiter
         if hit.node?.name == "bomber" || hit.node?.name == "mine" || hit.node?.name == "mutant" || hit.node?.name == "baiter" {
             hit.node?.removeFromParent()
+            points += 100
         }
 
 
@@ -715,6 +725,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             contact.bodyB.node?.physicsBody?.isDynamic = false
             let poc = CGPoint(x: (contact.bodyB.node?.position.x)!, y: 96)
             contact.bodyB.node?.run(SKAction.move(to: poc, duration: 0.5))
+            points += 100
             return
         }
 
@@ -723,6 +734,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         if hit.node?.name == "spaceman" && contact.bodyB.node?.name != "starship" {
             print("rule VI \(contact.bodyB.node?.name)")
             hit.node?.removeFromParent()
+            points -= 100
         }
     }
     
@@ -730,7 +742,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     func spriteTouched(box: TouchableSprite) {
         switch box.name {
-        
+        case "restart":
+
+            let scene = GameScene(size: CGSize(width: self.view!.bounds.width * 2, height: self.view!.bounds.height * 2))
+            let skView = self.view as? SKView
+            skView!.showsFPS = true
+            skView!.showsNodeCount = true
+            skView!.showsPhysics = true
+            skView!.ignoresSiblingOrder = true
+            scene.scaleMode = .aspectFit
+            skView!.presentScene(scene)
+            
         case "bomber":
             print("bomber.position \(box.position)")
         case "starship":
