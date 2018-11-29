@@ -21,6 +21,7 @@
 		7B16923521ADBB9000BCCC21 /* ItemComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B16923421ADBB9000BCCC21 /* ItemComponent.swift */; };
 		7B20BDA9219983C5002405C1 /* AlienDecentComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B20BDA8219983C5002405C1 /* AlienDecentComponent.swift */; };
 		7B20BDAB21998850002405C1 /* AlienEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B20BDAA21998850002405C1 /* AlienEntity.swift */; };
+		7B250A7A21B06449005A4A7D /* science_fiction_laser_007.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7B250A7921B06449005A4A7D /* science_fiction_laser_007.mp3 */; };
 		7B81710621A55C6A002D9337 /* MineEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B81710521A55C6A002D9337 /* MineEntity.swift */; };
 		7BA5CCCF2192DB72007EB2E3 /* MoveAlongPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCCE2192DB72007EB2E3 /* MoveAlongPath.swift */; };
 		7BA5CCD42192E9A4007EB2E3 /* PlayerEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCD32192E9A4007EB2E3 /* PlayerEntity.swift */; };
@@ -61,6 +62,7 @@
 		7B16923421ADBB9000BCCC21 /* ItemComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemComponent.swift; sourceTree = "<group>"; };
 		7B20BDA8219983C5002405C1 /* AlienDecentComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlienDecentComponent.swift; sourceTree = "<group>"; };
 		7B20BDAA21998850002405C1 /* AlienEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlienEntity.swift; sourceTree = "<group>"; };
+		7B250A7921B06449005A4A7D /* science_fiction_laser_007.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = science_fiction_laser_007.mp3; sourceTree = "<group>"; };
 		7B81710521A55C6A002D9337 /* MineEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MineEntity.swift; sourceTree = "<group>"; };
 		7BA5CCCE2192DB72007EB2E3 /* MoveAlongPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveAlongPath.swift; sourceTree = "<group>"; };
 		7BA5CCD32192E9A4007EB2E3 /* PlayerEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerEntity.swift; sourceTree = "<group>"; };
@@ -99,6 +101,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7B250A7821B06426005A4A7D /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				7B250A7921B06449005A4A7D /* science_fiction_laser_007.mp3 */,
+			);
+			path = Sounds;
+			sourceTree = "<group>";
+		};
 		7BA5CCD02192E953007EB2E3 /* Entity */ = {
 			isa = PBXGroup;
 			children = (
@@ -167,6 +177,7 @@
 		7BE20D07219222B900D68240 /* SKDefender */ = {
 			isa = PBXGroup;
 			children = (
+				7B250A7821B06426005A4A7D /* Sounds */,
 				7BA5CCDA21931B1A007EB2E3 /* Resources */,
 				7BA5CCD22192E96A007EB2E3 /* Components */,
 				7BA5CCD02192E953007EB2E3 /* Entity */,
@@ -244,6 +255,7 @@
 			files = (
 				7BE20D14219222B900D68240 /* Main.storyboard in Resources */,
 				7BE20D16219222BA00D68240 /* Assets.xcassets in Resources */,
+				7B250A7A21B06449005A4A7D /* science_fiction_laser_007.mp3 in Resources */,
 				7BA5CCDC21931B30007EB2E3 /* SKTUtils in Resources */,
 				7BE20D19219222BA00D68240 /* LaunchScreen.storyboard in Resources */,
 				7BE20D252192252200D68240 /* SwiftLogo.png in Resources */,

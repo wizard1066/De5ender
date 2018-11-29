@@ -740,32 +740,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     var previousDirection:String?
     
+    func restart() {
+        let scene = GameScene(size: CGSize(width: self.view!.bounds.width * 2, height: self.view!.bounds.height * 2))
+        let skView = self.view as? SKView
+        skView!.showsFPS = true
+        skView!.showsNodeCount = true
+        skView!.showsPhysics = true
+        skView!.ignoresSiblingOrder = true
+        scene.scaleMode = .aspectFit
+        skView!.presentScene(scene)
+    }
+    
     func spriteTouched(box: TouchableSprite) {
         switch box.name {
         case "restart":
-
-            let scene = GameScene(size: CGSize(width: self.view!.bounds.width * 2, height: self.view!.bounds.height * 2))
-            let skView = self.view as? SKView
-            skView!.showsFPS = true
-            skView!.showsNodeCount = true
-            skView!.showsPhysics = true
-            skView!.ignoresSiblingOrder = true
-            scene.scaleMode = .aspectFit
-            skView!.presentScene(scene)
+            restart()
             
         case "bomber":
             print("bomber.position \(box.position)")
         case "starship":
-//            let newX = box.convert(box.position, to: foregrounds[0])
-//            let newX = foregrounds[0].convert(box.position, to: baiter)
-//            let newY = foregrounds[0].convert(baiter.position, to: box)
-            print("playerNode.position \(box.position) ")
-            
-//            for foreground in foregrounds {
-//                print("forground XY \(foreground.frame.minX) \(foreground.frame.maxX) \(box.position)")
-//                print("player \(box.position)")
-            
-//            }
+            restart()
             
         case "spaceman":
             print("player \(box.position)")
@@ -832,6 +826,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         case "fire":
             let mshape = CGRect(x: 0, y: 0, width: 24, height: 6)
             let missileX = FireEntity(rect: mshape, xCord: 0, yCord: 0)
+            
+            playerNode.run(SKAction.playSoundFileNamed("science_fiction_laser_007.mp3", waitForCompletion: false))
             
             let fireNode = missileX.shapeComponent.node
             fireNode.zPosition = Layer.alien.rawValue
