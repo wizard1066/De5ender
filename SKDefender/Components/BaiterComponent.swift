@@ -116,7 +116,7 @@ class BaiterComponent: GKComponent {
         path.addLine(to: pathToExecute)
         print("beginBoming \(path)")
         
-        let followLine = SKAction.follow(path, speed: 128)
+        let followLine = SKAction.follow(path, speed: 64)
         
 //        localForegrounds[foreGroundIndex].addChild(mine.spriteComponent.node)
         self.spriteComponent.node.addChild(mine.spriteComponent.node)

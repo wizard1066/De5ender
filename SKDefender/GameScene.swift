@@ -162,11 +162,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     func doMutants(player: PlayerEntity) {
         let randomSource = GKARC4RandomSource()
         let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
-        for loop in 0...3 {
+        for loop in 0...0 {
             let randomValueZ = randomDistribution.nextInt()
             let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + baseCamp))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-            let (mutantNode, mutantShadow) = addMutant(sceneNo: randomValueZ, randX: randX, randY: randY, player: player)
+            let (mutantNode, mutantShadow) = addMutant(sceneNo: 2, randX: randX, randY: randY, player: player)
         }
     }
     
@@ -469,8 +469,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         setupForeground()
         let player = addPlayer()
 //        doBombers()
-        doBaiters(player: player)
-//        doMutants(player: player)
+//        doBaiters(player: player)
+        doMutants(player: player)
 //        doLanders()
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minY * 2 )

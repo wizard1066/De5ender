@@ -60,6 +60,34 @@ class MutantComponent: GKComponent {
         return indexToReturn
     }
     
+    func findPathToExecute(random: Int) -> (CGPoint, CGPoint) {
+        var directionToGoA: CGPoint
+        var directionToGoB: CGPoint
+        switch random {
+        case 0:
+            directionToGoA = CGPoint(x: 0, y: -512)
+            directionToGoB = CGPoint(x: 0, y: -512)
+            break
+        case 1:
+            directionToGoA = CGPoint(x: 0, y: 512)
+            directionToGoB = CGPoint(x: 0, y: 512)
+            break
+        case 2:
+            directionToGoA = CGPoint(x: -512, y: 0)
+            directionToGoB = CGPoint(x: -512, y: 0)
+            break
+        case 3:
+            directionToGoA = CGPoint(x: 512, y: 0)
+            directionToGoB = CGPoint(x: 512, y: 0)
+            break
+        default:
+            directionToGoA = CGPoint(x: 0, y: 0)
+            directionToGoB = CGPoint(x: 0, y: 0)
+            break
+        }
+        return (directionToGoA, directionToGoB)
+    }
+    
     func beginBombing(loop: Int, skew: Int) {
         // stop bombing if mutant is dead
         if self.spriteComponent.node.parent == nil {
@@ -70,19 +98,24 @@ class MutantComponent: GKComponent {
         //        mine.spriteComponent.node.zPosition = Layer.alien.rawValue
         let path = CGMutablePath()
         
-        path.move(to: spriteComponent.node.position)
-        var pathToExecute = playerToKill.spriteComponent.node.position
+        mine.spriteComponent.node.position = CGPoint.zero
+        path.move(to: CGPoint.zero)
+
+        var pathToExecute: CGPoint!
+        let (d2A, d2B) = findPathToExecute(random: skew)
         if skew % 2 == 0 {
-            pathToExecute.x += CGFloat(skew)
-            pathToExecute.y += CGFloat(skew)
+            let newX = d2A.x + CGFloat(skew)
+            let newY = d2A.y + CGFloat(skew)
+            pathToExecute = CGPoint(x: newX, y: newY)
         } else {
-            pathToExecute.x -= CGFloat(skew)
-            pathToExecute.y -= CGFloat(skew)
+            let newX = d2B.x + CGFloat(skew)
+            let newY = d2B.y + CGFloat(skew)
+            pathToExecute = CGPoint(x: newX, y: newY)
         }
         path.addLine(to: pathToExecute)
-        let followLine = SKAction.follow(path, speed: 128)
+        let followLine = SKAction.follow(path, speed: 64)
         
-        localForegrounds[foreGroundIndex].addChild(mine.spriteComponent.node)
+        self.spriteComponent.node.addChild(mine.spriteComponent.node)
         
         mine.spriteComponent.node.run(followLine)
         
@@ -116,7 +149,7 @@ class MutantComponent: GKComponent {
         if runLess < 120 + randQ {
             runLess += 1
         } else {
-            self.randQ = GKRandomSource.sharedRandom().nextInt(upperBound: 30)
+            self.randQ = GKRandomSource.sharedRandom().nextInt(upperBound: 4)
             self.beginBombing(loop: self.randQ, skew: self.randQ)
             runLess = 0
         }
