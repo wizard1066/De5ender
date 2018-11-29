@@ -61,6 +61,10 @@ class MutantComponent: GKComponent {
     }
     
     func beginBombing(loop: Int, skew: Int) {
+        // stop bombing if mutant is dead
+        if self.spriteComponent.node.parent == nil {
+            return
+        }
         
         let mine = BombEntity(imageName: "mine", owningNode: self.spriteComponent.node)
         //        mine.spriteComponent.node.zPosition = Layer.alien.rawValue
@@ -90,11 +94,11 @@ class MutantComponent: GKComponent {
     var foreGroundIndex:Int!
     var toggle = true
     var playerToKill: PlayerEntity!
-    var tweek: CGFloat?
+    var runLess: Int = 0
+    
     
     
     override func update(deltaTime seconds: TimeInterval) {
-        tweek = (localForegrounds.first?.size.width)!
         if runOnce {
             spriteShadow = (self.spriteComponent.node.userData?.object(forKey: "shadow") as? EntityNode)!
             spriteShadow?.alpha = 0.5
@@ -103,31 +107,28 @@ class MutantComponent: GKComponent {
             
         }
         
+        if runLess < 120 {
+            runLess += 1
+        } else {
+            self.beginBombing(loop: 0, skew: 4)
+            runLess = 0
+        }
+        
         if toggle {
-            
             toggle = false
-//            let rand = GKRandomSource.sharedRandom().nextInt(upperBound: 2)
             let pause = SKAction.wait(forDuration: TimeInterval(0.1))
-            let bomb = SKAction.run {
-                let rand = GKRandomSource.sharedRandom().nextInt(upperBound: 8)
-                if rand == 4 {
-                    let playerPos = self.whereIsPlayer()
-                    if playerPos == self.foreGroundIndex {
-                        self.beginBombing(loop: 0, skew: rand)
-                    }
-                }
-            }
-            
-            // CHANGE this so mutant gives up @ some point
             let move = SKAction.run {
                 self.toggle = true
                 // foreground index is the number of the foreground that the mutant is on right now...
                 
-
                     var newG = self.localForegrounds[self.foreGroundIndex].convert(self.spriteComponent.node.position, to: self.playerToKill.spriteComponent.node)
+                    newG.y = newG.y + 128
 
                     let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
                     let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
+                
+                    let tweek = randX * randY
+                    newG.y = newG.y - tweek
                     
                     if newG.x > 0 {
                         self.spriteComponent.node.position.x -= 8 + randX
@@ -152,7 +153,7 @@ class MutantComponent: GKComponent {
             }
 //            let amountToRotate:CGFloat = 0.5
 //            let rotateClockwise = SKAction.rotate(byAngle: amountToRotate.degreesToRadians(), duration: 0.2)
-            spriteComponent.node.run(SKAction.sequence([pause,move,bomb]))
+            spriteComponent.node.run(SKAction.sequence([pause,move]))
         }
         
         for mine in mines {

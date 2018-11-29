@@ -52,11 +52,16 @@ class BomberComponent: GKComponent {
     }
     
     var runOnce = true
-    var scanNodeIndex = 0
-    var foreGroundIndex = 0
+    var scanNodeIndex:Int!
+    var foreGroundIndex:Int!
     var toggle = true
     var change = false
     var band:CGFloat = 1.6
+    
+    func setScene(sceneNo: Int) {
+        foreGroundIndex = sceneNo
+        scanNodeIndex = sceneNo
+    }
     
     override func update(deltaTime seconds: TimeInterval) {
         if runOnce {

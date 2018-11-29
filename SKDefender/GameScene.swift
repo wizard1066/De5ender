@@ -167,21 +167,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         for loop in 0...3 {
             let randY = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY - CGFloat(baseCamp))) + baseCamp
             let randX = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2))
-            let (bomberNode, bomberShadow) = addBomber(loop: 0, randX: CGFloat(randX), randY: CGFloat(randY), scanNodes: scanNodes, foregrounds: foregrounds)
+            let (bomberNode, bomberShadow) = addBomber(sceneNo: 1, randX: CGFloat(randX), randY: CGFloat(randY), scanNodes: scanNodes, foregrounds: foregrounds)
         }
     }
     
     func doLanders(player: PlayerEntity) {
         for loop in 0..<numberOfForegrounds {
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-            let (landerNode,_) = self.addLander(loop: loop, randX: randX, randY: (self.view?.bounds.maxY)!*2, player: player)
-            let (itemNode,_) = self.addItem(loop: loop, randX: randX, player: player)
+            let (landerNode,_) = self.addLander(sceneNo: loop, randX: randX, randY: (self.view?.bounds.maxY)!*2, player: player)
+            let (itemNode,_) = self.addItem(sceneNo: loop, randX: randX)
         }
     }
     
     var landers:[LanderEntity] = []
     
-    func addItem(loop: Int, randX: CGFloat, player: PlayerEntity) -> (EntityNode, EntityNode) {
+    func addItem(sceneNo: Int, randX: CGFloat) -> (EntityNode, EntityNode) {
         let shadow = ItemEntity(imageName: "ItemBlank", xCord: randX, yCord: self.view!.bounds.minY + 96, shadowNode: nil)
         let itemShadow = shadow.itemComponent.node
         itemShadow.delegate = self
@@ -192,13 +192,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         let itemNode = item.itemComponent.node
         itemNode.zPosition = Layer.spaceman.rawValue
         itemNode.delegate = self
-        scanNodes[loop].addChild(itemShadow)
-        foregrounds[loop].addChild(itemNode)
+        scanNodes[sceneNo].addChild(itemShadow)
+        foregrounds[sceneNo].addChild(itemNode)
         
         return (itemNode, itemShadow)
     }
     
-    func addLander(loop: Int, randX: CGFloat, randY: CGFloat, player: PlayerEntity) -> (EntityNode, EntityNode) {
+    func addLander(sceneNo: Int, randX: CGFloat, randY: CGFloat, player: PlayerEntity) -> (EntityNode, EntityNode) {
         let shadow = LanderEntity(imageName: "alien", xCord: randX, yCord: self.view!.bounds.maxY, screenBounds: self.view!.bounds, shadowNode: nil)
         let landerShadow = shadow.spriteComponent.node
         landerShadow.zPosition = Layer.alien.rawValue
@@ -210,8 +210,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         let landerNode = lander.spriteComponent.node
         landerNode.zPosition = Layer.alien.rawValue
         landerNode.delegate = self
-        scanNodes[loop].addChild(landerShadow)
-        foregrounds[loop].addChild(landerNode)
+        scanNodes[sceneNo].addChild(landerShadow)
+        foregrounds[sceneNo].addChild(landerNode)
         landers.append(lander)
       
         return (landerNode, landerShadow)
@@ -266,19 +266,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var bombers:[BomberEntity] = []
     var mines:[MineEntity] = []
     
-    func addBomber(loop: Int, randX: CGFloat, randY: CGFloat, scanNodes:[EntityNode], foregrounds:[EntityNode]) -> (EntityNode, EntityNode) {
+    func addBomber(sceneNo: Int, randX: CGFloat, randY: CGFloat, scanNodes:[EntityNode], foregrounds:[EntityNode]) -> (EntityNode, EntityNode) {
         let shadow = BomberEntity(imageName: "bomber", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: nil)
+        shadow.bomberComponent.setScene(sceneNo: sceneNo)
         let bomberShadow = shadow.spriteComponent.node
         bomberShadow.zPosition = Layer.alien.rawValue
         bomberShadow.delegate = self
         
         let bomber = BomberEntity(imageName: "bomber", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: bomberShadow)
+        bomber.bomberComponent.setScene(sceneNo: sceneNo)
         let bomberNode = bomber.spriteComponent.node
         bomberNode.zPosition = Layer.alien.rawValue
         bomberNode.delegate = self
         
-        foregrounds[loop].addChild(bomberNode)
-        scanNodes[loop].addChild(bomberShadow)
+        foregrounds[sceneNo].addChild(bomberNode)
+        scanNodes[sceneNo].addChild(bomberShadow)
         bombers.append(bomber)
         
         return (bomberNode, bomberShadow)
@@ -409,7 +411,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             return
         }
         
-        manager.startDeviceMotionUpdates()
+//        manager.startDeviceMotionUpdates()
         
         cameraNode = SKCameraNode()
         cameraNode.position = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
@@ -422,9 +424,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         setupForeground()
         let player = addPlayer()
 //        doBombers()
-        doBaiters(player: player)
+//        doBaiters(player: player)
         doMutants(player: player)
-        doLanders(player: player)
+//        doLanders()
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minY * 2 )
         physicsBody = SKPhysicsBody(edgeLoopFrom: rectToSecure)
