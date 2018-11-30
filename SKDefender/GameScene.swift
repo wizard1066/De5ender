@@ -54,7 +54,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     var player:PlayerEntity!
     var shadow:PlayerEntity!
-    var bodyCount:Int = 0
+    var bodyCount:Int = 0 {
+        didSet {
+            newLunch()
+        }
+    }
     
     var playableStart: CGFloat = 0
     
@@ -520,23 +524,37 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         setupForeground()
         let player = addPlayer()
-        doBombers(bodies: 2, wayToGo: .cominEast) // 2 bombers
-        doBombers(bodies: 2, wayToGo: .cominWest) // 2 bombers
-//        doBaiters(player: player, bodies: 4) // 4 baiters
-//        doMutants(player: player, bodies: 4) // 4 mutants
-        doLanders(player: player, bodies: 4) // 8 landers
-        bodyCount += 16
+   
+        
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minY * 2 )
         physicsBody = SKPhysicsBody(edgeLoopFrom: rectToSecure)
         physicsBody?.isDynamic = false
 
-        let highscorePlacement = CGPoint(x: self.view!.bounds.maxX * 2 - 64, y: self.view!.bounds.maxY * 2 - 64)
+        let highscorePlacement = CGPoint(x: self.view!.bounds.maxX * 2 - 128, y: self.view!.bounds.maxY * 2 - 128)
         highScore = TextEntity(text: "0", Cords:highscorePlacement , name: "highscore")
         addChild(highScore.textComponent.node)
         
         let nextWavePlacement = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
         nextWave = TextEntity(text: "Next Wave", Cords: nextWavePlacement, name: "nextwave")
+        
+        bodyCount += 16
+        newWave()
+    }
+    
+    func newLunch() {
+        nextWave.textComponent.node.run(SKAction.fadeOut(withDuration: 2))
+        if bodyCount == 0 {
+            nextWave.textComponent.node.run(SKAction.fadeOut(withDuration: 2))
+            newWave()
+        }
+    }
+    func newWave() {
+        doBombers(bodies: 2, wayToGo: .cominEast) // 2 bombers
+        doBombers(bodies: 2, wayToGo: .cominWest) // 2 bombers
+        doBaiters(player: player, bodies: 4) // 4 baiters
+        doMutants(player: player, bodies: 4) // 4 mutants
+        doLanders(player: player, bodies: 4) // 4 landers
     }
     
     override func update(_ currentTime: CFTimeInterval) {

@@ -13,7 +13,7 @@ class MutantComponent: GKComponent {
     let spriteComponent: SpriteComponent
     
     var playableStart: CGFloat = 0
-    var playableRegion: CGFloat = UIScreen.main.bounds.maxY * 2
+    var playableRegion: CGFloat = UIScreen.main.bounds.maxY * 2 * 0.8
     var localBounds: CGRect!
     var localView: EntityNode!
     var localScan:[EntityNode] = []

@@ -13,7 +13,7 @@ class LanderComponent: GKComponent {
     let spriteComponent: SpriteComponent
     
     var playableStart: CGFloat = 0
-    var playableRegion: CGFloat = UIScreen.main.bounds.maxY * 2
+    var playableRegion: CGFloat = UIScreen.main.bounds.maxY * 2 * 0.85
     var decentRate: CGFloat = -0.5
     var mines:[BaitEntity] = []
     var localForegrounds:[EntityNode] = []
