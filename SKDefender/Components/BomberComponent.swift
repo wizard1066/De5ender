@@ -21,6 +21,7 @@ class BomberComponent: GKComponent {
     var spriteShadow: EntityNode?
     var mines:[MineEntity] = []
     var bounds: CGRect!
+    var directionToGo: spriteAttack!
     
     init(entity: GKEntity, screenBounds: CGRect, view2D: EntityNode, scanNodes: [EntityNode], foregrounds: [EntityNode], shadow:EntityNode?) {
         localBounds = screenBounds
@@ -28,6 +29,7 @@ class BomberComponent: GKComponent {
         localScan = scanNodes
         localForeground = foregrounds
         bounds = screenBounds
+        
         self.spriteComponent = entity.component(ofType: SpriteComponent.self)!
         super.init()
     }
@@ -58,9 +60,10 @@ class BomberComponent: GKComponent {
     var change = false
     var band:CGFloat = 1.6
     
-    func setScene(sceneNo: Int) {
+    func setVariable(sceneNo: Int, direction: spriteAttack) {
         foreGroundIndex = sceneNo
         scanNodeIndex = sceneNo
+        directionToGo = direction
     }
     
     override func update(deltaTime seconds: TimeInterval) {
@@ -86,8 +89,13 @@ class BomberComponent: GKComponent {
             mine.update(deltaTime: seconds)
         }
 
-        spriteComponent.node.position.x -= 2
-        spriteShadow?.position.x -= 2
+        if directionToGo == .cominEast {
+            spriteComponent.node.position.x -= 2
+            spriteShadow?.position.x -= 2
+        } else {
+            spriteComponent.node.position.x += 2
+            spriteShadow?.position.x += 2
+        }
         
         if spriteComponent.node.position.y < bounds.maxY * band && !change {
             spriteComponent.node.position.y += 1

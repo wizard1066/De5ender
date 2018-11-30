@@ -22,6 +22,8 @@ class TextEntity: GKEntity {
         spriteNode.name = name
         spriteNode.position = Cords
         spriteNode.color = UIColor.white
+        spriteNode.fontName = "Futura-CondensedMedium"
+        spriteNode.fontSize = 48
     }
     
     required init?(coder aDecoder: NSCoder) {

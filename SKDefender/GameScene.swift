@@ -72,64 +72,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     var firing: AVAudioPlayer!
     
-    func createStarLayers() {
-        //A layer of a star field
-        let starfieldNode = SKNode()
-        starfieldNode.name = "starfieldNode"
-        starfieldNode.addChild(starfieldEmitterNode(speed: -36, lifetime: size.height / 20, scale: 0.2, birthRate: 1, color: SKColor.lightGray))
-        addChild(starfieldNode)
-        
-        //        A second layer of stars
-        var emitterNode = starfieldEmitterNode(speed: -24, lifetime: size.height / 10, scale: 0.15, birthRate: 1, color: SKColor.gray)
-        emitterNode.zPosition = -10
-        starfieldNode.addChild(emitterNode)
-        
-        //        A third layer
-        emitterNode = starfieldEmitterNode(speed: -12, lifetime: size.height / 5, scale: 0.1, birthRate: 1, color: SKColor.darkGray)
-        starfieldNode.addChild(emitterNode)
-        
-    }
-    
-    func starfieldEmitterNode(speed: CGFloat, lifetime: CGFloat, scale: CGFloat, birthRate: CGFloat, color: SKColor) -> SKEmitterNode {
-        let star = SKLabelNode(fontNamed: "Helvetica")
-        star.fontSize = 80.0
-        star.text = "✦"
-        let textureView = SKView()
-        let texture = textureView.texture(from: star)
-        texture!.filteringMode = .nearest
-        
-        let emitterNode = SKEmitterNode()
-        emitterNode.particleTexture = texture
-        emitterNode.particleBirthRate = birthRate
-        emitterNode.particleColor = color
-        emitterNode.particleLifetime = lifetime
-        emitterNode.particleSpeed = speed
-        emitterNode.particleScale = scale
-        emitterNode.particleColorBlendFactor = 1
-        emitterNode.position = CGPoint(x: frame.midX, y: frame.maxY * 0.7)
-        
-        emitterNode.particlePositionRange = CGVector(dx: frame.maxX * 2, dy: 0)
-        emitterNode.particleSpeedRange = 48.0
-        
-        //Rotates the stars
-        emitterNode.particleAction = SKAction.repeatForever(SKAction.sequence([
-            SKAction.rotate(byAngle: CGFloat(-Double.pi/4), duration: 1),
-            SKAction.rotate(byAngle: CGFloat(Double.pi/4), duration: 1)]))
-        
-        //Causes the stars to twinkle
-        let twinkles = 20
-        let colorSequence = SKKeyframeSequence(capacity: twinkles*2)
-        let twinkleTime = 1.0 / CGFloat(twinkles)
-        for i in 0..<twinkles {
-            colorSequence.addKeyframeValue(SKColor.white,time: CGFloat(i) * 2 * twinkleTime / 2)
-            colorSequence.addKeyframeValue(SKColor.yellow, time: (CGFloat(i) * 2 + 1) * twinkleTime / 2)
-        }
-        emitterNode.particleColorSequence = colorSequence
-        
-        emitterNode.advanceSimulationTime(TimeInterval(lifetime))
-        return emitterNode
-    }
-    
     func preLoadSound() {
         do {
             let path = Bundle.main.path(forResource: "science_fiction_laser_007", ofType: ("mp3"))
@@ -190,6 +132,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             let scanNode = scanground.buildComponent.node
             scanNode.delegate = self
             foregroundNode.delegate = self
+            staticStars(source: foregroundNode)
             addChild(foreground.buildComponent.node)
             foregrounds.append(foregroundNode)
             scanNodes.append(scanNode)
@@ -220,10 +163,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
     }
     
-    func doBaiters(player: PlayerEntity) {
+    func doBaiters(player: PlayerEntity, bodies: Int) {
         let randomSource = GKARC4RandomSource()
         let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
-        for loop in 0...3 {
+        for loop in 0..<bodies {
             let randomValueZ = randomDistribution.nextInt()
             let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + baseCamp))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
@@ -231,10 +174,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         }
     }
     
-    func doMutants(player: PlayerEntity) {
+    func doMutants(player: PlayerEntity, bodies: Int) {
         let randomSource = GKARC4RandomSource()
         let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
-        for loop in 0...3 {
+        for loop in 0..<bodies {
             let randomValueZ = randomDistribution.nextInt()
             let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + baseCamp))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
@@ -242,19 +185,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         }
     }
     
-    func doBombers() {
-        for loop in 0...3 {
+    func doBombers(bodies: Int, wayToGo: spriteAttack) {
+        for loop in 0..<bodies {
             let randY = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY - CGFloat(baseCamp))) + baseCamp
             let randX = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2))
-            let (bomberNode, bomberShadow) = addBomber(sceneNo: 1, randX: CGFloat(randX), randY: CGFloat(randY), scanNodes: scanNodes, foregrounds: foregrounds)
+            let (bomberNode, bomberShadow) = addBomber(sceneNo: 1, randX: CGFloat(randX), randY: CGFloat(randY), scanNodes: scanNodes, foregrounds: foregrounds, direction: wayToGo)
         }
     }
     
-    func doLanders(player: PlayerEntity) {
-        for loop in 0..<numberOfForegrounds {
-            let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-            let (landerNode,_) = self.addLander(sceneNo: loop, randX: randX, randY: (self.view?.bounds.maxY)!*2, player: player)
-            let (itemNode,_) = self.addItem(sceneNo: loop, randX: randX)
+    func doLanders(player: PlayerEntity, bodies: Int) {
+        let randomSource = GKARC4RandomSource()
+        let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
+        for loop in 0..<bodies {
+            let randomValueZ = randomDistribution.nextInt()
+            let randT = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 60))
+            let waitAction = SKAction.wait(forDuration: TimeInterval(randT))
+            let execAction = SKAction.run {
+                let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
+                let (landerNode,_) = self.addLander(sceneNo: randomValueZ, randX: randX, randY: (self.view?.bounds.maxY)!*2, player: player)
+                let (itemNode,_) = self.addItem(sceneNo: randomValueZ, randX: randX)
+            }
+            player.spriteComponent.node.run(SKAction.sequence([waitAction, execAction]))
         }
     }
     
@@ -279,6 +230,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     func addLander(sceneNo: Int, randX: CGFloat, randY: CGFloat, player: PlayerEntity) -> (EntityNode, EntityNode) {
         let shadow = LanderEntity(imageName: "alien", xCord: randX, yCord: self.view!.bounds.maxY, screenBounds: self.view!.bounds, shadowNode: nil)
+        shadow.landerComponent.setVariables(foregrounds: foregrounds, playerNode: playerNode, sceneNo: sceneNo)
         let landerShadow = shadow.spriteComponent.node
         landerShadow.zPosition = Layer.alien.rawValue
         landerShadow.delegate = self
@@ -286,6 +238,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         landerShadow.zPosition = Layer.alien.rawValue
         
         let lander = LanderEntity(imageName: "alien", xCord: randX, yCord: self.view!.bounds.maxY, screenBounds: self.view!.bounds, shadowNode: landerShadow)
+        lander.landerComponent.setVariables(foregrounds: foregrounds, playerNode: playerNode, sceneNo: sceneNo)
         let landerNode = lander.spriteComponent.node
         landerNode.zPosition = Layer.alien.rawValue
         landerNode.delegate = self
@@ -383,15 +336,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var bombers:[BomberEntity] = []
     var mines:[MineEntity] = []
     
-    func addBomber(sceneNo: Int, randX: CGFloat, randY: CGFloat, scanNodes:[EntityNode], foregrounds:[EntityNode]) -> (EntityNode, EntityNode) {
-        let shadow = BomberEntity(imageName: "bomber", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: nil)
-        shadow.bomberComponent.setScene(sceneNo: sceneNo)
+    func addBomber(sceneNo: Int, randX: CGFloat, randY: CGFloat, scanNodes:[EntityNode], foregrounds:[EntityNode], direction: spriteAttack) -> (EntityNode, EntityNode) {
+        var imageName: String!
+        if direction == .cominWest {
+            imageName = "bomberb"
+        } else {
+            imageName = "bomber"
+        }
+        let shadow = BomberEntity(imageName: imageName, xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: nil)
+        shadow.bomberComponent.setVariable(sceneNo: sceneNo, direction: direction)
         let bomberShadow = shadow.spriteComponent.node
         bomberShadow.zPosition = Layer.alien.rawValue
         bomberShadow.delegate = self
         
-        let bomber = BomberEntity(imageName: "bomber", xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: bomberShadow)
-        bomber.bomberComponent.setScene(sceneNo: sceneNo)
+        let bomber = BomberEntity(imageName: imageName, xCord: randX, yCord: randY, screenBounds: self.view!.bounds, view2D: foregrounds[0], scanNodes:scanNodes, foregrounds:foregrounds, shadowNode: bomberShadow)
+        bomber.bomberComponent.setVariable(sceneNo: sceneNo, direction: direction)
         let bomberNode = bomber.spriteComponent.node
         bomberNode.zPosition = Layer.alien.rawValue
         bomberNode.delegate = self
@@ -488,7 +447,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         downArrow.hudComponent.node.delegate = self
          downArrow.hudComponent.node.zPosition = Layer.controls.rawValue
         
-        advancedArrow = HeadsUpEntity(imageName: "RightArrow", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!) - 128, name: "advance")
+        advancedArrow = HeadsUpEntity(imageName: "RightArrow", xCord: ((self.view?.bounds.maxX)! * 2) - 128, yCord: ((self.view?.bounds.maxY)!) - 160, name: "advance")
         advancedArrow.hudComponent.node.delegate = self
          advancedArrow.hudComponent.node.zPosition = Layer.controls.rawValue
         
@@ -519,6 +478,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var cameraNode: SKCameraNode!
     var manager: CMMotionManager!
     
+    func staticStars(source: SKSpriteNode) {
+        let lowest = Int(self.view!.bounds.maxY * 0.2)
+        for k in lowest ... Int(self.view!.bounds.maxY * 2 * 0.8) {
+            let place = GKRandomSource.sharedRandom().nextBool()
+            if place {
+                let randX = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX) * 2)
+                let star = SKLabelNode(fontNamed: "Helvetica")
+                let randP = GKRandomSource.sharedRandom().nextInt(upperBound: 12)
+                star.fontSize = CGFloat(randP)
+                star.text = "✦"
+                star.position = CGPoint(x: randX, y: k)
+                source.addChild(star)
+            }
+        }
+        
+    }
+    
     override func didMove(to view: SKView) {
         /* Setup your scene here */
         physicsWorld.gravity = CGVector(dx: 0, dy: -0.5)
@@ -533,7 +509,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
 //        manager.startDeviceMotionUpdates()
         
         preLoadSound()
-        createStarLayers()
         
         cameraNode = SKCameraNode()
         cameraNode.position = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
@@ -545,11 +520,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         setupForeground()
         let player = addPlayer()
-        doBombers() // 4 bombers
-        doBaiters(player: player) // 4 baiters
-        doMutants(player: player) // 4 mutants
-        doLanders(player: player) // 8 landers
-        bodyCount += 20
+        doBombers(bodies: 2, wayToGo: .cominEast) // 2 bombers
+        doBombers(bodies: 2, wayToGo: .cominWest) // 2 bombers
+//        doBaiters(player: player, bodies: 4) // 4 baiters
+//        doMutants(player: player, bodies: 4) // 4 mutants
+        doLanders(player: player, bodies: 4) // 8 landers
+        bodyCount += 16
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minY * 2 )
         physicsBody = SKPhysicsBody(edgeLoopFrom: rectToSecure)
@@ -711,7 +687,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             let alienShadow = contact.bodyA.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
             alienShadow.position = CGPoint(x: 0, y: -64)
             alienShadow.addChild(shadow)
-            highScore.textComponent.lessScore(score: 1000)
+            highScore.textComponent.lessScore(score: 100)
             return
         }
 
@@ -868,7 +844,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         if hit.node?.name == "spaceman" && contact.bodyB.node?.name != "starship" {
             print("rule VI \(contact.bodyB.node?.name)")
             hit.node?.removeFromParent()
-            highScore.textComponent.lessScore(score: 250)
+            highScore.textComponent.lessScore(score: 100)
         }
     }
     
@@ -953,7 +929,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 break
             }
         case "fire":
-            let mshape = CGRect(x: 0, y: 0, width: 128, height: 6)
+            let mshape = CGRect(x: 0, y: 0, width: 32, height: 6)
             let missileX = FireEntity(rect: mshape, xCord: 0, yCord: 0)
             
             playerNode.run(SKAction.playSoundFileNamed("science_fiction_laser_007.mp3", waitForCompletion: false))
