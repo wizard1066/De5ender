@@ -67,6 +67,15 @@ class BomberComponent: GKComponent {
     }
     
     override func update(deltaTime seconds: TimeInterval) {
+        for mine in mines {
+            mine.update(deltaTime: seconds)
+        }
+        print("mines.count \(mines.count)")
+        if spriteComponent.node.parent == nil {
+            spriteShadow?.removeFromParent()
+            return
+        }
+        
         if runOnce {
             spriteShadow = (self.spriteComponent.node.userData?.object(forKey: "shadow") as? EntityNode)!
             spriteShadow?.alpha = 0.5
@@ -85,9 +94,9 @@ class BomberComponent: GKComponent {
             spriteComponent.node.run(SKAction.sequence([pause,bomb]))
         }
         
-        for mine in mines {
-            mine.update(deltaTime: seconds)
-        }
+//        for mine in mines {
+//            mine.update(deltaTime: seconds)
+//        }
 
         if directionToGo == .cominEast {
             spriteComponent.node.position.x -= 2
@@ -111,9 +120,7 @@ class BomberComponent: GKComponent {
             }
         }
         
-        if spriteComponent.node.parent == nil {
-            spriteShadow?.removeFromParent()
-        }
+   
         
         if spriteComponent.node.position.x < 0 {
             if spriteComponent.node.parent != nil {

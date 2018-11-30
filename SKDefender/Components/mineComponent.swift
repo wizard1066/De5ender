@@ -39,7 +39,6 @@ class MineComponent: GKComponent {
             let fadeOut = SKAction.fadeOut(withDuration: 1)
             let fadeAway = SKAction.removeFromParent()
             spriteComponent.node.run(SKAction.sequence([fadeOut, fadeAway]))
-            spriteComponent.node.removeFromParent()
         }
     }
     

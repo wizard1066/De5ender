@@ -93,6 +93,9 @@ class BaiterComponent: GKComponent {
     }
     
     func beginBombing(loop: Int, skew: Int) {
+        if self.spriteComponent.node.parent == nil {
+            return
+        }
         print("beginBoming \(skew)")
         let mine = BaitEntity(imageName: "mine", owningNode: self.spriteComponent.node)
         //        mine.spriteComponent.node.zPosition = Layer.alien.rawValue
@@ -133,6 +136,7 @@ class BaiterComponent: GKComponent {
     var playerToKill: PlayerEntity!
     var running: spriteAttack?
     var runLess: Int? = 0
+    var runMore: Int? = 0
     var randQ: Int = 0
     
     func setRunning(value2D: spriteAttack) {
@@ -142,6 +146,10 @@ class BaiterComponent: GKComponent {
     
     
     override func update(deltaTime seconds: TimeInterval) {
+        if spriteComponent.node.parent == nil {
+            spriteShadow?.removeFromParent()
+            return
+        }
         if runOnce {
             spriteShadow = (self.spriteComponent.node.userData?.object(forKey: "shadow") as? EntityNode)!
             spriteShadow?.alpha = 0.5
@@ -150,16 +158,14 @@ class BaiterComponent: GKComponent {
             
         }
         
-        if toggle {
-            
-            toggle = false
-            
-            let pause = SKAction.wait(forDuration: TimeInterval(0.1))
+        if runMore! < 16 + randQ {
+            runMore! += 1
+        } else {
+            runMore = 0
             
             
             // CHANGE this so mutant gives up @ some point
-            let move = SKAction.run {
-                self.toggle = true
+    
                 // foreground index is the number of the foreground that the mutant is on right now...
 //                let playerPos = self.whereIsPlayer()
                 
@@ -222,8 +228,7 @@ class BaiterComponent: GKComponent {
             }
             //            let amountToRotate:CGFloat = 0.5
             //            let rotateClockwise = SKAction.rotate(byAngle: amountToRotate.degreesToRadians(), duration: 0.2)
-            spriteComponent.node.run(SKAction.sequence([pause,move]))
-        }
+        
         
         for mine in mines {
             mine.update(deltaTime: seconds)
@@ -232,9 +237,7 @@ class BaiterComponent: GKComponent {
         //        spriteComponent.node.position.x -= 2
         //        spriteShadow?.position.x -= 2
         
-        if spriteComponent.node.parent == nil {
-            spriteShadow?.removeFromParent()
-        }
+        
         
         
         if spriteComponent.node.zRotation.radiansToDegrees() > 10 {

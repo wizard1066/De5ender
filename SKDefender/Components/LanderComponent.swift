@@ -78,6 +78,9 @@ class LanderComponent: GKComponent {
     }
     
     func beginBombing(loop: Int, skew: Int) {
+        if self.spriteComponent.node.parent == nil {
+            return
+        }
         print("beginBoming \(skew)")
         let mine = BaitEntity(imageName: "mine", owningNode: self.spriteComponent.node)
         //        mine.spriteComponent.node.zPosition = Layer.alien.rawValue
@@ -135,6 +138,10 @@ class LanderComponent: GKComponent {
     var randQ: Int = 0
     
     override func update(deltaTime seconds: TimeInterval) {
+        if spriteComponent.node.parent == nil {
+            spriteShadow?.removeFromParent()
+            return
+        }
         if runOnce {
             spriteShadow = (self.spriteComponent.node.userData?.object(forKey: "shadow") as? EntityNode)!
             spriteShadow?.alpha = 0.5
@@ -154,9 +161,7 @@ class LanderComponent: GKComponent {
             spriteComponent.node.run(SKAction.sequence([fadeAway,selfDestruct]))
         }
         
-        if spriteComponent.node.parent == nil {
-            spriteShadow?.removeFromParent()
-        }
+        
         
         for mine in mines {
             mine.update(deltaTime: seconds)

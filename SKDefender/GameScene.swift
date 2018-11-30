@@ -545,16 +545,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     func newLunch() {
         nextWave.textComponent.node.run(SKAction.fadeOut(withDuration: 2))
         if bodyCount == 0 {
-            nextWave.textComponent.node.run(SKAction.fadeOut(withDuration: 2))
+            let waitAction = SKAction.wait(forDuration: 4)
+            let fadeOutAction = SKAction.fadeOut(withDuration: 2)
+            nextWave.textComponent.node.run(SKAction.sequence([waitAction, fadeOutAction]))
             newWave()
         }
     }
     func newWave() {
         doBombers(bodies: 2, wayToGo: .cominEast) // 2 bombers
         doBombers(bodies: 2, wayToGo: .cominWest) // 2 bombers
-        doBaiters(player: player, bodies: 4) // 4 baiters
-        doMutants(player: player, bodies: 4) // 4 mutants
-        doLanders(player: player, bodies: 4) // 4 landers
+//        doBaiters(player: player, bodies: 4) // 4 baiters memory ok
+//        doMutants(player: player, bodies: 4) // 4 mutants memory ok
+//        doLanders(player: player, bodies: 4) // 4 landers memory ok
     }
     
     override func update(_ currentTime: CFTimeInterval) {
