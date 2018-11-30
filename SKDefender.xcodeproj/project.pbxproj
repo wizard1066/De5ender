@@ -22,6 +22,8 @@
 		7B20BDA9219983C5002405C1 /* AlienDecentComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B20BDA8219983C5002405C1 /* AlienDecentComponent.swift */; };
 		7B20BDAB21998850002405C1 /* AlienEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B20BDAA21998850002405C1 /* AlienEntity.swift */; };
 		7B250A7A21B06449005A4A7D /* science_fiction_laser_007.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 7B250A7921B06449005A4A7D /* science_fiction_laser_007.mp3 */; };
+		7B250A7C21B12F52005A4A7D /* TextEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B250A7B21B12F52005A4A7D /* TextEntity.swift */; };
+		7B250A7E21B13038005A4A7D /* TextComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B250A7D21B13038005A4A7D /* TextComponent.swift */; };
 		7B81710621A55C6A002D9337 /* MineEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B81710521A55C6A002D9337 /* MineEntity.swift */; };
 		7BA5CCCF2192DB72007EB2E3 /* MoveAlongPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCCE2192DB72007EB2E3 /* MoveAlongPath.swift */; };
 		7BA5CCD42192E9A4007EB2E3 /* PlayerEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA5CCD32192E9A4007EB2E3 /* PlayerEntity.swift */; };
@@ -63,6 +65,8 @@
 		7B20BDA8219983C5002405C1 /* AlienDecentComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlienDecentComponent.swift; sourceTree = "<group>"; };
 		7B20BDAA21998850002405C1 /* AlienEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlienEntity.swift; sourceTree = "<group>"; };
 		7B250A7921B06449005A4A7D /* science_fiction_laser_007.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = science_fiction_laser_007.mp3; sourceTree = "<group>"; };
+		7B250A7B21B12F52005A4A7D /* TextEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEntity.swift; sourceTree = "<group>"; };
+		7B250A7D21B13038005A4A7D /* TextComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextComponent.swift; sourceTree = "<group>"; };
 		7B81710521A55C6A002D9337 /* MineEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MineEntity.swift; sourceTree = "<group>"; };
 		7BA5CCCE2192DB72007EB2E3 /* MoveAlongPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveAlongPath.swift; sourceTree = "<group>"; };
 		7BA5CCD32192E9A4007EB2E3 /* PlayerEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerEntity.swift; sourceTree = "<group>"; };
@@ -126,6 +130,7 @@
 				7B16922821AC316200BCCC21 /* BaitEntity.swift */,
 				7B16922E21AD999900BCCC21 /* LanderEntity.swift */,
 				7B16923221ADAD1A00BCCC21 /* ItemEntity.swift */,
+				7B250A7B21B12F52005A4A7D /* TextEntity.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -146,6 +151,7 @@
 				7B16922A21AC31A800BCCC21 /* BaitComponent.swift */,
 				7B16923021AD9A3F00BCCC21 /* LanderComponent.swift */,
 				7B16923421ADBB9000BCCC21 /* ItemComponent.swift */,
+				7B250A7D21B13038005A4A7D /* TextComponent.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -281,6 +287,7 @@
 				7BA5CCE421949084007EB2E3 /* PathComponent.swift in Sources */,
 				7B20BDA9219983C5002405C1 /* AlienDecentComponent.swift in Sources */,
 				7B16922721ABF36A00BCCC21 /* BaiterComponent.swift in Sources */,
+				7B250A7C21B12F52005A4A7D /* TextEntity.swift in Sources */,
 				7B81710621A55C6A002D9337 /* MineEntity.swift in Sources */,
 				7BE20D0F219222B900D68240 /* GameScene.swift in Sources */,
 				7BA5CCCF2192DB72007EB2E3 /* MoveAlongPath.swift in Sources */,
@@ -300,6 +307,7 @@
 				7B16923521ADBB9000BCCC21 /* ItemComponent.swift in Sources */,
 				7BFEEC2D21A6F440006B5D59 /* BombEntity.swift in Sources */,
 				7BEF7BB521A2C19D00681795 /* BomberComponent.swift in Sources */,
+				7B250A7E21B13038005A4A7D /* TextComponent.swift in Sources */,
 				7B049C22219B5AB600120A49 /* HeadsUpEntity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

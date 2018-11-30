@@ -9,6 +9,7 @@
 import SpriteKit
 import GameplayKit
 import CoreMotion
+import AVFoundation
 
 struct PhysicsCat {
     static let None: UInt32 = 0
@@ -53,6 +54,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     var player:PlayerEntity!
     var shadow:PlayerEntity!
+    var bodyCount:Int = 0
     
     var playableStart: CGFloat = 0
     
@@ -66,8 +68,78 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     lazy var screenWidth = view!.bounds.width
     lazy var screenHeight = view!.bounds.height
     
-    // 128 here is a multiple of the screen width
     
+    
+    var firing: AVAudioPlayer!
+    
+    func createStarLayers() {
+        //A layer of a star field
+        let starfieldNode = SKNode()
+        starfieldNode.name = "starfieldNode"
+        starfieldNode.addChild(starfieldEmitterNode(speed: -36, lifetime: size.height / 20, scale: 0.2, birthRate: 1, color: SKColor.lightGray))
+        addChild(starfieldNode)
+        
+        //        A second layer of stars
+        var emitterNode = starfieldEmitterNode(speed: -24, lifetime: size.height / 10, scale: 0.15, birthRate: 1, color: SKColor.gray)
+        emitterNode.zPosition = -10
+        starfieldNode.addChild(emitterNode)
+        
+        //        A third layer
+        emitterNode = starfieldEmitterNode(speed: -12, lifetime: size.height / 5, scale: 0.1, birthRate: 1, color: SKColor.darkGray)
+        starfieldNode.addChild(emitterNode)
+        
+    }
+    
+    func starfieldEmitterNode(speed: CGFloat, lifetime: CGFloat, scale: CGFloat, birthRate: CGFloat, color: SKColor) -> SKEmitterNode {
+        let star = SKLabelNode(fontNamed: "Helvetica")
+        star.fontSize = 80.0
+        star.text = "✦"
+        let textureView = SKView()
+        let texture = textureView.texture(from: star)
+        texture!.filteringMode = .nearest
+        
+        let emitterNode = SKEmitterNode()
+        emitterNode.particleTexture = texture
+        emitterNode.particleBirthRate = birthRate
+        emitterNode.particleColor = color
+        emitterNode.particleLifetime = lifetime
+        emitterNode.particleSpeed = speed
+        emitterNode.particleScale = scale
+        emitterNode.particleColorBlendFactor = 1
+        emitterNode.position = CGPoint(x: frame.midX, y: frame.maxY * 0.7)
+        
+        emitterNode.particlePositionRange = CGVector(dx: frame.maxX * 2, dy: 0)
+        emitterNode.particleSpeedRange = 48.0
+        
+        //Rotates the stars
+        emitterNode.particleAction = SKAction.repeatForever(SKAction.sequence([
+            SKAction.rotate(byAngle: CGFloat(-Double.pi/4), duration: 1),
+            SKAction.rotate(byAngle: CGFloat(Double.pi/4), duration: 1)]))
+        
+        //Causes the stars to twinkle
+        let twinkles = 20
+        let colorSequence = SKKeyframeSequence(capacity: twinkles*2)
+        let twinkleTime = 1.0 / CGFloat(twinkles)
+        for i in 0..<twinkles {
+            colorSequence.addKeyframeValue(SKColor.white,time: CGFloat(i) * 2 * twinkleTime / 2)
+            colorSequence.addKeyframeValue(SKColor.yellow, time: (CGFloat(i) * 2 + 1) * twinkleTime / 2)
+        }
+        emitterNode.particleColorSequence = colorSequence
+        
+        emitterNode.advanceSimulationTime(TimeInterval(lifetime))
+        return emitterNode
+    }
+    
+    func preLoadSound() {
+        do {
+            let path = Bundle.main.path(forResource: "science_fiction_laser_007", ofType: ("mp3"))
+            let url = URL(fileURLWithPath: path!)
+            firing = try! AVAudioPlayer(contentsOf: url)
+            firing.prepareToPlay
+        }
+    }
+    
+    // 128 here is a multiple of the screen width
     func buildGround(color: UIColor) -> (SKTexture, CGMutablePath) {
         let loopsNeeded = Int(screenWidth / 128)
         var path: CGMutablePath?
@@ -390,6 +462,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var playerNode: EntityNode!
     var shadowNode: EntityNode!
     var advancedArrow: HeadsUpEntity!
+    var highScore: TextEntity!
+    var nextWave: TextEntity!
     
     func addPlayer() -> PlayerEntity {
         shadow = PlayerEntity(imageName: "ship16", shadowNode: nil, physics: false)
@@ -456,7 +530,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             return
         }
         
-        manager.startDeviceMotionUpdates()
+//        manager.startDeviceMotionUpdates()
+        
+        preLoadSound()
+        createStarLayers()
         
         cameraNode = SKCameraNode()
         cameraNode.position = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
@@ -468,17 +545,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
         setupForeground()
         let player = addPlayer()
-        doBombers()
-        doBaiters(player: player)
-        doMutants(player: player)
-        doLanders(player: player)
+        doBombers() // 4 bombers
+        doBaiters(player: player) // 4 baiters
+        doMutants(player: player) // 4 mutants
+        doLanders(player: player) // 8 landers
+        bodyCount += 20
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minY * 2 )
         physicsBody = SKPhysicsBody(edgeLoopFrom: rectToSecure)
         physicsBody?.isDynamic = false
 
+        let highscorePlacement = CGPoint(x: self.view!.bounds.maxX * 2 - 64, y: self.view!.bounds.maxY * 2 - 64)
+        highScore = TextEntity(text: "0", Cords:highscorePlacement , name: "highscore")
+        addChild(highScore.textComponent.node)
         
-        
+        let nextWavePlacement = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
+        nextWave = TextEntity(text: "Next Wave", Cords: nextWavePlacement, name: "nextwave")
     }
     
     override func update(_ currentTime: CFTimeInterval) {
@@ -586,7 +668,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     var playerCG: CGFloat!
     var points: Int = 0
     
+    func doBodyCount() {
+        print("bodyCount \(bodyCount)")
+        bodyCount -= 1
+        if bodyCount == 0 {
+            nextWave.textComponent.node.alpha = 0
+            addChild(nextWave.textComponent.node)
+            nextWave.textComponent.node.run(SKAction.fadeIn(withDuration: 2))
+        }
+    }
+    
+    var lastNodeA: SKNode!
+    var lastNodeB: SKNode!
+    
     func didBegin(_ contact: SKPhysicsContact) {
+        // Stops multiple calls to didBegin same object, but brakes our spaceman drop
+//            if lastNodeA == contact.bodyA.node || lastNodeB == contact.bodyB.node {
+//                return
+//            } else {
+//                lastNodeA = contact.bodyA.node
+//                lastNodeB = contact.bodyB.node
+//            }
+        
+        
         let other = contact.bodyA.categoryBitMask == PhysicsCat.Player ? contact.bodyB : contact.bodyA
         let kidnap = contact.bodyA.categoryBitMask == PhysicsCat.Alien ? contact.bodyB : contact.bodyA
         let hit = contact.bodyA.categoryBitMask == PhysicsCat.Fire ? contact.bodyB : contact.bodyA
@@ -607,7 +711,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             let alienShadow = contact.bodyA.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
             alienShadow.position = CGPoint(x: 0, y: -64)
             alienShadow.addChild(shadow)
-            points -= 1000
+            highScore.textComponent.lessScore(score: 1000)
             return
         }
 
@@ -623,7 +727,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 other.node?.physicsBody?.isDynamic = false
     //            other.node?.userData?.setObject(status.rescued, forKey: "status" as NSCopying)
                 contact.bodyB.node?.addChild(other.node!)
-                points += 500
+                highScore.textComponent.moreScore(score: 500)
                 return
             }
         }
@@ -640,7 +744,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 saving?.removeFromParent()
                 other.node?.addChild(saving!)
                 saving?.userData?.setObject(status.rescued, forKey: "status" as NSCopying)
-                points += 250
+                highScore.textComponent.moreScore(score: 500)
             }
             return
         }
@@ -651,23 +755,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             print("rule IV \(contact.bodyA.node?.name) \(contact.bodyB.node?.name)")
             let victim = hit.node?.childNode(withName: "spaceman")
 
-            let alienShadow = hit.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
-            alienShadow.removeFromParent()
+//            let alienShadow = hit.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+//            alienShadow.removeFromParent()
             contact.bodyA.node?.removeFromParent()
 
             let parent2U = hit.node?.parent
-            hit.node?.removeFromParent()
+//            hit.node?.removeFromParent()
             if victim != nil {
                 victim?.position = (hit.node?.position)!
                 victim?.removeFromParent()
                 victim?.physicsBody?.isDynamic = true
                 parent2U?.addChild(victim!)
             }
+            if let node = hit.node as? SKSpriteNode {
+                if node.parent != nil {
+                    let shadow = hit.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+                    (shadow as? SKSpriteNode)?.removeFromParent()
+                    hit.node?.removeFromParent()
+                    highScore.textComponent.moreScore(score: 100)
+                    doBodyCount()
+                }
+            }
             return
         }
 
         // player hits mine
         if other.node?.name == "mine" && contact.bodyA.node?.name == "starship" {
+            print("rule XI")
             let shadow = contact.bodyA.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
             (shadow as? SKSpriteNode)?.removeFromParent()
             contact.bodyA.node?.removeFromParent()
@@ -688,30 +802,54 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         // player hits baiter
         
         if other.node?.name == "baiter" && contact.bodyA.node?.name == "starship" {
-            let shadow = other.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
-            (shadow as? SKSpriteNode)?.removeFromParent()
-            other.node?.removeFromParent()
-            
+            print("rule X")
+            if let node = other.node as? SKSpriteNode {
+                if node.parent != nil {
+                    let shadow = other.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+                    (shadow as? SKSpriteNode)?.removeFromParent()
+                    other.node?.removeFromParent()
+                    highScore.textComponent.moreScore(score: 100)
+                    doBodyCount()
+                }
+            }
         }
         
         if other.node?.name == "mutant" && contact.bodyA.node?.name == "starship" {
-            let shadow = other.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
-            (shadow as? SKSpriteNode)?.removeFromParent()
-            other.node?.removeFromParent()
-            
+            print("rule IX")
+            if let node = other.node as? SKSpriteNode {
+                if node.parent != nil {
+                    let shadow = other.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+                    (shadow as? SKSpriteNode)?.removeFromParent()
+                    other.node?.removeFromParent()
+                    highScore.textComponent.moreScore(score: 100)
+                    doBodyCount()
+                }
+            }
         }
         
         if other.node?.name == "bomber" && contact.bodyA.node?.name == "starship" {
-            let shadow = other.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
-            (shadow as? SKSpriteNode)?.removeFromParent()
-            other.node?.removeFromParent()
-            
+            print("rule VIII")
+            if let node = other.node as? SKSpriteNode {
+                if node.parent != nil {
+                    let shadow = other.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+                    (shadow as? SKSpriteNode)?.removeFromParent()
+                    other.node?.removeFromParent()
+                    highScore.textComponent.moreScore(score: 100)
+                    doBodyCount()
+                }
+            }
         }
 
         // fir hits bomber or mine or mutant or baiter
         if hit.node?.name == "bomber" || hit.node?.name == "mine" || hit.node?.name == "mutant" || hit.node?.name == "baiter" {
-            hit.node?.removeFromParent()
-            points += 100
+            print("rule VII")
+            if let node = hit.node as? SKSpriteNode {
+                if node.parent != nil {
+                    node.removeFromParent()
+                    highScore.textComponent.moreScore(score: 100)
+                    doBodyCount()
+                }
+            }
         }
 
 
@@ -721,7 +859,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             contact.bodyB.node?.physicsBody?.isDynamic = false
             let poc = CGPoint(x: (contact.bodyB.node?.position.x)!, y: 96)
             contact.bodyB.node?.run(SKAction.move(to: poc, duration: 0.5))
-            points += 100
+            highScore.textComponent.moreScore(score: 250)
             return
         }
 
@@ -730,7 +868,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         if hit.node?.name == "spaceman" && contact.bodyB.node?.name != "starship" {
             print("rule VI \(contact.bodyB.node?.name)")
             hit.node?.removeFromParent()
-            points -= 100
+            highScore.textComponent.lessScore(score: 250)
         }
     }
     
@@ -815,10 +953,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
                 break
             }
         case "fire":
-            let mshape = CGRect(x: 0, y: 0, width: 24, height: 6)
+            let mshape = CGRect(x: 0, y: 0, width: 128, height: 6)
             let missileX = FireEntity(rect: mshape, xCord: 0, yCord: 0)
             
             playerNode.run(SKAction.playSoundFileNamed("science_fiction_laser_007.mp3", waitForCompletion: false))
+            
             
             let fireNode = missileX.shapeComponent.node
             fireNode.zPosition = Layer.alien.rawValue
