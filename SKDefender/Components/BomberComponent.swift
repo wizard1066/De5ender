@@ -68,9 +68,10 @@ class BomberComponent: GKComponent {
     
     override func update(deltaTime seconds: TimeInterval) {
         for mine in mines {
-            mine.update(deltaTime: seconds)
+            if mine.mineComponent.lifetime != 8 {
+                mine.update(deltaTime: seconds)
+            }
         }
-        print("mines.count \(mines.count)")
         if spriteComponent.node.parent == nil {
             spriteShadow?.removeFromParent()
             return

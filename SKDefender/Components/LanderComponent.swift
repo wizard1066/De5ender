@@ -9,7 +9,12 @@
 import SpriteKit
 import GameplayKit
 
+protocol landerEscaped: NSObjectProtocol {
+    func spriteEscaped(sprite: EntityNode)
+}
+
 class LanderComponent: GKComponent {
+    weak var delegate: landerEscaped!
     let spriteComponent: SpriteComponent
     
     var playableStart: CGFloat = 0
@@ -62,16 +67,16 @@ class LanderComponent: GKComponent {
             directionToGoB = CGPoint(x: -512, y: 64)
             break
         case .cominWest?:
-            directionToGoA = CGPoint(x: 0, y: 0)
-            directionToGoB = CGPoint(x: 512, y: 0)
+            directionToGoA = CGPoint(x: -128, y: -96)
+            directionToGoB = CGPoint(x: 512, y: 64)
             break
         case .cominEast?:
-            directionToGoA = CGPoint(x: 0, y: 0)
-            directionToGoB = CGPoint(x: -512, y: 0)
+            directionToGoA = CGPoint(x: -32, y: -64)
+            directionToGoB = CGPoint(x: -512, y: 64)
             break
         default:
-            directionToGoA = CGPoint(x: 0, y: 0)
-            directionToGoB = CGPoint(x: 0, y: 0)
+            directionToGoA = CGPoint(x: 0, y: -64)
+            directionToGoB = CGPoint(x: 512, y: 512)
             break
         }
         return (directionToGoA, directionToGoB)
@@ -81,7 +86,6 @@ class LanderComponent: GKComponent {
         if self.spriteComponent.node.parent == nil {
             return
         }
-        print("beginBoming \(skew)")
         let mine = BaitEntity(imageName: "mine", owningNode: self.spriteComponent.node)
         //        mine.spriteComponent.node.zPosition = Layer.alien.rawValue
         
@@ -102,7 +106,7 @@ class LanderComponent: GKComponent {
             pathToExecute = CGPoint(x: newX, y: newY)
         }
         path.addLine(to: pathToExecute)
-        print("beginBoming \(path)")
+        print("beginBoming \(self.running) \(path) ")
         
         let followLine = SKAction.follow(path, speed: 64)
         
@@ -159,6 +163,7 @@ class LanderComponent: GKComponent {
             let fadeAway = SKAction.fadeOut(withDuration: 0.5)
             let selfDestruct = SKAction.removeFromParent()
             spriteComponent.node.run(SKAction.sequence([fadeAway,selfDestruct]))
+            delegate.spriteEscaped(sprite: spriteComponent.node)
         }
         
         

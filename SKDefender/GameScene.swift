@@ -35,7 +35,9 @@ enum spriteAttack {
     case cominWest
 }
 
-class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
+class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
+    
+    
     
     var moveLeft = false
     var moveRight = false
@@ -75,6 +77,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     
     
     var firing: AVAudioPlayer!
+    var lastEscape: EntityNode!
+    
+    func spriteEscaped(sprite: EntityNode) {
+        if lastEscape == sprite {
+            return
+        } else {
+            lastEscape = sprite
+        }
+        doBodyCount()
+    }
     
     func preLoadSound() {
         do {
@@ -167,47 +179,49 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         
     }
     
-    func doBaiters(player: PlayerEntity, bodies: Int) {
+    func doBaiters(sceneNo: Int, player: PlayerEntity, bodies: Int) {
         let randomSource = GKARC4RandomSource()
         let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
         for loop in 0..<bodies {
             let randomValueZ = randomDistribution.nextInt()
-            let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + baseCamp))
+            let radar = self.view!.bounds.maxY * 0.3
+            let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2 - radar) + baseCamp))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-            let (baiterNode, baiterShdow) = addBaiter(sceneNo: randomValueZ,randX: randX, randY: randY, player: player)
+            let (baiterNode, baiterShdow) = addBaiter(sceneNo: sceneNo,randX: randX, randY: randY, player: player)
         }
     }
     
-    func doMutants(player: PlayerEntity, bodies: Int) {
+    func doMutants(sceneNo: Int, player: PlayerEntity, bodies: Int) {
         let randomSource = GKARC4RandomSource()
         let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
         for loop in 0..<bodies {
             let randomValueZ = randomDistribution.nextInt()
-            let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2) + baseCamp))
+            let radar = self.view!.bounds.maxY * 0.3
+            let randY = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY * 2 - radar) + baseCamp))
             let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-            let (mutantNode, mutantShadow) = addMutant(sceneNo: randomValueZ, randX: randX, randY: randY, player: player)
+            let (mutantNode, mutantShadow) = addMutant(sceneNo: sceneNo, randX: randX, randY: randY, player: player)
         }
     }
     
-    func doBombers(bodies: Int, wayToGo: spriteAttack) {
+    func doBombers(sceneNo: Int, bodies: Int, wayToGo: spriteAttack) {
         for loop in 0..<bodies {
             let randY = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxY - CGFloat(baseCamp))) + baseCamp
             let randX = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2))
-            let (bomberNode, bomberShadow) = addBomber(sceneNo: 1, randX: CGFloat(randX), randY: CGFloat(randY), scanNodes: scanNodes, foregrounds: foregrounds, direction: wayToGo)
+            let (bomberNode, bomberShadow) = addBomber(sceneNo: sceneNo, randX: CGFloat(randX), randY: CGFloat(randY), scanNodes: scanNodes, foregrounds: foregrounds, direction: wayToGo)
         }
     }
     
-    func doLanders(player: PlayerEntity, bodies: Int) {
+    func doLanders(sceneNo: Int, player: PlayerEntity, bodies: Int) {
         let randomSource = GKARC4RandomSource()
         let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
         for loop in 0..<bodies {
             let randomValueZ = randomDistribution.nextInt()
-            let randT = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 60))
+            let randT = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: 8))
             let waitAction = SKAction.wait(forDuration: TimeInterval(randT))
             let execAction = SKAction.run {
                 let randX = CGFloat(GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX * 2)))
-                let (landerNode,_) = self.addLander(sceneNo: randomValueZ, randX: randX, randY: (self.view?.bounds.maxY)!*2, player: player)
-                let (itemNode,_) = self.addItem(sceneNo: randomValueZ, randX: randX)
+                let (landerNode,_) = self.addLander(sceneNo: sceneNo, randX: randX, randY: (self.view?.bounds.maxY)!*2, player: player)
+                let (itemNode,_) = self.addItem(sceneNo: sceneNo, randX: randX)
             }
             player.spriteComponent.node.run(SKAction.sequence([waitAction, execAction]))
         }
@@ -235,14 +249,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
     func addLander(sceneNo: Int, randX: CGFloat, randY: CGFloat, player: PlayerEntity) -> (EntityNode, EntityNode) {
         let shadow = LanderEntity(imageName: "alien", xCord: randX, yCord: self.view!.bounds.maxY, screenBounds: self.view!.bounds, shadowNode: nil)
         shadow.landerComponent.setVariables(foregrounds: foregrounds, playerNode: playerNode, sceneNo: sceneNo)
+        shadow.landerComponent.delegate = self
         let landerShadow = shadow.spriteComponent.node
         landerShadow.zPosition = Layer.alien.rawValue
         landerShadow.delegate = self
         landerShadow.name = "shadow"
         landerShadow.zPosition = Layer.alien.rawValue
         
+        
         let lander = LanderEntity(imageName: "alien", xCord: randX, yCord: self.view!.bounds.maxY, screenBounds: self.view!.bounds, shadowNode: landerShadow)
         lander.landerComponent.setVariables(foregrounds: foregrounds, playerNode: playerNode, sceneNo: sceneNo)
+        lander.landerComponent.delegate = self
         let landerNode = lander.spriteComponent.node
         landerNode.zPosition = Layer.alien.rawValue
         landerNode.delegate = self
@@ -489,11 +506,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             if place {
                 let randX = GKRandomSource.sharedRandom().nextInt(upperBound: Int(self.view!.bounds.maxX) * 2)
                 let star = SKLabelNode(fontNamed: "Helvetica")
-                let randP = GKRandomSource.sharedRandom().nextInt(upperBound: 12)
-                star.fontSize = CGFloat(randP)
-                star.text = "✦"
-                star.position = CGPoint(x: randX, y: k)
-                source.addChild(star)
+                let randP = GKRandomSource.sharedRandom().nextInt(upperBound: 18) - 8
+                if randP > 6 {
+                    star.fontSize = CGFloat(randP)
+                    star.text = "✦"
+                    star.position = CGPoint(x: randX, y: k)
+                    source.addChild(star)
+                }
             }
         }
         
@@ -510,7 +529,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
             return
         }
         
-//        manager.startDeviceMotionUpdates()
+        manager.startDeviceMotionUpdates()
         
         preLoadSound()
         
@@ -538,26 +557,101 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe {
         let nextWavePlacement = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
         nextWave = TextEntity(text: "Next Wave", Cords: nextWavePlacement, name: "nextwave")
         
-        bodyCount += 16
         newWave()
     }
     
+    // Runs when I change the value held in bodyCount
     func newLunch() {
         nextWave.textComponent.node.run(SKAction.fadeOut(withDuration: 2))
         if bodyCount == 0 {
-            let waitAction = SKAction.wait(forDuration: 4)
-            let fadeOutAction = SKAction.fadeOut(withDuration: 2)
+            let waitAction = SKAction.wait(forDuration: 8)
+            let fadeOutAction = SKAction.fadeOut(withDuration: 4)
             nextWave.textComponent.node.run(SKAction.sequence([waitAction, fadeOutAction]))
             newWave()
         }
     }
+    
+    var attackWaves: Int = 0
+    
     func newWave() {
-        doBombers(bodies: 2, wayToGo: .cominEast) // 2 bombers
-        doBombers(bodies: 2, wayToGo: .cominWest) // 2 bombers
-//        doBaiters(player: player, bodies: 4) // 4 baiters memory ok
-//        doMutants(player: player, bodies: 4) // 4 mutants memory ok
-//        doLanders(player: player, bodies: 4) // 4 landers memory ok
+        switch attackWaves {
+        case 0:
+            attackgroupA(bodiesAttacking: 10)
+            break
+        case 1:
+            attackgroupB(bodiesAttacking: 16)
+            break
+        case 2:
+            attackgroupC(bodiesAttacking: 22)
+            break
+        case 3:
+            attackgroupD(bodiesAttacking: 20)
+            break
+        default:
+            break
+        }
+        
+        
     }
+    
+    func attackgroupA(bodiesAttacking: Int) {
+        bodyCount = bodiesAttacking
+        let randomSource = GKARC4RandomSource()
+        let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
+        let randomValueZ = randomDistribution.nextInt()
+        doBombers(sceneNo: randomValueZ, bodies: 2, wayToGo: .cominEast) // 2 bombers
+        doBombers(sceneNo: randomValueZ,bodies: 2, wayToGo: .cominWest) // 2 bombers
+        doBaiters(sceneNo: randomValueZ,player: player, bodies: 2) // 4 baiters memory ok
+        doMutants(sceneNo: randomValueZ,player: player, bodies: 2) // 4 mutants memory ok
+        doLanders(sceneNo: randomValueZ,player: player, bodies: 2) // 4 landers memory ok
+        attackWaves += 1
+    }
+    
+    func attackgroupB(bodiesAttacking: Int) {
+        bodyCount = bodiesAttacking
+        for _ in 0..<1 {
+            let randomSource = GKARC4RandomSource()
+            let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
+            let randomValueZ = randomDistribution.nextInt()
+            doBombers(sceneNo: randomValueZ, bodies: 2, wayToGo: .cominEast) // 2 bombers
+            doBombers(sceneNo: randomValueZ,bodies: 4, wayToGo: .cominWest) // 2 bombers
+            doBaiters(sceneNo: randomValueZ,player: player, bodies: 2) // 4 baiters memory ok
+            doMutants(sceneNo: randomValueZ,player: player, bodies: 4) // 4 mutants memory ok
+            doLanders(sceneNo: randomValueZ,player: player, bodies: 4) // 4 landers memory ok
+        }
+        attackWaves += 1
+    }
+    
+    func attackgroupC(bodiesAttacking: Int) {
+        bodyCount = bodiesAttacking * 2
+        for _ in 0..<2 {
+            let randomSource = GKARC4RandomSource()
+            let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
+            let randomValueZ = randomDistribution.nextInt()
+            doBombers(sceneNo: randomValueZ, bodies: 4, wayToGo: .cominEast) // 2 bombers
+            doBombers(sceneNo: randomValueZ,bodies: 4, wayToGo: .cominWest) // 2 bombers
+            doBaiters(sceneNo: randomValueZ,player: player, bodies: 2) // 4 baiters memory ok
+            doMutants(sceneNo: randomValueZ,player: player, bodies: 8) // 4 mutants memory ok
+            doLanders(sceneNo: randomValueZ,player: player, bodies: 4) // 4 landers memory ok
+        }
+        attackWaves += 1
+    }
+    
+    func attackgroupD(bodiesAttacking: Int) {
+        bodyCount = bodiesAttacking * 2
+        for _ in 0..<2 {
+            let randomSource = GKARC4RandomSource()
+            let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 4, highestValue: numberOfForegrounds - 1)
+            let randomValueZ = randomDistribution.nextInt()
+            doBombers(sceneNo: randomValueZ, bodies: 4, wayToGo: .cominEast) // 2 bombers
+            doBombers(sceneNo: randomValueZ,bodies: 4, wayToGo: .cominWest) // 2 bombers
+            doBaiters(sceneNo: randomValueZ,player: player, bodies: 4) // 4 baiters memory ok
+            doMutants(sceneNo: randomValueZ,player: player, bodies: 8) // 4 mutants memory ok
+            doLanders(sceneNo: randomValueZ,player: player, bodies: 4) // 4 landers memory ok
+        }
+        attackWaves += 1
+    }
+    
     
     override func update(_ currentTime: CFTimeInterval) {
         let direct = manager.deviceMotion?.attitude
