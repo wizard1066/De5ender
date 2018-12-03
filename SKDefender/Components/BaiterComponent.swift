@@ -214,7 +214,7 @@ class BaiterComponent: GKComponent {
 //                        self.spriteShadow?.position.y += 8 + randY
                     }
                 
-                    if self.runLess! < 15 + self.randQ {
+                    if self.runLess! < 30 + self.randQ {
                         self.runLess! += 1
                     } else {
                         self.randQ = GKRandomSource.sharedRandom().nextInt(upperBound: 30)

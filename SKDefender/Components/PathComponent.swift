@@ -25,14 +25,14 @@ class PathComponent: GKComponent {
     
     func releaseFireLeft(_ lastUpdateTime: TimeInterval) {
         let amountToMove = screenWidth * 0.80
-        let path2F = SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 1)
+        let path2F = SKAction.move(by: CGVector(dx: -amountToMove, dy: 0), duration: 0.4)
         let removeM = SKAction.removeFromParent()
         self.shapeComponent.node.run(SKAction.sequence([path2F,removeM]))
     }
     
     func releaseFireRight(_ lastUpdateTime: TimeInterval) {
         let amountToMove = screenWidth * 0.80
-        let path2F = SKAction.move(by: CGVector(dx: amountToMove, dy: 0), duration: 1)
+        let path2F = SKAction.move(by: CGVector(dx: amountToMove, dy: 0), duration: 0.4)
         let removeM = SKAction.removeFromParent()
         self.shapeComponent.node.run(SKAction.sequence([path2F,removeM]))
     }

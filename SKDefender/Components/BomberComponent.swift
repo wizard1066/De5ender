@@ -48,6 +48,7 @@ class BomberComponent: GKComponent {
     
     func beginBombing(loop: Int, bomber: EntityNode) {
         let mine = MineEntity(imageName: "mine", owningNode: self.spriteComponent.node)
+        mine.spriteComponent.node.name = "mine"
         mine.spriteComponent.node.position = spriteComponent.node.position
         localForeground[foreGroundIndex].addChild(mine.spriteComponent.node)
         self.mines.append(mine)

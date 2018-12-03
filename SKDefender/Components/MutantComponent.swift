@@ -149,7 +149,7 @@ class MutantComponent: GKComponent {
             
         }
         
-        if runLess < 120 + randQ {
+        if runLess < 240 + randQ {
             runLess += 1
         } else {
             if self.spriteComponent.node.parent != nil {
