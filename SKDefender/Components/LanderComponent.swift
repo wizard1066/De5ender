@@ -87,12 +87,9 @@ class LanderComponent: GKComponent {
             return
         }
         let mine = BaitEntity(imageName: "mine", owningNode: self.spriteComponent.node)
-        //        mine.spriteComponent.node.zPosition = Layer.alien.rawValue
-        
         let path = CGMutablePath()
-        //        mine.spriteComponent.node.position = self.spriteComponent.node.position
-        //        path.move(to: self.spriteComponent.node.position)
         mine.spriteComponent.node.position = CGPoint.zero
+        mine.spriteComponent.node.name = "mine"
         path.move(to: CGPoint.zero)
         var pathToExecute: CGPoint!
         let (d2A, d2B) = findPathToExecute()
@@ -165,8 +162,6 @@ class LanderComponent: GKComponent {
             spriteComponent.node.run(SKAction.sequence([fadeAway,selfDestruct]))
             delegate.spriteEscaped(sprite: spriteComponent.node)
         }
-        
-        
         
         for mine in mines {
             mine.update(deltaTime: seconds)

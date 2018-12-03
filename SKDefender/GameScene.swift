@@ -583,8 +583,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
     func newWave() {
         switch attackWaves {
         case 0:
-//            special() // 722nodes BEFORE
-            attackgroupA(bodiesAttacking: 10)
+            special() // 722nodes BEFORE
+//            attackgroupA(bodiesAttacking: 10)
             break
         case 1:
             attackgroupB(bodiesAttacking: 14)
@@ -612,11 +612,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
     }
     
     func special() {
-        bodyCount = 1
+        bodyCount = 15
         nextWave.textComponent.node.text = "Special"
-//        doMutants(sceneNo: 1,player: player, bodies: 24) // memory leak
-//        doBaiters(sceneNo: 1,player: player, bodies: 24) // memory leak
-//        doBombers(sceneNo: 1, bodies: 24, wayToGo: .cominEast)
+
+        let playerScene = whereIsPlayer()
+        let randomValueZ = (playerScene + 4) % numberOfForegrounds
+        
+        doBombers(sceneNo: randomValueZ, bodies: 2, wayToGo: .cominEast) // 2 bombers
+        doBombers(sceneNo: randomValueZ,bodies: 2, wayToGo: .cominWest) // 2 bombers
+        doBaiters(sceneNo: randomValueZ,player: player, bodies: 2) // 4 baiters memory ok
+        doMutants(sceneNo: randomValueZ,player: player, bodies: 2) // 4 mutants memory ok
         for sceneNo in 0...7 {
             doLanders(sceneNo: sceneNo,player: player, bodies: 1)
         }
@@ -893,7 +898,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
 
         // alien hit, releases spaceman
 
-        if hit.node?.name == "alien" {
+        if hit.node?.name == "alien" && contact.bodyA.node?.name == "missile" {
             print("rule IV \(contact.bodyA.node?.name) \(contact.bodyB.node?.name)")
             let victim = hit.node?.childNode(withName: "spaceman")
 
