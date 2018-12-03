@@ -171,10 +171,9 @@ class LanderComponent: GKComponent {
         for mine in mines {
             mine.update(deltaTime: seconds)
         }
-        
+
         let playerIndex = self.whereIsPlayer()
-        
-        
+
         if self.foreGroundIndex == playerIndex {
             var newG = self.localForegrounds[self.foreGroundIndex].convert(self.spriteComponent.node.position, to: self.playerToKill)
             if newG.x > 0 {
@@ -182,7 +181,7 @@ class LanderComponent: GKComponent {
             } else {
                 self.running = .cominWest
             }
-            
+
             if runLess! < 240 + randQ {
                 runLess! += 1
             } else {

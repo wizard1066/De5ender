@@ -27,7 +27,7 @@ class PlayerEntity: GKEntity {
         spriteNode.size = CGSize(width: spriteNode.size.width/3, height: spriteNode.size.height/3)
         if physics {
 //        spriteNode.physicsBody = SKPhysicsBody.init(texture: texture, size: CGSize(width: spriteNode.size.width/2, height: spriteNode.size.height/2))
-            spriteNode.physicsBody = SKPhysicsBody.init(circleOfRadius: spriteNode.size.width/5 + 8)
+            spriteNode.physicsBody = SKPhysicsBody.init(circleOfRadius: spriteNode.size.width/6 )
             spriteNode.physicsBody?.categoryBitMask = PhysicsCat.Player
             spriteNode.physicsBody?.collisionBitMask = PhysicsCat.None
             spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.Ground | PhysicsCat.Mine

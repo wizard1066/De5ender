@@ -29,11 +29,10 @@ class MineEntity: GKEntity {
         mineNode.position.y = owningNode.position.y + 128
         mineNode.physicsBody = SKPhysicsBody.init(circleOfRadius: mineNode.size.width/2)
         mineNode.physicsBody?.affectedByGravity = false
-        mineNode.physicsBody?.isDynamic = false
+//        mineNode.physicsBody?.isDynamic = false
         mineNode.physicsBody?.categoryBitMask = PhysicsCat.Mine
-         mineNode.physicsBody?.collisionBitMask = PhysicsCat.None
-        mineNode.physicsBody?.contactTestBitMask = PhysicsCat.Player
-        //        mineNode.zPosition = Layer.mine.rawValue
+        mineNode.physicsBody?.collisionBitMask = PhysicsCat.None
+        mineNode.physicsBody?.contactTestBitMask = PhysicsCat.Player | PhysicsCat.Fire
         mineNode.name = "mine"
     }
     
