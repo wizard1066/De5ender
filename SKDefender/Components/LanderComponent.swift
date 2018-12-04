@@ -103,7 +103,7 @@ class LanderComponent: GKComponent {
             pathToExecute = CGPoint(x: newX, y: newY)
         }
         path.addLine(to: pathToExecute)
-        print("beginBoming \(self.running) \(path) ")
+        
         
         let followLine = SKAction.follow(path, speed: 64)
         
@@ -181,7 +181,7 @@ class LanderComponent: GKComponent {
                 runLess! += 1
             } else {
                 self.randQ = GKRandomSource.sharedRandom().nextInt(upperBound: 4)
-                self.beginBombing(loop: self.randQ, skew: self.randQ)
+//                self.beginBombing(loop: self.randQ, skew: self.randQ)
                 runLess = 0
             }
         }

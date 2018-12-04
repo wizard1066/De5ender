@@ -899,6 +899,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
     //            other.node?.userData?.setObject(status.rescued, forKey: "status" as NSCopying)
                 contact.bodyB.node?.addChild(other.node!)
                 highScore.textComponent.moreScore(score: 500)
+                let positionToScore = CGPoint(x: playerNode.position.x - 64, y: playerNode.position.y - 64)
+                let bonus = TextEntity(text: "500", Cords: positionToScore, name: "bonus")
+                bonus.textComponent.node.zPosition = Layer.mask.rawValue
+                addChild(bonus.textComponent.node)
+                let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+                let fadeIn = SKAction.fadeIn(withDuration: 0.5)
+                let waiter = SKAction.wait(forDuration: 0.5)
+                let remover = SKAction.removeFromParent()
+                bonus.textComponent.node.run(SKAction.sequence([fadeIn, waiter, fadeOut, remover]))
                 return
             }
         }
@@ -944,6 +953,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
                     (shadow as? SKSpriteNode)?.removeFromParent()
                     hit.node?.removeFromParent()
                     highScore.textComponent.moreScore(score: 100)
+                    let positionToScore = CGPoint(x: (hit.node?.position.x)!, y: (hit.node?.position.y)!)
+                    let bonus = TextEntity(text: "100", Cords: positionToScore, name: "bonus")
+                    bonus.textComponent.node.zPosition = Layer.mask.rawValue
+                    addChild(bonus.textComponent.node)
+                    let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+                    let fadeIn = SKAction.fadeIn(withDuration: 0.5)
+                    let waiter = SKAction.wait(forDuration: 0.5)
+                    let remover = SKAction.removeFromParent()
+                    bonus.textComponent.node.run(SKAction.sequence([fadeIn, waiter, fadeOut, remover]))
                     doBodyCount()
                 }
             }
@@ -955,20 +973,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
             if let node = other.node as? SKSpriteNode {
                 if node.parent != nil {
                     print("rule XI")
-                    let shadow = contact.bodyA.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
-                    (shadow as? SKSpriteNode)?.removeFromParent()
-//                    contact.bodyA.node?.removeFromParent()
-//                    other.node?.removeFromParent()
+                    
                     if lives != 0 {
-//                        addPlayer()
                         let fadeOut = SKAction.fadeOut(withDuration: 2)
                         let fadeIn = SKAction.fadeIn(withDuration: 2)
                         let waiter = SKAction.wait(forDuration: 2)
                         contact.bodyA.node?.run(SKAction.sequence([fadeOut, waiter, fadeIn]))
                         
-//                        if moveRight {
-//                            flipMe()
-//                        }
                         self.removeLives()
                         
                         lives -= 1
@@ -1007,6 +1018,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
             }
         }
         
+        // player hots mutant
+        
         if other.node?.name == "mutant" && contact.bodyA.node?.name == "starship" {
             print("rule IX")
             if let node = other.node as? SKSpriteNode {
@@ -1020,6 +1033,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
             }
         }
         
+        // player hots bomber
+        
         if other.node?.name == "bomber" && contact.bodyA.node?.name == "starship" {
             print("rule VIII")
             if let node = other.node as? SKSpriteNode {
@@ -1032,14 +1047,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
                 }
             }
         }
+        
+        // player hits lander
+        
+        if other.node?.name == "alien" && contact.bodyB.node?.name == "starship" {
+            print("rule XIII")
+            if let node = other.node as? SKSpriteNode {
+                if node.parent != nil {
+                    let shadow = other.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+                    (shadow as? SKSpriteNode)?.removeFromParent()
+                    other.node?.removeFromParent()
+                    highScore.textComponent.moreScore(score: 100)
+                    doBodyCount()
+                }
+            }
+        }
 
-        // fir hits bomber or mine or mutant or baiter
-        if hit.node?.name == "bomber" || hit.node?.name == "mine" || hit.node?.name == "mutant" || hit.node?.name == "baiter" {
+        // fire hits bomber or mine or mutant or baiter
+        if hit.node?.name == "bomber" || hit.node?.name == "mine" || hit.node?.name == "mutant" || hit.node?.name == "baiter"  {
             print("rule VII")
             if let node = hit.node as? SKSpriteNode {
                 if node.parent != nil {
+                    let positionToScore = CGPoint(x: node.position.x, y: node.position.y)
                     node.removeFromParent()
                     highScore.textComponent.moreScore(score: 100)
+                    let bonus = TextEntity(text: "100", Cords: positionToScore, name: "bonus")
+                    bonus.textComponent.node.zPosition = Layer.mask.rawValue
+                    addChild(bonus.textComponent.node)
+                    let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+                    let fadeIn = SKAction.fadeIn(withDuration: 0.5)
+                    let waiter = SKAction.wait(forDuration: 0.5)
+                    let remover = SKAction.removeFromParent()
+                    bonus.textComponent.node.run(SKAction.sequence([fadeIn, waiter, fadeOut, remover]))
                     doBodyCount()
                 }
             }

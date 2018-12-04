@@ -36,7 +36,7 @@ class BomberEntity: GKEntity {
         //        spriteNode.physicsBody = SKPhysicsBody.init(circleOfRadius: spriteNode.size.width/2)
         spriteNode.physicsBody?.categoryBitMask = PhysicsCat.Alien
         spriteNode.physicsBody?.collisionBitMask = PhysicsCat.None
-        spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.SpaceMan | PhysicsCat.Fire
+        spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.Fire | PhysicsCat.Player
         spriteNode.physicsBody?.affectedByGravity = false
         spriteNode.name = "bomber"
         

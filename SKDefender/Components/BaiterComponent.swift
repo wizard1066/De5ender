@@ -96,7 +96,7 @@ class BaiterComponent: GKComponent {
         if self.spriteComponent.node.parent == nil {
             return
         }
-        print("beginBoming \(skew)")
+        
         let mine = BaitEntity(imageName: "mine", owningNode: self.spriteComponent.node)
         //        mine.spriteComponent.node.zPosition = Layer.alien.rawValue
         
@@ -117,7 +117,7 @@ class BaiterComponent: GKComponent {
             pathToExecute = CGPoint(x: newX, y: newY)
         }
         path.addLine(to: pathToExecute)
-        print("beginBoming \(path)")
+        
         
         let followLine = SKAction.follow(path, speed: 64)
         
