@@ -240,11 +240,11 @@ class BaiterComponent: GKComponent {
         
         
         
-        if spriteComponent.node.zRotation.radiansToDegrees() > 10 {
-            spriteComponent.node.run(SKAction.rotate(toAngle: CGFloat(-20).degreesToRadians(), duration: 0.5))
-        } else {
-            spriteComponent.node.run(SKAction.rotate(toAngle: CGFloat(20).degreesToRadians(), duration: 0.5))
-        }
+//        if spriteComponent.node.zRotation.radiansToDegrees() > 10 {
+//            spriteComponent.node.run(SKAction.rotate(toAngle: CGFloat(-20).degreesToRadians(), duration: 0.5))
+//        } else {
+//            spriteComponent.node.run(SKAction.rotate(toAngle: CGFloat(20).degreesToRadians(), duration: 0.5))
+//        }
         
         if spriteComponent.node.position.x < 0 {
             if spriteComponent.node.parent != nil {

@@ -159,14 +159,11 @@ class MutantComponent: GKComponent {
             runLess = 0
         }
         
-        if runMore < 16 + randQ {
+        if runMore < 2 {
             runMore += 1
         } else {
             runMore = 0
-//            toggle = false
-//            let pause = SKAction.wait(forDuration: TimeInterval(0.1))
-//            let move = SKAction.run {
-//                self.toggle = true
+
                 // foreground index is the number of the foreground that the mutant is on right now...
                 
                     var newG = self.localForegrounds[self.foreGroundIndex].convert(self.spriteComponent.node.position, to: self.playerToKill.spriteComponent.node)
@@ -222,11 +219,11 @@ class MutantComponent: GKComponent {
         
         
         
-        if spriteComponent.node.zRotation.radiansToDegrees() > 10 {
-            spriteComponent.node.run(SKAction.rotate(toAngle: CGFloat(-20).degreesToRadians(), duration: 0.5))
-        } else {
-            spriteComponent.node.run(SKAction.rotate(toAngle: CGFloat(20).degreesToRadians(), duration: 0.5))
-        }
+//        if spriteComponent.node.zRotation.radiansToDegrees() > 10 {
+//            spriteComponent.node.run(SKAction.rotate(toAngle: CGFloat(-20).degreesToRadians(), duration: 0.5))
+//        } else {
+//            spriteComponent.node.run(SKAction.rotate(toAngle: CGFloat(20).degreesToRadians(), duration: 0.5))
+//        }
         
         if spriteComponent.node.position.x < 0 {
             if spriteComponent.node.parent != nil {

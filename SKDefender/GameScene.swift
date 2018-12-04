@@ -556,7 +556,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
             return
         }
         
-//        manager.startDeviceMotionUpdates()
+        manager.startDeviceMotionUpdates()
         
         preLoadSound()
         
@@ -583,47 +583,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         addChild(highScore.textComponent.node)
         
         let nextWavePlacement = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
-        nextWave = TextEntity(text: "Next Wave", Cords: nextWavePlacement, name: "nextwave")
-        
+        nextWave = TextEntity(text: "", Cords: nextWavePlacement, name: "nextwave")
+        addChild(nextWave.textComponent.node)
+//        newWave()
         newWave()
         flipMe()
     }
     
     // Runs when I change the value held in bodyCount
     func newLunch() {
-        nextWave.textComponent.node.run(SKAction.fadeOut(withDuration: 2))
+//        nextWave.textComponent.node.run(SKAction.fadeOut(withDuration: 2))
         if bodyCount == 0 {
-            let waitAction = SKAction.wait(forDuration: 8)
-            let fadeOutAction = SKAction.fadeOut(withDuration: 4)
+            let waitAction = SKAction.wait(forDuration: 4)
+//            let fadeAction = SKAction.fadeIn(withDuration: 2)
             let newAction = SKAction.run {
+                self.nextWave.textComponent.node.run(SKAction.fadeIn(withDuration: 4))
+                self.waveCount += 1
                 self.newWave()
+                print("\(self.waveCount)")
             }
-            nextWave.textComponent.node.run(SKAction.sequence([waitAction, fadeOutAction, newAction]))
+            nextWave.textComponent.node.run(SKAction.sequence([newAction]))
         }
-    }
-    
-    var attackWaves: Int = 0
-    
-    func newWave() {
-        switch attackWaves {
-        case 0:
-            special() // 722nodes BEFORE
-//            attackgroupA(bodiesAttacking: 10)
-            break
-        case 1:
-            attackgroupB(bodiesAttacking: 14)
-            break
-        case 2:
-            attackgroupC(bodiesAttacking: 18)
-            break
-        case 3:
-            attackgroupD(bodiesAttacking: 24)
-            break
-        default:
-            break
-        }
-        
-        
     }
     
     func flipMe() {
@@ -635,87 +615,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         radar.position = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY * 2 - self.view!.bounds.maxY * 0.4)
     }
     
-    func special() {
-        bodyCount = 15
-        nextWave.textComponent.node.text = "Special"
+    var waveCount = 0
+    
+    func newWave() {
+        bodyCount = 7 + (8 * waveCount)
+        print("-----> bodyCount \(bodyCount)")
+        nextWave.textComponent.node.text = "Wave \(waveCount)"
+        let waitAction = SKAction.wait(forDuration: 4)
+        let fadeOutAction = SKAction.fadeOut(withDuration: 4)
+        nextWave.textComponent.node.run(SKAction.sequence([waitAction, fadeOutAction]))
 
         let playerScene = whereIsPlayer()
         let randomValueZ = (playerScene + 4) % numberOfForegrounds
         
-        doBombers(sceneNo: randomValueZ, bodies: 2, wayToGo: .cominEast) // 2 bombers
-        doBombers(sceneNo: randomValueZ,bodies: 2, wayToGo: .cominWest) // 2 bombers
-        doBaiters(sceneNo: randomValueZ,player: player, bodies: 2) // 4 baiters memory ok
-        doMutants(sceneNo: randomValueZ,player: player, bodies: 2) // 4 mutants memory ok
+        doBombers(sceneNo: randomValueZ, bodies: 2 * waveCount, wayToGo: .cominEast) // 2 bombers
+        doBombers(sceneNo: randomValueZ,bodies: 2 * waveCount, wayToGo: .cominWest) // 2 bombers
+
+        doBaiters(sceneNo: randomValueZ,player: player, bodies: 2 * waveCount) // 4 baiters memory ok
+        doMutants(sceneNo: randomValueZ,player: player, bodies: 2 * waveCount) // 4 mutants memory ok
+        
         for sceneNo in 0...7 {
             doLanders(sceneNo: sceneNo,player: player, bodies: 1)
         }
-    }
-    
-    func attackgroupA(bodiesAttacking: Int) {
-        bodyCount = bodiesAttacking
-        nextWave.textComponent.node.text = "Group A"
-        
-        let playerScene = whereIsPlayer()
-        let randomValueZ = (playerScene + 4) % numberOfForegrounds
-        
-        doBombers(sceneNo: randomValueZ, bodies: 2, wayToGo: .cominEast) // 2 bombers
-        doBombers(sceneNo: randomValueZ,bodies: 2, wayToGo: .cominWest) // 2 bombers
-        doBaiters(sceneNo: randomValueZ,player: player, bodies: 2) // 4 baiters memory ok
-        doMutants(sceneNo: randomValueZ,player: player, bodies: 2) // 4 mutants memory ok
-        doLanders(sceneNo: randomValueZ,player: player, bodies: 2) // 4 landers memory ok
-        attackWaves += 1
-    }
-    
-    func attackgroupB(bodiesAttacking: Int) {
-        bodyCount = bodiesAttacking
-        nextWave.textComponent.node.text = "Group B"
-        
-
-            let playerScene = whereIsPlayer()
-            let randomValueZ = (playerScene + 4) % numberOfForegrounds
-            
-            doBombers(sceneNo: randomValueZ, bodies: 2, wayToGo: .cominEast) // 2 bombers
-            doBombers(sceneNo: randomValueZ,bodies: 4, wayToGo: .cominWest) // 2 bombers
-            doBaiters(sceneNo: randomValueZ,player: player, bodies: 2) // 4 baiters memory ok
-            doMutants(sceneNo: randomValueZ,player: player, bodies: 4) // 4 mutants memory ok
-            doLanders(sceneNo: randomValueZ,player: player, bodies: 2) // 4 landers memory ok
-        
-        attackWaves += 1
-    }
-    
-    func attackgroupC(bodiesAttacking: Int) {
-        bodyCount = bodiesAttacking
-        nextWave.textComponent.node.text = "Group C"
-        
-
-            let playerScene = whereIsPlayer()
-            let randomValueZ = (playerScene + 4) % numberOfForegrounds
-            
-            doBombers(sceneNo: randomValueZ, bodies: 4, wayToGo: .cominEast) // 2 bombers
-            doBombers(sceneNo: randomValueZ,bodies: 2, wayToGo: .cominWest) // 2 bombers
-            doBaiters(sceneNo: randomValueZ,player: player, bodies: 2) // 4 baiters memory ok
-            doMutants(sceneNo: randomValueZ,player: player, bodies: 8) // 4 mutants memory ok
-            doLanders(sceneNo: randomValueZ,player: player, bodies: 2) // 4 landers memory ok
-        
-        attackWaves += 1
-    }
-    
-    func attackgroupD(bodiesAttacking: Int) {
-        nextWave.textComponent.node.text = "Group D"
-        bodyCount = bodiesAttacking
-        
-
-            
-            let playerScene = whereIsPlayer()
-            let randomValueZ = (playerScene + 4) % numberOfForegrounds
-            
-            doBombers(sceneNo: randomValueZ, bodies: 2, wayToGo: .cominEast) // 2 bombers
-            doBombers(sceneNo: randomValueZ,bodies: 2, wayToGo: .cominWest) // 2 bombers
-            doBaiters(sceneNo: randomValueZ,player: player, bodies: 2) // 4 baiters memory ok
-            doMutants(sceneNo: randomValueZ,player: player, bodies: 8) // 4 mutants memory ok
-            doLanders(sceneNo: randomValueZ,player: player, bodies: 2) // 4 landers memory ok
-        
-        attackWaves += 1
     }
     
     public func whereIsPlayer() -> Int {
@@ -851,6 +772,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
     
     var lastNodeA: SKNode!
     var lastNodeB: SKNode!
+
     
     func didBegin(_ contact: SKPhysicsContact) {
         // Stops multiple calls to didBegin same object, but brakes our spaceman drop
@@ -870,44 +792,53 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         // alien kidnaps spaceman
 
         if kidnap.node?.name == "spaceman" && kidnap.node?.parent?.name == "foreground" && contact.bodyA.node!.name == "alien" {
-            print("rule I")
+            if let node = kidnap.node as? SKSpriteNode {
+                if node.parent != nil {
+                    print("rule I")
+                    let shadow = kidnap.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+                    (shadow as? SKSpriteNode)?.removeFromParent()
 
-            let shadow = kidnap.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
-            (shadow as? SKSpriteNode)?.removeFromParent()
-
-            kidnap.node?.removeFromParent()
-            kidnap.node?.position = CGPoint(x: 0, y: -96)
-            kidnap.node?.userData?.setObject(status.kidnapped, forKey: "status" as NSCopying)
-            contact.bodyA.node?.addChild(kidnap.node!)
-            let alienShadow = contact.bodyA.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
-            alienShadow.position = CGPoint(x: 0, y: -64)
-            alienShadow.addChild(shadow)
-            highScore.textComponent.lessScore(score: 100)
+                    kidnap.node?.removeFromParent()
+                    kidnap.node?.position = CGPoint(x: 0, y: -96)
+                    kidnap.node?.userData?.setObject(status.kidnapped, forKey: "status" as NSCopying)
+                    contact.bodyA.node?.addChild(kidnap.node!)
+                    let alienShadow = contact.bodyA.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+                    alienShadow.position = CGPoint(x: 0, y: -64)
+                    alienShadow.addChild(shadow)
+                    highScore.textComponent.lessScore(score: 100)
+                }
+            }
             return
         }
 
         // pickup falling spaceman from lander
 
         if other.node?.name == "spaceman" && other.node?.parent?.name == "foreground" && contact.bodyB.node!.name == "starship"  {
-//        if other.node?.name == "spaceman" && contact.bodyB.node!.name == "starship" {
-            print("rule II")
-//            pickup = other.node?.position
-            if other.node?.userData?.object(forKey: "status") as? status == status.kidnapped {
-                other.node?.removeFromParent()
-                other.node?.position = CGPoint(x: 0, y: -96)
-                other.node?.physicsBody?.isDynamic = false
-    //            other.node?.userData?.setObject(status.rescued, forKey: "status" as NSCopying)
-                contact.bodyB.node?.addChild(other.node!)
-                highScore.textComponent.moreScore(score: 500)
-                let positionToScore = CGPoint(x: playerNode.position.x - 64, y: playerNode.position.y - 64)
-                let bonus = TextEntity(text: "500", Cords: positionToScore, name: "bonus")
-                bonus.textComponent.node.zPosition = Layer.mask.rawValue
-                addChild(bonus.textComponent.node)
-                let fadeOut = SKAction.fadeOut(withDuration: 0.5)
-                let fadeIn = SKAction.fadeIn(withDuration: 0.5)
-                let waiter = SKAction.wait(forDuration: 0.5)
-                let remover = SKAction.removeFromParent()
-                bonus.textComponent.node.run(SKAction.sequence([fadeIn, waiter, fadeOut, remover]))
+            //        if other.node?.name == "spaceman" && contact.bodyB.node!.name == "starship" {
+            if let node = hit.node as? SKSpriteNode {
+                if node.parent != nil {
+                    print("rule II")
+                    //            pickup = other.node?.position
+                    if other.node?.userData?.object(forKey: "status") as? status == status.kidnapped {
+                        
+                        let positionToScore = CGPoint(x: playerNode.position.x , y: playerNode.position.y - 64)
+                        other.node?.removeFromParent()
+                        other.node?.position = CGPoint(x: 0, y: -96)
+                        other.node?.physicsBody?.isDynamic = false
+                        //            other.node?.userData?.setObject(status.rescued, forKey: "status" as NSCopying)
+                        contact.bodyB.node?.addChild(other.node!)
+                        highScore.textComponent.moreScore(score: 500)
+                        
+                        let bonus = TextEntity(text: "500", Cords: positionToScore, name: "bonus")
+                        bonus.textComponent.node.zPosition = Layer.mask.rawValue
+                        addChild(bonus.textComponent.node)
+                        let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+                        let fadeIn = SKAction.fadeIn(withDuration: 0.5)
+                        let waiter = SKAction.wait(forDuration: 0.5)
+                        let remover = SKAction.removeFromParent()
+                        bonus.textComponent.node.run(SKAction.sequence([fadeIn, waiter, fadeOut, remover]))
+                    }
+                }
                 return
             }
         }
@@ -915,16 +846,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         // drop spaceman if ground touches him while carried by starship
 
         if other.node?.name == "foreground" && contact.bodyB.node?.name == "starship"{
-            print("rule III")
-            let saving = contact.bodyB.node?.childNode(withName: "spaceman")
-            if saving != nil && saving?.userData?.object(forKey: "status") as? status == status.kidnapped {
-//                saving?.position = (other.node?.position)!
-                saving?.position.x = self.playerNode.position.x - (other.node?.position.x)!
-                saving?.position.y = 96
-                saving?.removeFromParent()
-                other.node?.addChild(saving!)
-                saving?.userData?.setObject(status.rescued, forKey: "status" as NSCopying)
-                highScore.textComponent.moreScore(score: 500)
+            if let node = hit.node as? SKSpriteNode {
+                if node.parent != nil {
+                    print("rule III")
+                    let saving = contact.bodyB.node?.childNode(withName: "spaceman")
+                    if saving != nil && saving?.userData?.object(forKey: "status") as? status == status.kidnapped {
+                        //                saving?.position = (other.node?.position)!
+                        saving?.position.x = self.playerNode.position.x - (other.node?.position.x)!
+                        saving?.position.y = 96
+                        saving?.removeFromParent()
+                        other.node?.addChild(saving!)
+                        saving?.userData?.setObject(status.rescued, forKey: "status" as NSCopying)
+                        
+                        //                let fX = other.node?.parent!.position.x
+                        //                let positionToScore = CGPoint(x: saving!.position.x, y: saving!.position.y)
+                        
+                        let bonus = TextEntity(text: "250", Cords: (saving?.position)!, name: "bonus")
+                        bonus.textComponent.node.zPosition = Layer.mask.rawValue
+                        addChild(bonus.textComponent.node)
+                        let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+                        let fadeIn = SKAction.fadeIn(withDuration: 0.5)
+                        let waiter = SKAction.wait(forDuration: 0.5)
+                        let remover = SKAction.removeFromParent()
+                        bonus.textComponent.node.run(SKAction.sequence([fadeIn, waiter, fadeOut, remover]))
+                        highScore.textComponent.moreScore(score: 250)
+                    }
+                }
             }
             return
         }
@@ -932,37 +879,44 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         // alien hit, releases spaceman
 
         if hit.node?.name == "alien" && contact.bodyA.node?.name == "missile" {
-            print("rule IV \(contact.bodyA.node?.name) \(contact.bodyB.node?.name)")
-            let victim = hit.node?.childNode(withName: "spaceman")
-
-//            let alienShadow = hit.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
-//            alienShadow.removeFromParent()
-            contact.bodyA.node?.removeFromParent()
-
-            let parent2U = hit.node?.parent
-//            hit.node?.removeFromParent()
-            if victim != nil {
-                victim?.position = (hit.node?.position)!
-                victim?.removeFromParent()
-                victim?.physicsBody?.isDynamic = true
-                parent2U?.addChild(victim!)
-            }
             if let node = hit.node as? SKSpriteNode {
                 if node.parent != nil {
-                    let shadow = hit.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
-                    (shadow as? SKSpriteNode)?.removeFromParent()
-                    hit.node?.removeFromParent()
-                    highScore.textComponent.moreScore(score: 100)
-                    let positionToScore = CGPoint(x: (hit.node?.position.x)!, y: (hit.node?.position.y)!)
-                    let bonus = TextEntity(text: "100", Cords: positionToScore, name: "bonus")
-                    bonus.textComponent.node.zPosition = Layer.mask.rawValue
-                    addChild(bonus.textComponent.node)
-                    let fadeOut = SKAction.fadeOut(withDuration: 0.5)
-                    let fadeIn = SKAction.fadeIn(withDuration: 0.5)
-                    let waiter = SKAction.wait(forDuration: 0.5)
-                    let remover = SKAction.removeFromParent()
-                    bonus.textComponent.node.run(SKAction.sequence([fadeIn, waiter, fadeOut, remover]))
-                    doBodyCount()
+                    print("rule IV \(contact.bodyA.node?.name) \(contact.bodyB.node?.name)")
+                    let victim = hit.node?.childNode(withName: "spaceman")
+                    
+                    //            let alienShadow = hit.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+                    //            alienShadow.removeFromParent()
+                    contact.bodyA.node?.removeFromParent()
+                    
+                    let parent2U = hit.node?.parent
+                    //            hit.node?.removeFromParent()
+                    if victim != nil {
+                        victim?.position = (hit.node?.position)!
+                        victim?.removeFromParent()
+                        victim?.physicsBody?.isDynamic = true
+                        parent2U?.addChild(victim!)
+                    }
+                    if let node = hit.node as? SKSpriteNode {
+                        if node.parent != nil {
+                            print("parent \(hit.node?.parent!.name)")
+                            let fX = hit.node?.parent!.position.x
+                            let positionToScore = CGPoint(x: (hit.node?.position.x)! + fX!, y: (hit.node?.position.y)!)
+                            let shadow = hit.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+                            (shadow as? SKSpriteNode)?.removeFromParent()
+                            hit.node?.removeFromParent()
+                            highScore.textComponent.moreScore(score: 100)
+                            let bonus = TextEntity(text: "100", Cords: positionToScore, name: "bonus")
+                            bonus.textComponent.node.zPosition = Layer.mask.rawValue
+                            addChild(bonus.textComponent.node)
+                            let fadeOut = SKAction.fadeOut(withDuration: 0.5)
+                            let fadeIn = SKAction.fadeIn(withDuration: 0.5)
+                            let waiter = SKAction.wait(forDuration: 0.5)
+                            let remover = SKAction.removeFromParent()
+                            
+                            bonus.textComponent.node.run(SKAction.sequence([fadeIn, waiter, fadeOut, remover]))
+                            doBodyCount()
+                        }
+                    }
                 }
             }
             return
@@ -1006,9 +960,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         // player hits baiter
         
         if other.node?.name == "baiter" && contact.bodyA.node?.name == "starship" {
-            print("rule X")
+            
             if let node = other.node as? SKSpriteNode {
                 if node.parent != nil {
+                    print("rule X")
                     let shadow = other.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
                     (shadow as? SKSpriteNode)?.removeFromParent()
                     other.node?.removeFromParent()
@@ -1021,9 +976,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         // player hots mutant
         
         if other.node?.name == "mutant" && contact.bodyA.node?.name == "starship" {
-            print("rule IX")
+            
             if let node = other.node as? SKSpriteNode {
                 if node.parent != nil {
+                    print("rule IX")
                     let shadow = other.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
                     (shadow as? SKSpriteNode)?.removeFromParent()
                     other.node?.removeFromParent()
@@ -1036,9 +992,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         // player hots bomber
         
         if other.node?.name == "bomber" && contact.bodyA.node?.name == "starship" {
-            print("rule VIII")
+            
             if let node = other.node as? SKSpriteNode {
                 if node.parent != nil {
+                    print("rule VIII")
                     let shadow = other.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
                     (shadow as? SKSpriteNode)?.removeFromParent()
                     other.node?.removeFromParent()
@@ -1051,9 +1008,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         // player hits lander
         
         if other.node?.name == "alien" && contact.bodyB.node?.name == "starship" {
-            print("rule XIII")
+            
             if let node = other.node as? SKSpriteNode {
                 if node.parent != nil {
+                    print("rule XIII")
                     let shadow = other.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
                     (shadow as? SKSpriteNode)?.removeFromParent()
                     other.node?.removeFromParent()
@@ -1062,13 +1020,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
                 }
             }
         }
-
-        // fire hits bomber or mine or mutant or baiter
-        if hit.node?.name == "bomber" || hit.node?.name == "mine" || hit.node?.name == "mutant" || hit.node?.name == "baiter"  {
-            print("rule VII")
+        
+        // fire hits mine, disappears- but no extra points
+        
+        if hit.node?.name == "mine" {
             if let node = hit.node as? SKSpriteNode {
                 if node.parent != nil {
-                    let positionToScore = CGPoint(x: node.position.x, y: node.position.y)
+                    node.removeFromParent()
+                }
+            }
+        }
+
+        // fire hits bomber or mine or mutant or baiter
+        if hit.node?.name == "bomber"  || hit.node?.name == "mutant" || hit.node?.name == "baiter"  {
+            if let node = hit.node as? SKSpriteNode {
+                if node.parent != nil {
+                    print("rule VII")
+                    let fX = hit.node?.parent!.position.x
+                    let positionToScore = CGPoint(x: (hit.node?.position.x)! + fX!, y: (hit.node?.position.y)!)
                     node.removeFromParent()
                     highScore.textComponent.moreScore(score: 100)
                     let bonus = TextEntity(text: "100", Cords: positionToScore, name: "bonus")
@@ -1084,34 +1053,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
             }
         }
         
-        // fire hits bomb
-        if hit.node?.name == "mine" {
-            print("rule XII")
-            hit.node?.removeFromParent()
-//            if let node = hit.node as? SKSpriteNode {
-//                if node.parent != nil {
-//                    node.removeFromParent()
-//                }
-//            }
-        }
 
 
         // spaceman falling to ground
         if other.node?.name == "foreground" {
-            print("rule V")
-            contact.bodyB.node?.physicsBody?.isDynamic = false
-            let poc = CGPoint(x: (contact.bodyB.node?.position.x)!, y: 96)
-            contact.bodyB.node?.run(SKAction.move(to: poc, duration: 0.5))
-            highScore.textComponent.moreScore(score: 250)
+            if let node = other.node as? SKSpriteNode {
+                if node.parent != nil {
+                    print("rule V")
+                    contact.bodyB.node?.physicsBody?.isDynamic = false
+                    let poc = CGPoint(x: (contact.bodyB.node?.position.x)!, y: 96)
+                    contact.bodyB.node?.run(SKAction.move(to: poc, duration: 0.5))
+                    highScore.textComponent.moreScore(score: 250)
+                }
+            }
             return
         }
 
         // shoot the spaceman and he will disppear
 
         if hit.node?.name == "spaceman" && contact.bodyB.node?.name != "starship" {
-            print("rule VI \(contact.bodyB.node?.name)")
-            hit.node?.removeFromParent()
-            highScore.textComponent.lessScore(score: 100)
+            if let node = hit.node as? SKSpriteNode {
+                if node.parent != nil {
+                    print("rule VI")
+                    hit.node?.removeFromParent()
+                    highScore.textComponent.lessScore(score: 100)
+                }
+            }
         }
     }
     
