@@ -37,7 +37,7 @@ enum spriteAttack {
 
 class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
     
-    
+    var lives: Int = 3
     
     var moveLeft = false
     var moveRight = false
@@ -448,8 +448,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
     var advancedArrow: HeadsUpEntity!
     var highScore: TextEntity!
     var nextWave: TextEntity!
+    var playerLives:[EntityNode] = []
     
-    func addPlayer() -> PlayerEntity {
+    func showLives() {
+        for lifes in 0...lives - 1 {
+            let playerAvailable = PlayerEntity(imageName: "ship16", shadowNode: nil, physics: false)
+            let playerAvailableNode = playerAvailable.spriteComponent.node
+            playerAvailableNode.position = CGPoint(x: self.view!.bounds.minX + CGFloat(64), y: (self.view!.bounds.maxY * 2) - CGFloat((lifes * 64) + 64))
+            playerAvailableNode.scale(to: CGSize(width: playerAvailableNode.size.width/2.5, height: playerAvailableNode.size.height/2.5))
+            addChild(playerAvailableNode)
+            playerLives.append(playerAvailableNode)
+        }
+    }
+    
+    func removeLives() {
+        if playerLives.count > 0 {
+            let playerToGo = playerLives.popLast() as? EntityNode
+            playerToGo!.removeFromParent()
+        }
+    }
+    
+    func addPlayer() {
+        
         shadow = PlayerEntity(imageName: "ship16", shadowNode: nil, physics: false)
         shadowNode = shadow.spriteComponent.node
         shadowNode.position = CGPoint(x: self.view!.bounds.maxX / 2, y: self.view!.bounds.maxY / 2)
@@ -463,7 +483,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         playerNode.zPosition = Layer.player.rawValue
         playerNode.delegate = self
         addChild(playerNode)
-        
+    
+    }
+    
+    func addHUD() {
         let upArrow = HeadsUpEntity(imageName: "UpArrow", xCord: (self.view?.bounds.minX)! + 128, yCord: ((self.view?.bounds.maxY)!) + 128, name: "up")
         upArrow.hudComponent.node.delegate = self
          upArrow.hudComponent.node.zPosition = Layer.controls.rawValue
@@ -497,7 +520,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         addChild(fireSquare.hudComponent.node)
         addChild(flipButton.hudComponent.node)
         
-        return player
+        
     }
     
     var cameraNode: SKCameraNode!
@@ -533,7 +556,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
             return
         }
         
-        manager.startDeviceMotionUpdates()
+//        manager.startDeviceMotionUpdates()
         
         preLoadSound()
         
@@ -546,8 +569,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         addChild(cameraNode)
         
         setupForeground()
-        let player = addPlayer()
-   
+        showLives()
+        addPlayer()
+        addHUD()
         
 //        Add a boundry to the screen
         let rectToSecure = CGRect(x: 0, y: 0, width: self.view!.bounds.maxX * 2, height: self.view!.bounds.minY * 2 )
@@ -928,22 +952,44 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
 
         // player hits mine
         if other.node?.name == "mine" && contact.bodyA.node?.name == "starship" {
-            print("rule XI")
-            let shadow = contact.bodyA.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
-            (shadow as? SKSpriteNode)?.removeFromParent()
-            contact.bodyA.node?.removeFromParent()
-            other.node?.removeFromParent()
-            print("GameOver \(points)")
-            
-            let gameOver = SKLabelNode()
-            gameOver.text = "Game Over"
-            gameOver.position = CGPoint(x: self.view!.bounds.midX, y: self.view!.bounds.midY)
-            addChild(gameOver)
-            let restart = TouchableSprite(imageNamed: "OrangeBulletExplo1")
-            restart.name = "restart"
-            restart.position = CGPoint(x: self.view!.bounds.midX, y: self.view!.bounds.midY + 128)
-            restart.delegate = self
-            addChild(restart)
+            if let node = other.node as? SKSpriteNode {
+                if node.parent != nil {
+                    print("rule XI")
+                    let shadow = contact.bodyA.node?.userData?.object(forKey:"shadow") as! SKSpriteNode
+                    (shadow as? SKSpriteNode)?.removeFromParent()
+//                    contact.bodyA.node?.removeFromParent()
+//                    other.node?.removeFromParent()
+                    if lives != 0 {
+//                        addPlayer()
+                        let fadeOut = SKAction.fadeOut(withDuration: 2)
+                        let fadeIn = SKAction.fadeIn(withDuration: 2)
+                        let waiter = SKAction.wait(forDuration: 2)
+                        contact.bodyA.node?.run(SKAction.sequence([fadeOut, waiter, fadeIn]))
+                        
+//                        if moveRight {
+//                            flipMe()
+//                        }
+                        self.removeLives()
+                        
+                        lives -= 1
+                    } else {
+                        lives = 3
+                        print("GameOver \(points)")
+                        contact.bodyA.node?.removeFromParent()
+                        other.node?.removeFromParent()
+                        
+                        let gameOver = SKLabelNode()
+                        gameOver.text = "Game Over"
+                        gameOver.position = CGPoint(x: self.view!.bounds.midX, y: self.view!.bounds.midY)
+                        addChild(gameOver)
+                        let restart = TouchableSprite(imageNamed: "OrangeBulletExplo1")
+                        restart.name = "restart"
+                        restart.position = CGPoint(x: self.view!.bounds.midX, y: self.view!.bounds.midY + 128)
+                        restart.delegate = self
+                        addChild(restart)
+                    }
+                }
+            }
         }
         
         // player hits baiter
