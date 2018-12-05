@@ -359,7 +359,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
     }
     
     var bombers:[BomberEntity] = []
-    var mines:[MineEntity] = []
     
     func addBomber(sceneNo: Int, randX: CGFloat, randY: CGFloat, scanNodes:[EntityNode], foregrounds:[EntityNode], direction: spriteAttack) -> (EntityNode, EntityNode) {
         var imageName: String!
@@ -556,7 +555,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
             return
         }
         
-        manager.startDeviceMotionUpdates()
+//        manager.startDeviceMotionUpdates()
         
         preLoadSound()
         
@@ -585,7 +584,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         let nextWavePlacement = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY)
         nextWave = TextEntity(text: "", Cords: nextWavePlacement, name: "nextwave")
         addChild(nextWave.textComponent.node)
-//        newWave()
+
         newWave()
         flipMe()
     }
@@ -615,7 +614,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         radar.position = CGPoint(x: self.view!.bounds.maxX, y: self.view!.bounds.maxY * 2 - self.view!.bounds.maxY * 0.4)
     }
     
-    var waveCount = 0
+    var waveCount = 1
     
     func newWave() {
         bodyCount = 7 + (8 * waveCount)
@@ -707,15 +706,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         }
         
         for bomber in bombers {
-            bomber.update(deltaTime: lastUpdateTimeInterval)
+            bomber.update(deltaTime: deltaTime)
         }
         
         for mutant in mutants {
-            mutant.update(deltaTime: lastUpdateTimeInterval)
+            mutant.update(deltaTime: deltaTime)
         }
         
         for baiter in baiters {
-            baiter.update(deltaTime: lastUpdateTimeInterval)
+            baiter.update(deltaTime: deltaTime)
         }
         
     }
@@ -989,7 +988,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
             }
         }
         
-        // player hots bomber
+        // player hits bomber
         
         if other.node?.name == "bomber" && contact.bodyA.node?.name == "starship" {
             
@@ -1038,6 +1037,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
                     print("rule VII")
                     let fX = hit.node?.parent!.position.x
                     let positionToScore = CGPoint(x: (hit.node?.position.x)! + fX!, y: (hit.node?.position.y)!)
+                    deleteEntry(entry2D: node)
+                    let shadow = node.userData?.object(forKey:"shadow") as! SKSpriteNode
+                    (shadow as? SKSpriteNode)?.removeFromParent()
                     node.removeFromParent()
                     highScore.textComponent.moreScore(score: 100)
                     let bonus = TextEntity(text: "100", Cords: positionToScore, name: "bonus")
@@ -1094,6 +1096,44 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         scene.scaleMode = .aspectFit
         skView!.presentScene(scene)
     }
+    
+    
+    func deleteEntry(entry2D: SKSpriteNode) {
+        switch entry2D.name {
+        case "bomber":
+            let classOf = entry2D.userData?.object(forKey: "class") as? BomberEntity
+            if let i = bombers.index(where: { $0 == classOf }) {
+                bombers.remove(at: i)
+                print("deleted Bomber")
+            }
+            break
+        case "mutant":
+            let classOf = entry2D.userData?.object(forKey: "class") as? MutantEntity
+            if let i = mutants.index(where: { $0 == classOf }) {
+                mutants.remove(at: i)
+                print("deleted Mutant")
+            }
+            break
+        case "baiter":
+            let classOf = entry2D.userData?.object(forKey: "class") as? BaitEntity
+            if let i = baiters.index(where: { $0 == classOf }) {
+                baiters.remove(at: i)
+                print("deleted Baiter")
+            }
+            break
+        case "alien":
+            let classOf = entry2D.userData?.object(forKey: "class") as? LanderEntity
+            if let i = landers.index(where: { $0 == classOf }) {
+                landers.remove(at: i)
+                print("deleted Baiter")
+            }
+            break
+        default:
+            break
+        }
+        
+    }
+    
     
     func spriteTouched(box: TouchableSprite) {
         switch box.name {

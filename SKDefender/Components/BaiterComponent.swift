@@ -129,6 +129,13 @@ class BaiterComponent: GKComponent {
         self.mines.append(mine)
     }
     
+    func deleteMineEntry(mine2D: EntityNode) {
+        if let i = mines.index(where: { $0 == mine2D }) {
+            mines.remove(at: i)
+            print("deleted Mine")
+        }
+    }
+    
     var runOnce = true
     var scanNodeIndex:Int!
     var foreGroundIndex:Int!

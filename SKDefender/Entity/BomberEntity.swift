@@ -43,6 +43,7 @@ class BomberEntity: GKEntity {
         if shadowNode != nil {
             spriteNode.userData = NSMutableDictionary()
             spriteNode.userData?.setObject(shadowNode, forKey: "shadow" as NSCopying)
+            spriteNode.userData?.setObject(self, forKey: "class" as NSCopying)
 //            spriteNode.userData?.setObject(bomb, forKey: "bomb" as NSCopying)
         }
         
