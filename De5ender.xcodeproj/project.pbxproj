@@ -78,7 +78,7 @@
 		7BA5CCE121948F8C007EB2E3 /* ShapeComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeComponent.swift; sourceTree = "<group>"; };
 		7BA5CCE321949084007EB2E3 /* PathComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathComponent.swift; sourceTree = "<group>"; };
 		7BA5CCE52195C2B1007EB2E3 /* ResueEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResueEntity.swift; sourceTree = "<group>"; };
-		7BE20D05219222B900D68240 /* SKDefender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SKDefender.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BE20D05219222B900D68240 /* De5ender.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = De5ender.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BE20D08219222B900D68240 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7BE20D0E219222B900D68240 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		7BE20D10219222B900D68240 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
@@ -167,7 +167,7 @@
 		7BE20CFC219222B900D68240 = {
 			isa = PBXGroup;
 			children = (
-				7BE20D07219222B900D68240 /* SKDefender */,
+				7BE20D07219222B900D68240 /* De5ender */,
 				7BE20D06219222B900D68240 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -175,12 +175,12 @@
 		7BE20D06219222B900D68240 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7BE20D05219222B900D68240 /* SKDefender.app */,
+				7BE20D05219222B900D68240 /* De5ender.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		7BE20D07219222B900D68240 /* SKDefender */ = {
+		7BE20D07219222B900D68240 /* De5ender */ = {
 			isa = PBXGroup;
 			children = (
 				7B250A7821B06426005A4A7D /* Sounds */,
@@ -198,15 +198,15 @@
 				7BE20D17219222BA00D68240 /* LaunchScreen.storyboard */,
 				7BE20D1A219222BA00D68240 /* Info.plist */,
 			);
-			path = SKDefender;
+			path = De5ender;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		7BE20D04219222B900D68240 /* SKDefender */ = {
+		7BE20D04219222B900D68240 /* De5ender */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7BE20D1D219222BA00D68240 /* Build configuration list for PBXNativeTarget "SKDefender" */;
+			buildConfigurationList = 7BE20D1D219222BA00D68240 /* Build configuration list for PBXNativeTarget "De5ender" */;
 			buildPhases = (
 				7BE20D01219222B900D68240 /* Sources */,
 				7BE20D02219222B900D68240 /* Frameworks */,
@@ -216,9 +216,9 @@
 			);
 			dependencies = (
 			);
-			name = SKDefender;
+			name = De5ender;
 			productName = SKDefender;
-			productReference = 7BE20D05219222B900D68240 /* SKDefender.app */;
+			productReference = 7BE20D05219222B900D68240 /* De5ender.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -249,7 +249,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				7BE20D04219222B900D68240 /* SKDefender */,
+				7BE20D04219222B900D68240 /* De5ender */,
 			);
 		};
 /* End PBXProject section */
@@ -456,13 +456,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = CWGS87U262;
-				INFOPLIST_FILE = SKDefender/Info.plist;
+				INFOPLIST_FILE = De5ender/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = ch.cqd.skdefender.SKDefender;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.cqd.de5ender.De5ender;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -475,13 +475,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = CWGS87U262;
-				INFOPLIST_FILE = SKDefender/Info.plist;
+				INFOPLIST_FILE = De5ender/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = ch.cqd.skdefender.SKDefender;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.cqd.de5ender.De5ender;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -500,7 +500,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		7BE20D1D219222BA00D68240 /* Build configuration list for PBXNativeTarget "SKDefender" */ = {
+		7BE20D1D219222BA00D68240 /* Build configuration list for PBXNativeTarget "De5ender" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7BE20D1E219222BA00D68240 /* Debug */,
