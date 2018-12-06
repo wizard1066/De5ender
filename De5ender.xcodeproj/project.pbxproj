@@ -236,7 +236,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 7BE20D00219222B900D68240 /* Build configuration list for PBXProject "SKDefender" */;
+			buildConfigurationList = 7BE20D00219222B900D68240 /* Build configuration list for PBXProject "De5ender" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -491,7 +491,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		7BE20D00219222B900D68240 /* Build configuration list for PBXProject "SKDefender" */ = {
+		7BE20D00219222B900D68240 /* Build configuration list for PBXProject "De5ender" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7BE20D1B219222BA00D68240 /* Debug */,
