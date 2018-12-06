@@ -19,7 +19,7 @@ class MutantComponent: GKComponent {
     var localScan:[EntityNode] = []
     var localForegrounds:[EntityNode] = []
     var spriteShadow: EntityNode?
-    var mines:[BombEntity] = []
+    var mines:[MineEntity] = []
     
     init(entity: GKEntity, screenBounds: CGRect, view2D: EntityNode, scanNodes: [EntityNode], foregrounds: [EntityNode], shadow:EntityNode?) {
         localBounds = screenBounds
@@ -88,11 +88,11 @@ class MutantComponent: GKComponent {
         return (directionToGoA, directionToGoB)
     }
     
-    func beginBombing(loop: Int, skew: Int) {
+    func beginBombing(loop: Int, skew: Int, direct: spriteAttack) {
         // stop bombing if mutant is dead
         
         
-        let mine = BombEntity(imageName: "mine", owningNode: self.spriteComponent.node)
+        let mine = MineEntity(imageName: "mine", owningNode: self.spriteComponent.node, direct2D: direct)
         //        mine.spriteComponent.node.zPosition = Layer.alien.rawValue
         let path = CGMutablePath()
         
@@ -149,15 +149,7 @@ class MutantComponent: GKComponent {
             
         }
         
-        if runLess < 240 + randQ {
-            runLess += 1
-        } else {
-            if self.spriteComponent.node.parent != nil {
-                self.randQ = GKRandomSource.sharedRandom().nextInt(upperBound: 4)
-                self.beginBombing(loop: self.randQ, skew: self.randQ)
-            }
-            runLess = 0
-        }
+        
         
         if runMore < 2 {
             runMore += 1
@@ -186,44 +178,50 @@ class MutantComponent: GKComponent {
                     if newG.x > 0 {
                         self.spriteComponent.node.position.x -= 8 + randX
                         self.spriteShadow?.position.x = self.spriteComponent.node.position.x
-//
+
                     } else {
                         self.spriteComponent.node.position.x += 8 + randX
                         self.spriteShadow?.position.x = self.spriteComponent.node.position.x
-//
+
                     }
+            
+                    // only tries to move inline when on the same screen
             
                     let playerIndex = self.whereIsPlayer()
                     if self.foreGroundIndex == playerIndex {
                         if newG.y > 0 {
                             self.spriteComponent.node.position.y -= 8 + randY
                             self.spriteShadow?.position.y = self.spriteComponent.node.position.y
-    //                        self.spriteShadow?.position.y -= 8 + randY
+
                         } else {
                             self.spriteComponent.node.position.y += 8 - randY
                             self.spriteShadow?.position.y = self.spriteComponent.node.position.y
-    //                        self.spriteShadow?.position.y += 8 - randY
+
+                        }
+                        
+                        // only starts to bomb when on same screen
+                        
+                        if runLess < 64 + randQ {
+                            runLess += 1
+                        } else {
+                            if self.spriteComponent.node.parent != nil {
+                                self.randQ = GKRandomSource.sharedRandom().nextInt(upperBound: 4)
+                                if newG.x > 0 {
+                                    self.beginBombing(loop: self.randQ, skew: self.randQ, direct: .cominWest)
+                                } else {
+                                    self.beginBombing(loop: self.randQ, skew: self.randQ, direct: .cominEast)
+                                }
+                            }
+                            runLess = 0
                         }
                     }
                 
-//            }
-//            spriteComponent.node.run(SKAction.sequence([pause,move]))
+
         }
         
         for mine in mines {
             mine.update(deltaTime: seconds)
         }
-        
-//        spriteComponent.node.position.x -= 2
-//        spriteShadow?.position.x -= 2
-        
-        
-        
-//        if spriteComponent.node.zRotation.radiansToDegrees() > 10 {
-//            spriteComponent.node.run(SKAction.rotate(toAngle: CGFloat(-20).degreesToRadians(), duration: 0.5))
-//        } else {
-//            spriteComponent.node.run(SKAction.rotate(toAngle: CGFloat(20).degreesToRadians(), duration: 0.5))
-//        }
         
         if spriteComponent.node.position.x < 0 {
             if spriteComponent.node.parent != nil {

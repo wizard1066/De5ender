@@ -31,13 +31,14 @@ class MutantEntity: GKEntity {
         
         let spriteNode = spriteComponent.node
         spriteNode.size = CGSize(width: spriteNode.size.width/2, height: spriteNode.size.height/2)
-        spriteNode.physicsBody = SKPhysicsBody.init(texture: texture, size: spriteNode.size)
         spriteNode.position = CGPoint(x: xCord, y: yCord)
-        //        spriteNode.physicsBody = SKPhysicsBody.init(circleOfRadius: spriteNode.size.width/2)
-        spriteNode.physicsBody?.categoryBitMask = PhysicsCat.Alien
-        spriteNode.physicsBody?.collisionBitMask = PhysicsCat.None
-        spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.Fire | PhysicsCat.Player
-        spriteNode.physicsBody?.affectedByGravity = false
+        if shadowNode != nil {
+            spriteNode.physicsBody = SKPhysicsBody.init(texture: texture, size: spriteNode.size)
+            spriteNode.physicsBody?.categoryBitMask = PhysicsCat.Alien
+            spriteNode.physicsBody?.collisionBitMask = PhysicsCat.None
+            spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.Fire | PhysicsCat.Player
+            spriteNode.physicsBody?.affectedByGravity = false
+        }
         spriteNode.name = "mutant"
         
         if shadowNode != nil {

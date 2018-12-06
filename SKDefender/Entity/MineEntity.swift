@@ -13,20 +13,20 @@ class MineEntity: GKEntity {
     var spriteComponent: SpriteComponent!
     var mineComponent: MineComponent!
     
-    init(imageName: String, owningNode: EntityNode) {
+    init(imageName: String, owningNode: EntityNode, direct2D:spriteAttack) {
         super.init()
         
         let texture = SKTexture(imageNamed: imageName)
         spriteComponent = SpriteComponent(entity: self, texture: texture, size: texture.size())
         addComponent(spriteComponent)
         
-        mineComponent = MineComponent(entity: self)
+        mineComponent = MineComponent(entity: self, direct: direct2D)
         addComponent(mineComponent)
         
         let mineNode = spriteComponent.node
         mineNode.size = CGSize(width: 32, height: 32)
-        mineNode.position.x = owningNode.position.x
-        mineNode.position.y = owningNode.position.y + 128
+//        mineNode.position.x = owningNode.position.x
+//        mineNode.position.y = owningNode.position.y + 128
         mineNode.physicsBody = SKPhysicsBody.init(circleOfRadius: mineNode.size.width/2)
         mineNode.physicsBody?.affectedByGravity = false
 //        mineNode.physicsBody?.isDynamic = false

@@ -139,6 +139,10 @@ class LanderComponent: GKComponent {
     var randQ: Int = 0
     
     override func update(deltaTime seconds: TimeInterval) {
+        for mine in mines {
+            mine.update(deltaTime: seconds)
+        }
+
         if spriteComponent.node.parent == nil {
             spriteShadow?.removeFromParent()
             return
@@ -163,10 +167,7 @@ class LanderComponent: GKComponent {
             delegate.spriteEscaped(sprite: spriteComponent.node)
         }
         
-        for mine in mines {
-            mine.update(deltaTime: seconds)
-        }
-
+        
         let playerIndex = self.whereIsPlayer()
 
         if self.foreGroundIndex == playerIndex {
@@ -181,7 +182,7 @@ class LanderComponent: GKComponent {
                 runLess! += 1
             } else {
                 self.randQ = GKRandomSource.sharedRandom().nextInt(upperBound: 4)
-//                self.beginBombing(loop: self.randQ, skew: self.randQ)
+                self.beginBombing(loop: self.randQ, skew: self.randQ)
                 runLess = 0
             }
         }

@@ -618,7 +618,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
     
     func newWave() {
         bodyCount = 7 + (8 * waveCount)
-        print("-----> bodyCount \(bodyCount)")
+//        bodyCount = (2 * waveCount)
+        
         nextWave.textComponent.node.text = "Wave \(waveCount)"
         let waitAction = SKAction.wait(forDuration: 4)
         let fadeOutAction = SKAction.fadeOut(withDuration: 4)
@@ -627,15 +628,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         let playerScene = whereIsPlayer()
         let randomValueZ = (playerScene + 4) % numberOfForegrounds
         
-        doBombers(sceneNo: randomValueZ, bodies: 2 * waveCount, wayToGo: .cominEast) // 2 bombers
-        doBombers(sceneNo: randomValueZ,bodies: 2 * waveCount, wayToGo: .cominWest) // 2 bombers
+//        doBombers(sceneNo: randomValueZ,bodies: 2 * waveCount, wayToGo: .cominEast) // 2 bombers
+//        doBombers(sceneNo: randomValueZ,bodies: 2 * waveCount, wayToGo: .cominWest) // 2 bombers
 
-        doBaiters(sceneNo: randomValueZ,player: player, bodies: 2 * waveCount) // 4 baiters memory ok
-        doMutants(sceneNo: randomValueZ,player: player, bodies: 2 * waveCount) // 4 mutants memory ok
+//        doBaiters(sceneNo: randomValueZ,player: player, bodies: 2 * waveCount) // 4 baiters memory ok
+        doMutants(sceneNo: 3,player: player, bodies: 2 * waveCount) // 4 mutants memory ok
+        doMutants(sceneNo: 5,player: player, bodies: 2 * waveCount)
+
+//        for sceneNo in 0...7 {
+//            doLanders(sceneNo: sceneNo,player: player, bodies: 1)
+//        }
         
-        for sceneNo in 0...7 {
-            doLanders(sceneNo: sceneNo,player: player, bodies: 1)
-        }
+        
     }
     
     public func whereIsPlayer() -> Int {
@@ -1144,7 +1148,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
             print("bomber.position \(box.position)")
         case "starship":
             //fuck
-            manager.stopDeviceMotionUpdates()
+            self.enumerateChildNodes(withName: "mine") { (node, stop) in
+                print("node.name")
+            }
         case "spaceman":
             print("player \(box.position)")
         case "baiter":

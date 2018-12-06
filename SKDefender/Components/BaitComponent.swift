@@ -28,6 +28,9 @@ class BaitComponent: GKComponent {
     var lifetime = 0
     
     override func update(deltaTime seconds: TimeInterval) {
+        if spriteComponent.node.parent == nil {
+            return
+        }
         if spriteComponent.node.alpha == 1 {
             spriteComponent.node.run(SKAction.fadeOut(withDuration: 0.25))
         }

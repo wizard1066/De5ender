@@ -46,11 +46,14 @@ class BomberComponent: GKComponent {
 //        localView = entity
 //    }
     
-    func beginBombing(loop: Int, bomber: EntityNode) {
-        let mine = MineEntity(imageName: "mine", owningNode: self.spriteComponent.node)
+    func beginBombing(loop: Int, bomber: EntityNode, direction:spriteAttack) {
+        let mine = MineEntity(imageName: "mine", owningNode: self.spriteComponent.node, direct2D: direction)
         mine.spriteComponent.node.name = "mine"
-        mine.spriteComponent.node.position = spriteComponent.node.position
-        localForeground[foreGroundIndex].addChild(mine.spriteComponent.node)
+//        mine.spriteComponent.node.position = spriteComponent.node.position
+//        localForeground[foreGroundIndex].addChild(mine.spriteComponent.node)
+        
+        mine.spriteComponent.node.position = CGPoint(x: 0, y: 0)
+        self.spriteComponent.node.addChild(mine.spriteComponent.node)
         self.mines.append(mine)
     }
     
@@ -82,11 +85,11 @@ class BomberComponent: GKComponent {
             spriteShadow = (self.spriteComponent.node.userData?.object(forKey: "shadow") as? EntityNode)!
             spriteShadow?.alpha = 0.5
             runOnce = false
-            beginBombing(loop: 0, bomber: spriteComponent.node)
+            beginBombing(loop: 0, bomber: spriteComponent.node, direction: directionToGo)
         }
         
         if toggle {
-            beginBombing(loop: 0, bomber: spriteComponent.node)
+            beginBombing(loop: 0, bomber: spriteComponent.node, direction: directionToGo)
             toggle = false
             let rand = GKRandomSource.sharedRandom().nextInt(upperBound: 8)
             let pause = SKAction.wait(forDuration: TimeInterval(rand))
@@ -96,9 +99,9 @@ class BomberComponent: GKComponent {
             spriteComponent.node.run(SKAction.sequence([pause,bomb]))
         }
         
-//        for mine in mines {
-//            mine.update(deltaTime: seconds)
-//        }
+        for mine in mines {
+            mine.update(deltaTime: seconds)
+        }
 
         if directionToGo == .cominEast {
             spriteComponent.node.position.x -= 2

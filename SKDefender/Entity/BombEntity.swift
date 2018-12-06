@@ -20,8 +20,8 @@ class BombEntity: GKEntity {
         spriteComponent = SpriteComponent(entity: self, texture: texture, size: texture.size())
         addComponent(spriteComponent)
         
-        mineComponent = MineComponent(entity: self)
-        addComponent(mineComponent)
+//        mineComponent = MineComponent(entity: self, direct: )
+//        addComponent(mineComponent)
         
         let mineNode = spriteComponent.node
         mineNode.size = CGSize(width: 32, height: 32)

@@ -11,9 +11,11 @@ import GameplayKit
 
 class MineComponent: GKComponent {
     let spriteComponent: SpriteComponent
+    var localDirection: spriteAttack!
     
-    init(entity: GKEntity) {
+    init(entity: GKEntity, direct: spriteAttack) {
         self.spriteComponent = entity.component(ofType: SpriteComponent.self)!
+        localDirection = direct
         super.init()
     }
     
@@ -25,9 +27,22 @@ class MineComponent: GKComponent {
         return spriteComponent.node.position
     }
     
+    public func setDirect(direct: spriteAttack) {
+        localDirection = direct
+    }
+    
     var lifetime = 0
     
     override func update(deltaTime seconds: TimeInterval) {
+        if spriteComponent.node.parent == nil {
+            return
+        }
+        if localDirection == .cominEast {
+            spriteComponent.node.position.x += 1
+        } else {
+            spriteComponent.node.position.x -= 1
+        }
+        
         if spriteComponent.node.alpha == 1 {
             spriteComponent.node.run(SKAction.fadeOut(withDuration: 0.5))
         }
