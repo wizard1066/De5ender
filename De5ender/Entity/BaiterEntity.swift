@@ -34,7 +34,8 @@ class BaiterEntity: GKEntity {
         spriteNode.position = CGPoint(x: xCord, y: yCord)
         
         if shadowNode != nil {
-            spriteNode.physicsBody = SKPhysicsBody.init(texture: texture, size: spriteNode.size)
+//            spriteNode.physicsBody = SKPhysicsBody.init(texture: texture, size: spriteNode.size)
+            spriteNode.physicsBody = SKPhysicsBody.init(circleOfRadius: spriteNode.size.width/5 )
             spriteNode.physicsBody?.categoryBitMask = PhysicsCat.Alien
             spriteNode.physicsBody?.collisionBitMask = PhysicsCat.None
             spriteNode.physicsBody?.contactTestBitMask = PhysicsCat.Fire | PhysicsCat.Player

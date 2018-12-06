@@ -162,9 +162,11 @@ class MutantComponent: GKComponent {
                     switch self.running {
                         case .cominNorth?:
                             newG.y = newG.y - 128
+                            
                             break
                         case .cominSouth?:
                             newG.y = newG.y + 128
+                            
                             break
                         default:
                             break
@@ -178,10 +180,18 @@ class MutantComponent: GKComponent {
                     if newG.x > 0 {
                         self.spriteComponent.node.position.x -= 8 + randX
                         self.spriteShadow?.position.x = self.spriteComponent.node.position.x
+                        if self.spriteComponent.node.texture != SKTexture(imageNamed: "mutantb") {
+                            self.spriteComponent.node.texture = SKTexture(imageNamed: "mutantb")
+                            self.spriteShadow?.texture = SKTexture(imageNamed: "mutantb")
+                        }
 
                     } else {
                         self.spriteComponent.node.position.x += 8 + randX
                         self.spriteShadow?.position.x = self.spriteComponent.node.position.x
+                        if self.spriteComponent.node.texture != SKTexture(imageNamed: "mutant") {
+                            self.spriteComponent.node.texture = SKTexture(imageNamed: "mutant")
+                            self.spriteShadow?.texture = SKTexture(imageNamed: "mutant")
+                        }
 
                     }
             

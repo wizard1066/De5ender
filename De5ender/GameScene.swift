@@ -97,24 +97,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         }
     }
     
+    var lastValue: CGFloat = 96
+    var firstValue: CGFloat = 0
+    
     // 128 here is a multiple of the screen width
-    func buildGround(color: UIColor) -> (SKTexture, CGMutablePath) {
-        let loopsNeeded = Int(screenWidth / 128)
+    func buildGround(color: UIColor, lastOne: Int) -> (SKTexture, CGMutablePath) {
+        print("lastOne \(lastOne)")
+        let loopsNeeded = Int(screenWidth / 16)
         var path: CGMutablePath?
-        var lastValue = 96
+        let randomSource = GKARC4RandomSource()
+        let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 80, highestValue: 256)
         for loop in stride(from: 0, to: Int(screenWidth*2), by: loopsNeeded) {
-            let randomSource = GKARC4RandomSource()
-            let randomDistribution = GKRandomDistribution(randomSource: randomSource, lowestValue: 80, highestValue: 128)
-            let randomValueY = randomDistribution.nextInt()
+            var randomValueY = randomDistribution.nextInt()
+            if lastOne == numberOfForegrounds - 1, loop == Int(screenWidth*2) {
+                randomValueY = 96
+            }
             if path == nil {
                 path = CGMutablePath()
-                path!.move(to: CGPoint(x: 0, y: lastValue))
+                path!.move(to: CGPoint(x: firstValue, y: lastValue))
             } else {
                 path!.addLine(to: CGPoint(x: loop, y: randomValueY))
             }
-            if loop + loopsNeeded > Int(screenWidth*2) {
-                lastValue = randomValueY
-            }
+            lastValue = CGFloat(randomValueY)
+            
         }
         
         let shape = SKShapeNode()
@@ -141,7 +146,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
         
         for i in 0..<numberOfForegrounds {
             let color2U = colours[i]
-            let (texture, path) = buildGround(color: color2U)
+            let (texture, path) = buildGround(color: color2U, lastOne: i)
             let foreground = BuildEntity(texture: texture, path: path, i: i, width: self.view!.bounds.width * 2, physics: true)
             let scanground = BuildEntity(texture: texture, path: path, i: i, width: self.view!.bounds.width * 2, physics: false)
             let foregroundNode = foreground.buildComponent.node
@@ -631,7 +636,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, touchMe, landerEscaped {
 //        doBombers(sceneNo: randomValueZ,bodies: 2 * waveCount, wayToGo: .cominEast) // 2 bombers
 //        doBombers(sceneNo: randomValueZ,bodies: 2 * waveCount, wayToGo: .cominWest) // 2 bombers
 
-//        doBaiters(sceneNo: randomValueZ,player: player, bodies: 2 * waveCount) // 4 baiters memory ok
+//        doBaiters(sceneNo: 3,player: player, bodies: 2 * waveCount) // 4 baiters memory ok
+//        doBaiters(sceneNo: 5,player: player, bodies: 2 * waveCount) // 4 baiters memory ok
         doMutants(sceneNo: 3,player: player, bodies: 2 * waveCount) // 4 mutants memory ok
         doMutants(sceneNo: 5,player: player, bodies: 2 * waveCount)
 

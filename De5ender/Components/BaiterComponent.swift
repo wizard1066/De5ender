@@ -165,7 +165,7 @@ class BaiterComponent: GKComponent {
             
         }
         
-        if runMore! < 16 + randQ {
+        if runMore! < 4 + randQ {
             runMore! += 1
         } else {
             runMore = 0
@@ -201,11 +201,17 @@ class BaiterComponent: GKComponent {
                     if newG.x > 0 {
                         self.spriteComponent.node.position.x -= 8 + randX
                         self.spriteShadow?.position.x = self.spriteComponent.node.position.x
-//                        self.spriteShadow?.position.x -= 8 + randX
+                        if self.spriteComponent.node.texture != SKTexture(imageNamed: "baiter") {
+                            self.spriteComponent.node.texture = SKTexture(imageNamed: "baiter")
+                            self.spriteShadow?.texture = SKTexture(imageNamed: "baiter")
+                        }
                     } else {
                         self.spriteComponent.node.position.x += 8 + randX
                         self.spriteShadow?.position.x = self.spriteComponent.node.position.x
-//                        self.spriteShadow?.position.x += 8 + randX
+                        if self.spriteComponent.node.texture != SKTexture(imageNamed: "baiterb") {
+                            self.spriteComponent.node.texture = SKTexture(imageNamed: "baiterb")
+                            self.spriteShadow?.texture = SKTexture(imageNamed: "baiterb")
+                        }
                     }
                 
                 let playerIndex = self.whereIsPlayer()
